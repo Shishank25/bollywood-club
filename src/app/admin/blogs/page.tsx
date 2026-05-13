@@ -25,10 +25,6 @@ export default function BlogsAdminPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    fetchBlogs();
-  }, []);
-
   const fetchBlogs = useCallback(async () => {
     try {
       setLoading(true);
@@ -41,6 +37,10 @@ export default function BlogsAdminPage() {
     } finally {
       setLoading(false);
     }
+  }, []);
+
+  useEffect(() => {
+    fetchBlogs();
   }, []);
 
   const handleDeleteBlog = useCallback(async (id: number) => {
@@ -56,7 +56,7 @@ export default function BlogsAdminPage() {
   }, [fetchBlogs]);
 
   if (action === 'new' || (action === 'edit' && blogId)) {
-    return <BlogEditor blogId={blogId ? parseInt(blogId) : undefined} onClose={() => router.push('/admin/blogs')} />;
+    return <BlogEditorPage blogId={blogId ? parseInt(blogId) : undefined} onClose={() => router.push('/admin/blogs')} />;
   }
 
   return (
@@ -270,12 +270,6 @@ function BlogEditorPage({ blogId, onClose }: BlogEditorPageProps) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    if (blogId) {
-      fetchBlog();
-    }
-  }, [blogId]);
-
   const fetchBlog = async () => {
     if (!blogId) return;
     try {
@@ -350,6 +344,12 @@ function BlogEditorPage({ blogId, onClose }: BlogEditorPageProps) {
       setSaving(false);
     }
   };
+
+  useEffect(() => {
+    if (blogId) {
+      fetchBlog();
+    }
+  }, [blogId]);
 
   return (
     <div className="blog-editor-page">
