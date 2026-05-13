@@ -172,10 +172,13 @@ export async function deleteImage(imageId: number) {
 // ============================================
 
 export async function getBlogPosts(published: boolean = true) {
-  const query = published
-    ? sql`SELECT id, slug, title, excerpt, featured_image, author, published, created_at, updated_at, published_at FROM blog_posts WHERE published = true ORDER BY published_at DESC`
-    : sql`SELECT id, slug, title, excerpt, featured_image, author, published, created_at, updated_at, published_at FROM blog_posts ORDER BY updated_at DESC`;
-  return query.rows || [];
+  if (published) {
+    const { rows } = await sql`SELECT id, slug, title, excerpt, featured_image, author, published, created_at, updated_at, published_at FROM blog_posts WHERE published = true ORDER BY published_at DESC`;
+    return rows;
+  } else {
+    const { rows } = await sql`SELECT id, slug, title, excerpt, featured_image, author, published, created_at, updated_at, published_at FROM blog_posts ORDER BY updated_at DESC`;
+    return rows;
+  }
 }
 
 export async function getBlogPostBySlug(slug: string) {
@@ -197,22 +200,28 @@ export async function createBlogPost(data: any) {
 }
 
 export async function updateBlogPost(blogId: number, data: any) {
-  const result = await sql`
-    UPDATE blog_posts
-    SET 
-      slug = COALESCE(${data.slug || null}, slug),
-      title = COALESCE(${data.title || null}, title),
-      excerpt = COALESCE(${data.excerpt || null}, excerpt),
-      content = COALESCE(${data.content || null}, content),
-      featured_image = COALESCE(${data.featured_image || null}, featured_image),
-      author = COALESCE(${data.author || null}, author),
-      published = COALESCE(${data.published !== undefined ? data.published : null}, published),
-      published_at = CASE WHEN ${data.published === true} THEN COALESCE(published_at, CURRENT_TIMESTAMP) ELSE published_at END,
-      updated_at = CURRENT_TIMESTAMP
-    WHERE id = ${blogId}
-    RETURNING id, slug, title, excerpt, content, featured_image, author, published, created_at, updated_at, published_at
-  `;
-  return result.rows[0];
+  try {
+    const result = await sql`
+      UPDATE blog_posts
+      SET 
+        slug = CASE WHEN ${data.slug !== undefined} THEN ${data.slug} ELSE slug END,
+        title = CASE WHEN ${data.title !== undefined} THEN ${data.title} ELSE title END,
+        excerpt = CASE WHEN ${data.excerpt !== undefined} THEN ${data.excerpt} ELSE excerpt END,
+        content = CASE WHEN ${data.content !== undefined} THEN ${data.content} ELSE content END,
+        published = CASE WHEN ${data.published !== undefined} THEN ${data.published} ELSE published END,
+        published_at = CASE 
+          WHEN ${data.published === true} AND published_at IS NULL THEN CURRENT_TIMESTAMP 
+          ELSE published_at 
+        END,
+        updated_at = CURRENT_TIMESTAMP
+      WHERE id = ${blogId}
+      RETURNING *
+    `;
+    return result.rows[0];
+  } catch (error) {
+    console.error("Database Update Error:", error);
+    throw new Error(`Failed to update blog post ${blogId}`);
+  }
 }
 
 export async function deleteBlogPost(blogId: number) {
