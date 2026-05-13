@@ -191,12 +191,28 @@ export async function getBlogPostBySlug(slug: string) {
 }
 
 export async function createBlogPost(data: any) {
-  const result = await sql`
-    INSERT INTO blog_posts (slug, title, excerpt, content, featured_image, author, published, published_at)
-    VALUES (${data.slug}, ${data.title}, ${data.excerpt || null}, ${data.content}, ${data.featured_image || null}, ${data.author || null}, ${data.published || false}, ${data.published ? new Date() : null})
-    RETURNING id, slug, title, excerpt, content, featured_image, author, published, created_at, updated_at, published_at
-  `;
-  return result.rows[0];
+  try {
+    const result = await sql`
+      INSERT INTO blog_posts (
+        slug, title, excerpt, content, featured_image, author, published, published_at
+      )
+      VALUES (
+        ${data.slug}, 
+        ${data.title}, 
+        ${data.excerpt || null}, 
+        ${data.content}, 
+        ${data.featured_image || null}, 
+        ${data.author || null}, 
+        ${data.published || false}, 
+        ${data.published ? new Date().toISOString() : null} 
+      )
+      RETURNING *
+    `;
+    return result.rows[0];
+  } catch (error) {
+    console.error("Error creating blog post:", error);
+    throw error;
+  }
 }
 
 export async function updateBlogPost(blogId: number, data: any) {
