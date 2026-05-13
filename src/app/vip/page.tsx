@@ -1,8 +1,14 @@
 "use client";
 
 import { useEffect, useState } from 'react';
+import { MediaAsset } from '@/lib/media';
+import MediaSlot from '@/lib/media';
 
 export default function VipPage() {
+    // State for media fetching
+    const [media, setMedia] = useState<Record<string, MediaAsset>>({});
+    const [isLoading, setIsLoading] = useState(true);
+
     // State for the cinematic image reveal
     const [isRevealed, setIsRevealed] = useState(false);
 
@@ -33,7 +39,29 @@ export default function VipPage() {
         }
     ];
 
+    // 1. Fetch Media from your GET Route
     useEffect(() => {
+        const fetchMedia = async () => {
+            try {
+                const res = await fetch('/api/media?page=/vip');
+                if (res.ok) {
+                    const data = await res.json();
+                    setMedia(data);
+                }
+            } catch (error) {
+                console.error("Failed to fetch media:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchMedia();
+    }, []);
+
+    // 2. Scroll reveal animations (Re-runs when loading state changes)
+    useEffect(() => {
+        if (isLoading) return; // Wait for dynamic content to mount before observing
+
         // Trigger the clip-path reveal slightly after mount
         const revealTimer = setTimeout(() => setIsRevealed(true), 100);
 
@@ -54,22 +82,22 @@ export default function VipPage() {
             clearTimeout(revealTimer);
             fadeElements.forEach(el => observer.unobserve(el));
         };
-    }, []);
+    }, [isLoading]);
 
     return (
         <main className="w-full selection:bg-brand-black selection:text-white">
             
-            {/* HERO SECTION */}
+            {/* ── HERO SECTION ── */}
             <section className="relative h-[75svh] min-h-[500px] w-full px-6 md:px-12 pt-28 pb-12 flex flex-col">
                 <div 
                     className={`relative w-full h-full rounded-[2rem] overflow-hidden bg-brand-black shadow-xl transition-[clip-path] duration-[1200ms] ease-custom ${
                         isRevealed ? '[clip-path:polygon(0_0,_100%_0,_100%_100%,_0_100%)]' : '[clip-path:polygon(0_100%,_100%_100%,_100%_100%,_0_100%)]'
                     }`}
                 >
-                    {/* Subtle 8-second zoom-out effect on load */}
-                    <img 
-                        src="https://images.unsplash.com/photo-1574160408544-672535091a18?q=80&w=1600&auto=format&fit=crop" 
-                        alt="VIP Crowd"
+                    {/* Replaced hardcoded image with MediaSlot */}
+                    <MediaSlot 
+                        id="hero-media" 
+                        mediaMap={media} 
                         className={`absolute inset-0 w-full h-full object-cover filter grayscale-[30%] mix-blend-screen opacity-60 transition-transform duration-[8000ms] ease-out ${
                             isRevealed ? 'scale-100' : 'scale-[1.05]'
                         }`} 
@@ -89,7 +117,7 @@ export default function VipPage() {
                 </div>
             </section>
 
-            {/* INTRO TEXT SECTION */}
+            {/* ── INTRO TEXT SECTION ── */}
             <section className="py-20 px-6 md:px-12 bg-brand-white text-center">
                 <div className="max-w-4xl mx-auto fade-up">
                     <h2 className="text-3xl md:text-5xl font-display font-bold tracking-tighter uppercase text-brand-black mb-6">
@@ -103,7 +131,7 @@ export default function VipPage() {
                 </div>
             </section>
 
-            {/* BOOKING FORM SECTION */}
+            {/* ── BOOKING FORM SECTION ── */}
             <section className="py-12 px-6 md:px-12 bg-brand-white border-t border-brand-border">
                 <div className="max-w-[1600px] mx-auto flex flex-col lg:flex-row gap-12 lg:gap-16 items-stretch">
                     
@@ -113,10 +141,11 @@ export default function VipPage() {
                             isRevealed ? '[clip-path:polygon(0_0,_100%_0,_100%_100%,_0_100%)]' : '[clip-path:polygon(0_100%,_100%_100%,_100%_100%,_0_100%)]'
                         }`}
                     >
-                        <img 
-                            src="https://images.unsplash.com/photo-1566737236500-c8ac43014a67?q=80&w=1000&auto=format&fit=crop" 
+                        {/* Replaced hardcoded image with MediaSlot */}
+                        <MediaSlot 
+                            id="form-media" 
+                            mediaMap={media} 
                             className="absolute inset-0 w-full h-full object-cover filter grayscale-[10%]" 
-                            alt="VIP Experience" 
                         />
                         <div className="absolute inset-0 bg-brand-black/20"></div>
                         
@@ -133,14 +162,13 @@ export default function VipPage() {
                             <h3 className="text-4xl md:text-5xl font-display font-bold uppercase tracking-tighter text-brand-black mb-2">Request A Table</h3>
                             <p className="text-xs font-bold tracking-[0.15em] uppercase text-brand-gray mb-12">Secure your premium access.</p>
                             
-                            {/* Converted .form-input to inline Tailwind classes */}
                             <form className="space-y-8" onSubmit={(e) => e.preventDefault()}>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                     <div>
-                                        <input type="text" placeholder="FIRST NAME *" required className="w-full bg-transparent border-b border-brand-black pb-2 text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray" />
+                                        <input type="text" placeholder="FIRST NAME *" required className="w-full bg-transparent border-b border-brand-black pb-2 text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray rounded-none" />
                                     </div>
                                     <div>
-                                        <input type="text" placeholder="LAST NAME *" required className="w-full bg-transparent border-b border-brand-black pb-2 text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray" />
+                                        <input type="text" placeholder="LAST NAME *" required className="w-full bg-transparent border-b border-brand-black pb-2 text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray rounded-none" />
                                     </div>
                                 </div>
 
@@ -148,26 +176,25 @@ export default function VipPage() {
                                     <div className="flex items-center gap-2 mr-4 text-xs font-bold tracking-widest text-brand-black">
                                         <span>+61</span>
                                     </div>
-                                    <input type="tel" placeholder="PHONE NUMBER *" required className="w-full bg-transparent text-xs font-bold tracking-[0.15em] uppercase outline-none placeholder-brand-gray text-brand-black" />
+                                    <input type="tel" placeholder="PHONE NUMBER *" required className="w-full bg-transparent text-xs font-bold tracking-[0.15em] uppercase outline-none placeholder-brand-gray text-brand-black rounded-none" />
                                 </div>
 
                                 <div>
-                                    <input type="email" placeholder="EMAIL ADDRESS *" required className="w-full bg-transparent border-b border-brand-black pb-2 text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray" />
+                                    <input type="email" placeholder="EMAIL ADDRESS *" required className="w-full bg-transparent border-b border-brand-black pb-2 text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray rounded-none" />
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                                     <div className="md:col-span-1">
-                                        <input type="text" placeholder="CITY" className="w-full bg-transparent border-b border-brand-black pb-2 text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray" />
+                                        <input type="text" placeholder="CITY" className="w-full bg-transparent border-b border-brand-black pb-2 text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray rounded-none" />
                                     </div>
                                     <div className="md:col-span-1">
-                                        <input type="date" className="w-full bg-transparent border-b border-brand-black pb-2 text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-gray [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-50 hover:[&::-webkit-calendar-picker-indicator]:opacity-100 transition-opacity" />
+                                        <input type="date" className="w-full bg-transparent border-b border-brand-black pb-2 text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-gray [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-50 hover:[&::-webkit-calendar-picker-indicator]:opacity-100 transition-opacity rounded-none" />
                                     </div>
                                     <div className="md:col-span-1">
-                                        <input type="number" min="1" placeholder="EST. GUESTS" className="w-full bg-transparent border-b border-brand-black pb-2 text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray" />
+                                        <input type="number" min="1" placeholder="EST. GUESTS" className="w-full bg-transparent border-b border-brand-black pb-2 text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray rounded-none" />
                                     </div>
                                 </div>
 
-                                {/* Pure Tailwind Monumental Button */}
                                 <button type="submit" className="group relative overflow-hidden inline-flex items-center justify-center w-full py-5 text-xs font-bold tracking-[0.15em] uppercase mt-8 bg-brand-black text-white transition-colors duration-300">
                                     <div className="absolute top-full left-0 w-full h-full bg-brand-accent transition-all duration-[400ms] ease-custom z-10 group-hover:top-0"></div>
                                     <span className="relative z-20">Submit Request</span>
@@ -179,7 +206,7 @@ export default function VipPage() {
                 </div>
             </section>
 
-            {/* FEATURES SECTION */}
+            {/* ── FEATURES SECTION ── */}
             <section className="py-24 px-6 md:px-12 bg-brand-offwhite">
                 <div className="max-w-[1600px] mx-auto">
                     
@@ -225,9 +252,8 @@ export default function VipPage() {
                 </div>
             </section>
 
-            {/* BIRTHDAY CTA SECTION */}
+            {/* ── BIRTHDAY CTA SECTION ── */}
             <section className="py-32 px-6 md:px-12 bg-brand-black text-brand-white relative overflow-hidden flex items-center justify-center text-center">
-                {/* Glowing Background Orb */}
                 <div className="absolute inset-0 w-full h-full pointer-events-none opacity-20">
                     <div className="absolute top-0 left-1/4 w-96 h-96 bg-brand-accent rounded-full mix-blend-screen filter blur-[100px]"></div>
                 </div>
@@ -240,8 +266,7 @@ export default function VipPage() {
                     <p className="text-sm md:text-base font-medium text-brand-gray mb-12 max-w-xl mx-auto leading-relaxed">
                         Get your birthday vibes on with a friend for free. Secure exclusive birthday deals and complimentary ticket offers to make your night legendary.
                     </p>
-                    {/* Pure Tailwind Outline Button */}
-                    <a href="#" className="relative inline-flex items-center justify-center bg-transparent text-white border border-white px-12 py-5 rounded-full text-xs font-bold tracking-[0.15em] uppercase transition-all duration-300 hover:bg-white hover:text-brand-black">
+                    <a href="/birthday" className="relative inline-flex items-center justify-center bg-transparent text-white border border-white px-12 py-5 rounded-full text-xs font-bold tracking-[0.15em] uppercase transition-all duration-300 hover:bg-white hover:text-brand-black">
                         View Birthday Offers
                     </a>
                 </div>

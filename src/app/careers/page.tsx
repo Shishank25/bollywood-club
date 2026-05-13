@@ -1,14 +1,21 @@
 "use client";
 
 import { useEffect, useState } from 'react';
+import { MediaAsset } from '@/lib/media';
+import MediaSlot from '@/lib/media';
 
 export default function CareersPage() {
+    // State for media fetching
+    const [media, setMedia] = useState<Record<string, MediaAsset>>({});
+    const [isLoading, setIsLoading] = useState(true);
+
     // State for the cinematic image reveal on load
     const [isRevealed, setIsRevealed] = useState(false);
 
-    // Roles Data Array to keep JSX clean
+    // Roles Data Array - Added unique IDs for MediaSlots
     const roles = [
         {
+            id: "role-1",
             title: "Promoters",
             icon: "fa-solid fa-bullhorn",
             desc: "Expand our reach. Bring the energy to the streets and pack the club with your network.",
@@ -16,6 +23,7 @@ export default function CareersPage() {
             delay: "0ms"
         },
         {
+            id: "role-2",
             title: "Influencers",
             icon: "fa-solid fa-camera-retro",
             desc: "Shape the culture. Share the vibe and capture the definitive moments of our events online.",
@@ -23,6 +31,7 @@ export default function CareersPage() {
             delay: "100ms"
         },
         {
+            id: "role-3",
             title: "DJs & Artists",
             icon: "fa-solid fa-compact-disc",
             desc: "Control the rhythm. Bring your unique sound and keep the dancefloor alive until dawn.",
@@ -30,6 +39,7 @@ export default function CareersPage() {
             delay: "200ms"
         },
         {
+            id: "role-4",
             title: "Live Musicians",
             icon: "fa-solid fa-guitar",
             desc: "Elevate the live experience. Blend classical elements with modern, high-energy club tracks.",
@@ -37,6 +47,7 @@ export default function CareersPage() {
             delay: "0ms"
         },
         {
+            id: "role-5",
             title: "Vocalists",
             icon: "fa-solid fa-microphone-lines",
             desc: "Command the crowd. Deliver powerful performances that act as the centerpiece of our shows.",
@@ -45,7 +56,29 @@ export default function CareersPage() {
         }
     ];
 
+    // 1. Fetch Media from your GET Route
     useEffect(() => {
+        const fetchMedia = async () => {
+            try {
+                const res = await fetch('/api/media?page=/careers');
+                if (res.ok) {
+                    const data = await res.json();
+                    setMedia(data);
+                }
+            } catch (error) {
+                console.error("Failed to fetch media:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchMedia();
+    }, []);
+
+    // 2. Scroll reveal animations (Re-runs when loading state changes)
+    useEffect(() => {
+        if (isLoading) return; // Wait for dynamic content to mount before observing
+
         // Trigger the clip-path and zoom reveal slightly after mount
         const revealTimer = setTimeout(() => setIsRevealed(true), 100);
 
@@ -64,26 +97,27 @@ export default function CareersPage() {
 
         return () => {
             clearTimeout(revealTimer);
-            fadeElements.forEach(el => observer.unobserve(el));
+            observer.disconnect();
         };
-    }, []);
+    }, [isLoading]);
 
     return (
         <main className="w-full selection:bg-brand-black selection:text-white">
             
-            {/* HERO SECTION */}
+            {/* ── HERO SECTION ── */}
             <section className="relative w-full px-4 md:px-8 pt-28 pb-12 flex flex-col">
                 <div 
                     className={`relative w-full h-[40svh] md:h-[50svh] min-h-[350px] rounded-[2rem] overflow-hidden bg-brand-black shadow-2xl flex items-center justify-center text-center transition-[clip-path] duration-[1200ms] ease-custom ${
                         isRevealed ? '[clip-path:polygon(0_0,_100%_0,_100%_100%,_0_100%)]' : '[clip-path:polygon(0_100%,_100%_100%,_100%_100%,_0_100%)]'
                     }`}
                 >
-                    <img 
-                        src="https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=1600&auto=format&fit=crop" 
-                        alt="Careers Background"
+                    {/* Replaced hardcoded image with MediaSlot */}
+                    <MediaSlot 
+                        id="hero-video" 
+                        mediaMap={media} 
                         className={`absolute inset-0 w-full h-full object-cover filter grayscale-[10%] opacity-70 transition-transform duration-[10000ms] ease-out ${
                             isRevealed ? 'scale-100' : 'scale-[1.15]'
-                        }`} 
+                        }`}
                     />
                     
                     <div className="absolute inset-0 bg-brand-black/30"></div>
@@ -100,7 +134,7 @@ export default function CareersPage() {
                 </div>
             </section>
 
-            {/* INTRO TEXT SECTION */}
+            {/* ── INTRO TEXT SECTION ── */}
             <section className="py-16 md:py-20 px-6 md:px-12 bg-brand-white text-center">
                 <div className="max-w-4xl mx-auto fade-up">
                     <h2 className="text-3xl md:text-5xl lg:text-6xl font-display font-bold tracking-tighter uppercase text-brand-black mb-6 leading-[0.95]">
@@ -117,7 +151,7 @@ export default function CareersPage() {
                 </div>
             </section>
 
-            {/* OPEN POSITIONS GRID */}
+            {/* ── OPEN POSITIONS GRID ── */}
             <section className="py-24 px-6 md:px-12 bg-brand-offwhite border-t border-brand-border">
                 <div className="max-w-[1600px] mx-auto">
                     
@@ -131,19 +165,29 @@ export default function CareersPage() {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6">
-                        {roles.map((role, i) => (
+                        {roles.map((role) => (
                             <div 
-                                key={i} 
-                                className={`${role.cols} group bg-brand-offwhite border border-transparent p-10 flex flex-col min-h-[280px] rounded-2xl cursor-pointer transition-all duration-[400ms] ease-custom hover:bg-brand-black hover:border-brand-black hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(0,0,0,0.15)] fade-up`}
+                                key={role.id} 
+                                className={`${role.cols} group bg-brand-offwhite border border-transparent p-10 flex flex-col min-h-[350px] rounded-2xl cursor-pointer transition-all duration-[400ms] ease-custom hover:bg-brand-black hover:border-brand-black hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(0,0,0,0.15)] fade-up`}
                                 style={{ transitionDelay: role.delay }}
                             >
-                                <div className="text-3xl text-brand-black mb-8 transition-colors duration-300 group-hover:text-brand-accent">
-                                    <i className={role.icon}></i>
+                                {/* Added MediaSlot container inside the role card */}
+                                <div className="w-full h-40 mb-6 overflow-hidden rounded-lg bg-brand-border/20">
+                                    <MediaSlot 
+                                        id={role.id} 
+                                        mediaMap={media} 
+                                        className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-500" 
+                                    />
                                 </div>
-                                <div className="mt-auto">
-                                    <h4 className="text-xl font-display font-bold uppercase tracking-tighter text-brand-black mb-2 transition-colors duration-300 group-hover:text-white">
+                                <div className="flex items-center gap-4 mb-4">
+                                    <div className="text-2xl text-brand-black transition-colors duration-300 group-hover:text-brand-accent">
+                                        <i className={role.icon}></i>
+                                    </div>
+                                    <h4 className="text-xl font-display font-bold uppercase tracking-tighter text-brand-black transition-colors duration-300 group-hover:text-white">
                                         {role.title}
                                     </h4>
+                                </div>
+                                <div className="mt-auto">
                                     <p className="text-xs text-brand-gray leading-relaxed font-medium transition-colors duration-300 group-hover:text-white/80">
                                         {role.desc}
                                     </p>
@@ -154,7 +198,7 @@ export default function CareersPage() {
                 </div>
             </section>
 
-            {/* APPLICATION FORM SECTION */}
+            {/* ── APPLICATION FORM SECTION ── */}
             <section className="py-12 px-6 md:px-12 bg-brand-white border-t border-brand-border">
                 <div className="max-w-[1600px] mx-auto flex flex-col lg:flex-row gap-12 lg:gap-16 items-stretch">
                     
@@ -164,10 +208,11 @@ export default function CareersPage() {
                             isRevealed ? '[clip-path:polygon(0_0,_100%_0,_100%_100%,_0_100%)]' : '[clip-path:polygon(0_100%,_100%_100%,_100%_100%,_0_100%)]'
                         }`}
                     >
-                        <img 
-                            src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=1000&auto=format&fit=crop" 
+                        {/* Replaced hardcoded image with MediaSlot */}
+                        <MediaSlot 
+                            id="form-media" 
+                            mediaMap={media} 
                             className="absolute inset-0 w-full h-full object-cover filter grayscale-[10%]" 
-                            alt="On Stage" 
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-brand-black/60 to-transparent"></div>
                         

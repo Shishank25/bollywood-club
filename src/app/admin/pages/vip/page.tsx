@@ -1,4 +1,3 @@
-// app/admin/pages/home/page.tsx
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -13,32 +12,33 @@ interface MediaAsset {
   height: number | null;
 }
 
-const HOME_SLOTS = [
-  { id: 'hero-video', label: '🎬 Hero Video', description: 'Main background video at the top' },
-  { id: 'cinematic-1', label: '✨ Highlight 1', description: 'First cinematic showcase' },
-  { id: 'cinematic-2', label: '✨ Highlight 2', description: 'Second cinematic showcase' },
+// Configured specifically for the VIP page slots
+const VIP_SLOTS = [
+  { id: 'hero-media', label: '🎬 VIP Hero Media', description: 'Main background video or image at the top of the VIP page' },
+  { id: 'form-media', label: '📝 VIP Form Media', description: 'Image or video displayed next to the VIP booking form' },
 ];
 
-export default function HomePageEditorPage() {
+export default function VipPageEditorPage() {
   const router = useRouter();
   const [mediaAssets, setMediaAssets] = useState<Record<string, MediaAsset>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    fetchHomePageMedia();
+    fetchVipPageMedia();
   }, []);
 
-  const fetchHomePageMedia = async () => {
+  const fetchVipPageMedia = async () => {
     try {
       setLoading(true);
-      const res = await fetch('/api/media?page=/home');
-      if (!res.ok) throw new Error('Failed to fetch home page media');
+      // Fetching specifically for the /vip route
+      const res = await fetch('/api/media?page=/vip');
+      if (!res.ok) throw new Error('Failed to fetch VIP page media');
       
       const data = await res.json();
       setMediaAssets(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error loading home page data');
+      setError(err instanceof Error ? err.message : 'Error loading VIP page data');
     } finally {
       setLoading(false);
     }
@@ -49,7 +49,7 @@ export default function HomePageEditorPage() {
       <div className="flex items-center justify-center py-12">
         <div className="text-center">
           <div className="w-12 h-12 rounded-full border-4 border-slate-700 border-t-blue-500 animate-spin mx-auto mb-4"></div>
-          <p className="text-slate-400">Loading home page editor...</p>
+          <p className="text-slate-400">Loading VIP page editor...</p>
         </div>
       </div>
     );
@@ -59,8 +59,8 @@ export default function HomePageEditorPage() {
     <div className="space-y-6">
       {/* Page Title */}
       <div>
-        <h2 className="text-3xl font-bold text-white mb-2">Edit Home Page Media</h2>
-        <p className="text-slate-400">Configure media assets for your home page sections</p>
+        <h2 className="text-3xl font-bold text-white mb-2">Edit VIP Page Media</h2>
+        <p className="text-slate-400">Configure the hero and form media assets for your VIP Table packages</p>
       </div>
 
       {/* Error Alert */}
@@ -73,12 +73,12 @@ export default function HomePageEditorPage() {
 
       {/* Media Slots Grid */}
       <div className="grid gap-6">
-        {HOME_SLOTS.map((slot) => (
+        {VIP_SLOTS.map((slot) => (
           <MediaEditorCard 
             key={slot.id}
             slotConfig={slot}
             initialData={mediaAssets[slot.id]}
-            onRefresh={fetchHomePageMedia}
+            onRefresh={fetchVipPageMedia}
           />
         ))}
       </div>
@@ -112,7 +112,7 @@ function MediaEditorCard({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          pageRoute: '/home',
+          pageRoute: '/vip', // Target the VIP route
           htmlId: slotConfig.id,
           mediaUrl: formData.mediaUrl,
           mediaType: formData.mediaType,
@@ -137,7 +137,6 @@ function MediaEditorCard({
 
   return (
     <div className="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden shadow-lg hover:border-slate-600 transition-colors">
-      {/* Header */}
       <div className="p-4 border-b border-slate-700 bg-gradient-to-r from-slate-800 to-slate-700/50 flex justify-between items-start">
         <div>
           <h3 className="text-lg font-semibold text-white">{slotConfig.label}</h3>
@@ -148,9 +147,7 @@ function MediaEditorCard({
         </div>
       </div>
 
-      {/* Content */}
       <div className="p-6 space-y-5">
-        {/* Media URL Input */}
         <div>
           <label className="block text-sm font-medium text-white mb-2">Media URL</label>
           <input 
@@ -164,7 +161,6 @@ function MediaEditorCard({
           />
         </div>
 
-        {/* Media Type */}
         <div>
           <label className="block text-sm font-medium text-white mb-2">Media Type</label>
           <select 
@@ -174,12 +170,11 @@ function MediaEditorCard({
             value={formData.mediaType}
             onChange={(e) => setFormData({...formData, mediaType: e.target.value as 'image' | 'video'})}
           >
-            <option value="image">📷 Image</option>
+            <option value="image">🖼️ Image</option>
             <option value="video">🎥 Video</option>
           </select>
         </div>
 
-        {/* Alt Text */}
         <div>
           <label className="block text-sm font-medium text-white mb-2">Alt Text (SEO / Accessibility)</label>
           <input 
@@ -193,7 +188,6 @@ function MediaEditorCard({
           />
         </div>
 
-        {/* Dimensions Grid */}
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-white mb-2">Width (px)</label>
@@ -221,7 +215,6 @@ function MediaEditorCard({
           </div>
         </div>
 
-        {/* Media Preview */}
         {hasMedia && (
           <div className="pt-4 border-t border-slate-700">
             <p className="text-xs font-medium text-slate-400 mb-3 uppercase tracking-wide">Preview</p>
@@ -242,7 +235,6 @@ function MediaEditorCard({
         )}
       </div>
 
-      {/* Footer */}
       <div className="p-4 bg-slate-700/30 border-t border-slate-700 flex justify-end gap-3">
         <button 
           onClick={handleSave}
@@ -251,7 +243,7 @@ function MediaEditorCard({
                    disabled:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed
                    font-medium transition-all duration-200"
         >
-          {saving ? '💾 Saving...' : '💾 Save'}
+          {saving ? '⏳ Saving...' : '💾 Save'}
         </button>
       </div>
     </div>

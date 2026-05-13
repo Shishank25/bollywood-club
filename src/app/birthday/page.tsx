@@ -1,25 +1,35 @@
 "use client";
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { MediaAsset } from '@/lib/media';
+import MediaSlot from '@/lib/media'; // Adjust path as needed
 
 export default function BirthdayPage() {
+    // State for media fetching
+    const [media, setMedia] = useState<Record<string, MediaAsset>>({});
+    const [isLoading, setIsLoading] = useState(true);
+    
     // State for the cinematic image reveal on load
     const [isRevealed, setIsRevealed] = useState(false);
 
     const features = [
         {
+            id: "card-1",
             num: "01",
             title: "The VIP Experience",
             desc: "Lights, Camera, BOLLYWOOD – where every birthday is a blockbuster! Elevate your celebration. Skip the lines, dance in the VIP lounge, and enjoy top-shelf drinks.",
             delay: "0ms"
         },
         {
+            id: "card-2",
             num: "02",
             title: "Hottest Beats & Glamour",
             desc: "Dance to the hottest Bollywood beats, sip on exotic cocktails, and capture the glamour with our professional in-house photographers to remember the night forever.",
             delay: "100ms"
         },
         {
+            id: "card-3",
             num: "03",
             title: "Exclusive Offers",
             desc: "Book now for exclusive birthday offers and make your special day a true sensation! Limited slots are available, so grab your tickets now before they sell out.",
@@ -27,7 +37,29 @@ export default function BirthdayPage() {
         }
     ];
 
+    // 1. Fetch Media from your GET Route
     useEffect(() => {
+        const fetchMedia = async () => {
+            try {
+                const res = await fetch('/api/media?page=/birthday');
+                if (res.ok) {
+                    const data = await res.json();
+                    setMedia(data);
+                }
+            } catch (error) {
+                console.error("Failed to fetch media:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchMedia();
+    }, []);
+
+    // 2. Scroll reveal animations (Re-runs when loading state changes)
+    useEffect(() => {
+        if (isLoading) return; // Wait for dynamic content to mount before observing
+
         // Trigger the clip-path and zoom reveal slightly after mount
         const revealTimer = setTimeout(() => setIsRevealed(true), 100);
 
@@ -46,27 +78,29 @@ export default function BirthdayPage() {
 
         return () => {
             clearTimeout(revealTimer);
-            fadeElements.forEach(el => observer.unobserve(el));
+            observer.disconnect();
         };
-    }, []);
+    }, [isLoading]);
 
     return (
         <main className="w-full selection:bg-brand-black selection:text-white">
             
-            {/* HERO SECTION */}
+            {/* ── HERO SECTION ── */}
             <section className="relative h-[75svh] min-h-[500px] w-full px-6 md:px-12 pt-28 pb-12 flex flex-col">
                 <div 
                     className={`relative w-full h-full rounded-[2rem] overflow-hidden bg-brand-black shadow-xl transition-[clip-path] duration-[1200ms] ease-custom ${
                         isRevealed ? '[clip-path:polygon(0_0,_100%_0,_100%_100%,_0_100%)]' : '[clip-path:polygon(0_100%,_100%_100%,_100%_100%,_0_100%)]'
                     }`}
                 >
-                    <img 
-                        src="https://images.unsplash.com/photo-1517457373958-b7bdd4587205?q=80&w=1600&auto=format&fit=crop" 
+                    {/* Replaced hardcoded image with MediaSlot */}
+                    <MediaSlot 
+                        id="hero-video" 
+                        mediaMap={media} 
                         className={`absolute inset-0 w-full h-full object-cover filter grayscale-[20%] opacity-70 transition-transform duration-[8000ms] ease-out ${
                             isRevealed ? 'scale-100' : 'scale-[1.05]'
                         }`}
-                        alt="Birthday Celebration"
                     />
+                    
                     <div className="absolute inset-0 bg-gradient-to-t from-brand-black via-brand-black/40 to-transparent"></div>
                     
                     <div className="absolute inset-0 flex flex-col justify-end pb-16 px-8 md:px-16 lg:px-24 z-20">
@@ -82,7 +116,7 @@ export default function BirthdayPage() {
                 </div>
             </section>
 
-            {/* TEXT INTRO SECTION */}
+            {/* ── TEXT INTRO SECTION ── */}
             <section className="py-20 px-6 md:px-12 bg-brand-white text-center">
                 <div className="max-w-4xl mx-auto fade-up">
                     <h2 className="text-3xl md:text-5xl lg:text-6xl font-display font-bold tracking-tighter uppercase text-brand-black mb-6 leading-[0.95]">
@@ -99,7 +133,7 @@ export default function BirthdayPage() {
                 </div>
             </section>
 
-            {/* BOOKING FORM SECTION */}
+            {/* ── BOOKING FORM SECTION ── */}
             <section className="py-12 px-6 md:px-12 bg-brand-white border-t border-brand-border">
                 <div className="max-w-[1600px] mx-auto flex flex-col lg:flex-row gap-12 lg:gap-16 items-stretch">
                     
@@ -109,11 +143,13 @@ export default function BirthdayPage() {
                             isRevealed ? '[clip-path:polygon(0_0,_100%_0,_100%_100%,_0_100%)]' : '[clip-path:polygon(0_100%,_100%_100%,_100%_100%,_0_100%)]'
                         }`}
                     >
-                        <img 
-                            src="https://images.unsplash.com/photo-1530103862676-de88b368798d?q=80&w=1000&auto=format&fit=crop" 
+                        {/* Replaced hardcoded image with MediaSlot */}
+                        <MediaSlot 
+                            id="form-media" 
+                            mediaMap={media} 
                             className="absolute inset-0 w-full h-full object-cover filter grayscale-[10%]" 
-                            alt="Birthday Experience" 
                         />
+
                         <div className="absolute inset-0 bg-brand-black/20"></div>
                         
                         <div className="absolute bottom-12 left-12 mix-blend-difference text-brand-white z-10">
@@ -159,7 +195,6 @@ export default function BirthdayPage() {
                                     </div>
                                 </div>
 
-                                {/* Pure Tailwind Monumental Button */}
                                 <button type="submit" className="group relative overflow-hidden inline-flex items-center justify-center w-full py-5 text-xs font-bold tracking-[0.15em] uppercase mt-8 bg-brand-black text-white transition-colors duration-300">
                                     <div className="absolute top-full left-0 w-full h-full bg-brand-accent transition-all duration-[400ms] ease-custom z-10 group-hover:top-0"></div>
                                     <span className="relative z-20">Submit Details</span>
@@ -171,7 +206,7 @@ export default function BirthdayPage() {
                 </div>
             </section>
 
-            {/* FEATURES GRID SECTION */}
+            {/* ── FEATURES GRID SECTION ── */}
             <section className="py-24 px-6 md:px-12 bg-brand-offwhite">
                 <div className="max-w-[1600px] mx-auto">
                     
@@ -194,10 +229,18 @@ export default function BirthdayPage() {
                         {features.map((feature, i) => (
                             <div 
                                 key={i} 
-                                className="bg-brand-offwhite border border-transparent p-10 flex flex-col justify-between min-h-[300px] transition-all duration-[400ms] ease-custom hover:bg-white hover:border-brand-black hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(0,0,0,0.05)] fade-up group"
+                                className="bg-brand-offwhite border border-transparent p-10 flex flex-col justify-start min-h-[300px] transition-all duration-[400ms] ease-custom hover:bg-white hover:border-brand-black hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(0,0,0,0.05)] fade-up group"
                                 style={{ transitionDelay: feature.delay }}
                             >
-                                <div className="mb-8">
+                                {/* Added MediaSlot container inside the card */}
+                                <div className="w-full h-40 mb-6 overflow-hidden rounded-lg bg-brand-border/20">
+                                    <MediaSlot 
+                                        id={feature.id} 
+                                        mediaMap={media} 
+                                        className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-500" 
+                                    />
+                                </div>
+                                <div className="mb-4">
                                     <span className="text-5xl font-display font-extrabold text-brand-black/10 group-hover:text-brand-accent transition-colors duration-500">
                                         {feature.num}
                                     </span>
@@ -217,7 +260,8 @@ export default function BirthdayPage() {
                 </div>
             </section>
 
-            {/* VIP CTA SECTION */}
+            {/* ── VIP CTA SECTION ── */}
+            {/* Assuming no explicit slot was defined for this in the admin panel, keeping it hardcoded */}
             <section className="py-32 px-6 md:px-12 bg-brand-black text-brand-white relative overflow-hidden flex items-center justify-center text-center">
                 <img 
                     src="https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?q=80&w=1600&auto=format&fit=crop" 
@@ -234,9 +278,9 @@ export default function BirthdayPage() {
                     <p className="text-sm md:text-base font-medium text-brand-gray mb-12 max-w-xl mx-auto leading-relaxed">
                         Book a VIP Booth Package for an exclusive seating area, a dedicated host, and premium bottle service. Experience the ultimate luxury.
                     </p>
-                    <a href="/vip" className="relative inline-flex items-center justify-center bg-transparent text-white border border-white px-12 py-5 rounded-full text-xs font-bold tracking-[0.15em] uppercase transition-all duration-300 hover:bg-white hover:text-brand-black">
+                    <Link href="/vip" className="relative inline-flex items-center justify-center bg-transparent text-white border border-white px-12 py-5 rounded-full text-xs font-bold tracking-[0.15em] uppercase transition-all duration-300 hover:bg-white hover:text-brand-black">
                         View VIP Packages
-                    </a>
+                    </Link>
                 </div>
             </section>
 

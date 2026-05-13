@@ -1,5 +1,7 @@
 // test-db.ts (in your project root)
 import { sql } from '@vercel/postgres';
+import { config } from 'dotenv';
+config({ path: '.env.local' });
 
 async function testConnection() {
   try {

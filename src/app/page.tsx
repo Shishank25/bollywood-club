@@ -1,11 +1,37 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { MediaAsset } from "@/lib/media"; // Adjust this path if you saved your types elsewhere
+import MediaSlot from "@/lib/media"; // Adjust this path based on where you saved the component
 
 export default function HomePage() {
-  // Scroll reveal animations
+  const [media, setMedia] = useState<Record<string, MediaAsset>>({});
+  const [isLoading, setIsLoading] = useState(true);
+
+  // 1. Fetch Media from your GET Route
   useEffect(() => {
+    const fetchMedia = async () => {
+      try {
+        const res = await fetch('/api/media?page=/home');
+        if (res.ok) {
+          const data = await res.json();
+          setMedia(data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch media:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchMedia();
+  }, []);
+
+  // 2. Scroll reveal animations (Re-runs when loading state changes)
+  useEffect(() => {
+    if (isLoading) return; // Wait for dynamic content to mount before observing
+
     // Image reveal on load
     const reveals = document.querySelectorAll(".img-reveal");
     const timer = setTimeout(() => {
@@ -25,35 +51,32 @@ export default function HomePage() {
       },
       { threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
     );
+    
     fadeElements.forEach((el) => observer.observe(el));
 
     return () => {
       clearTimeout(timer);
       observer.disconnect();
     };
-  }, []);
+  }, [isLoading]);
 
   return (
     <>
       {/* ── Hero ── */}
-      <section className="relative h-[100svh] w-full flex flex-col justify-end px-6 md:px-12 pb-12 pt-32 bg-brand-white">
-        <div className="absolute inset-0 top-[88px] bottom-6 left-6 right-6 rounded-[2rem] overflow-hidden bg-brand-offwhite img-reveal active -z-10">
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="w-full h-full object-cover opacity-90 mix-blend-multiply grayscale-[10%]"
-          >
-            <source
-              src="https://cdn.pixabay.com/vimeo/302821215/party-18239.mp4?width=1280"
-              type="video/mp4"
-            />
-          </video>
+      <section className="relative h-[100svh] w-full flex flex-col justify-end px-6 md:px-12 pb-12 pt-32">
+        <div className="absolute inset-0 top-[88px] bottom-6 left-6 right-6 rounded-[2rem] overflow-hidden bg-brand-offwhite img-reveal -z-10">
+          
+          {/* REFACTORED: MediaSlot completely handles loading, video vs image, and dimensions */}
+          <MediaSlot 
+            id="hero-video" 
+            mediaMap={media} 
+            className="w-full h-full object-cover opacity-90 mix-blend-multiply grayscale-[10%]" 
+          />
+
           <div className="absolute inset-0 bg-gradient-to-t from-white/90 via-white/30 to-transparent" />
         </div>
 
-        <div className="relative z-10 w-full max-w-[1600px] mx-auto flex flex-col md:flex-row justify-between items-end gap-10 fade-up active">
+        <div className="relative z-10 w-full max-w-[1600px] mx-auto flex flex-col md:flex-row justify-between items-end gap-10 fade-up">
           <div className="max-w-3xl">
             <h1 className="text-5xl md:text-7xl lg:text-[6vw] font-display font-extrabold tracking-tighter leading-[0.9] text-brand-black uppercase mb-6">
               Elevate Your<br />
@@ -130,7 +153,7 @@ export default function HomePage() {
                 <div className="w-full aspect-[3/4] overflow-hidden bg-brand-offwhite mb-6">
                   <img
                     src={event.img}
-                    className="w-full h-full object-cover filter grayscale group-hover:grayscale-0"
+                    className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-500"
                     alt={`${event.title} flyer`}
                   />
                 </div>
@@ -166,19 +189,16 @@ export default function HomePage() {
         </div>
 
         <div className="max-w-[1600px] mx-auto flex gap-6 overflow-x-auto snap-x snap-mandatory hide-scroll fade-up">
-          {[
-            "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=1200&auto=format&fit=crop",
-            "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=1200&auto=format&fit=crop",
-            "https://images.unsplash.com/photo-1549213713-52caee0428d6?q=80&w=1200&auto=format&fit=crop",
-          ].map((src, i) => (
+          {/* REFACTORED: Map over your database IDs instead of hardcoded URLs */}
+          {['cinematic-1', 'cinematic-2'].map((id) => (
             <div
-              key={i}
+              key={id}
               className="snap-center shrink-0 w-[85vw] md:w-[60vw] lg:w-[45vw] aspect-video relative group cursor-pointer overflow-hidden bg-brand-offwhite/10"
             >
-              <img
-                src={src}
+              <MediaSlot 
+                id={id} 
+                mediaMap={media} 
                 className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700"
-                alt="Video thumbnail"
               />
               <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500" />
               <div className="absolute inset-0 flex items-center justify-center">
@@ -194,7 +214,6 @@ export default function HomePage() {
       {/* ── Redefining Luxury ── */}
       <section className="py-32 bg-brand-white px-6 md:px-12 border-b border-brand-border">
         <div className="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-8">
-
           <div className="lg:col-span-5 fade-up">
             <div className="sticky top-32">
               <h2 className="text-5xl md:text-7xl font-display font-extrabold tracking-tighter uppercase leading-[0.9] text-brand-black mb-6">
@@ -252,7 +271,7 @@ export default function HomePage() {
 
       {/* ── Join the Inner Circle (Subscribe) ── */}
       <section className="py-0 flex flex-col lg:flex-row bg-brand-white border-b border-brand-border">
-        <div className="w-full lg:w-1/2 aspect-square lg:aspect-auto relative img-reveal active">
+        <div className="w-full lg:w-1/2 aspect-square lg:aspect-auto relative img-reveal">
           <img
             src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=1200&auto=format&fit=crop"
             className="w-full h-full object-cover filter grayscale-[20%]"

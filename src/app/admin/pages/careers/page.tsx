@@ -1,4 +1,3 @@
-// app/admin/pages/home/page.tsx
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -13,32 +12,38 @@ interface MediaAsset {
   height: number | null;
 }
 
-const HOME_SLOTS = [
-  { id: 'hero-video', label: '🎬 Hero Video', description: 'Main background video at the top' },
-  { id: 'cinematic-1', label: '✨ Highlight 1', description: 'First cinematic showcase' },
-  { id: 'cinematic-2', label: '✨ Highlight 2', description: 'Second cinematic showcase' },
+// Configured specifically for the Careers page slots
+const CAREERS_SLOTS = [
+  { id: 'hero-video', label: '🎬 Hero Video', description: 'Main background video at the top of the careers page' },
+  { id: 'role-1', label: '✨ Promoters Card', description: 'Media for the Promoters role card' },
+  { id: 'role-2', label: '✨ Influencers Card', description: 'Media for the Influencers role card' },
+  { id: 'role-3', label: '✨ DJs & Artists Card', description: 'Media for the DJs & Artists role card' },
+  { id: 'role-4', label: '✨ Live Musicians Card', description: 'Media for the Live Musicians role card' },
+  { id: 'role-5', label: '✨ Vocalists Card', description: 'Media for the Vocalists role card' },
+  { id: 'form-media', label: '📝 Form Media', description: 'Image or video displayed next to the application form' },
 ];
 
-export default function HomePageEditorPage() {
+export default function CareersPageEditorPage() {
   const router = useRouter();
   const [mediaAssets, setMediaAssets] = useState<Record<string, MediaAsset>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    fetchHomePageMedia();
+    fetchCareersPageMedia();
   }, []);
 
-  const fetchHomePageMedia = async () => {
+  const fetchCareersPageMedia = async () => {
     try {
       setLoading(true);
-      const res = await fetch('/api/media?page=/home');
-      if (!res.ok) throw new Error('Failed to fetch home page media');
+      // Fetching specifically for the /careers route
+      const res = await fetch('/api/media?page=/careers');
+      if (!res.ok) throw new Error('Failed to fetch careers page media');
       
       const data = await res.json();
       setMediaAssets(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error loading home page data');
+      setError(err instanceof Error ? err.message : 'Error loading careers page data');
     } finally {
       setLoading(false);
     }
@@ -49,7 +54,7 @@ export default function HomePageEditorPage() {
       <div className="flex items-center justify-center py-12">
         <div className="text-center">
           <div className="w-12 h-12 rounded-full border-4 border-slate-700 border-t-blue-500 animate-spin mx-auto mb-4"></div>
-          <p className="text-slate-400">Loading home page editor...</p>
+          <p className="text-slate-400">Loading careers page editor...</p>
         </div>
       </div>
     );
@@ -59,8 +64,8 @@ export default function HomePageEditorPage() {
     <div className="space-y-6">
       {/* Page Title */}
       <div>
-        <h2 className="text-3xl font-bold text-white mb-2">Edit Home Page Media</h2>
-        <p className="text-slate-400">Configure media assets for your home page sections</p>
+        <h2 className="text-3xl font-bold text-white mb-2">Edit Careers Page Media</h2>
+        <p className="text-slate-400">Configure media assets for your careers page sections and role cards</p>
       </div>
 
       {/* Error Alert */}
@@ -73,12 +78,12 @@ export default function HomePageEditorPage() {
 
       {/* Media Slots Grid */}
       <div className="grid gap-6">
-        {HOME_SLOTS.map((slot) => (
+        {CAREERS_SLOTS.map((slot) => (
           <MediaEditorCard 
             key={slot.id}
             slotConfig={slot}
             initialData={mediaAssets[slot.id]}
-            onRefresh={fetchHomePageMedia}
+            onRefresh={fetchCareersPageMedia}
           />
         ))}
       </div>
@@ -112,7 +117,7 @@ function MediaEditorCard({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          pageRoute: '/home',
+          pageRoute: '/careers', // Target the Careers route
           htmlId: slotConfig.id,
           mediaUrl: formData.mediaUrl,
           mediaType: formData.mediaType,
@@ -174,7 +179,7 @@ function MediaEditorCard({
             value={formData.mediaType}
             onChange={(e) => setFormData({...formData, mediaType: e.target.value as 'image' | 'video'})}
           >
-            <option value="image">📷 Image</option>
+            <option value="image">🖼️ Image</option>
             <option value="video">🎥 Video</option>
           </select>
         </div>
@@ -251,7 +256,7 @@ function MediaEditorCard({
                    disabled:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed
                    font-medium transition-all duration-200"
         >
-          {saving ? '💾 Saving...' : '💾 Save'}
+          {saving ? '⏳ Saving...' : '💾 Save'}
         </button>
       </div>
     </div>
