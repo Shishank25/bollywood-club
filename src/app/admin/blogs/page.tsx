@@ -1,7 +1,7 @@
 // app/admin/blogs/page.tsx
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
@@ -15,7 +15,7 @@ interface BlogPost {
   updated_at: string;
 }
 
-export default function BlogsAdminPage() {
+function BlogsAdminContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const action = searchParams.get('action');
@@ -450,5 +450,14 @@ function BlogEditorPage({ blogId, onClose }: BlogEditorPageProps) {
         }
       `}</style>
     </div>
+  );
+}
+
+// 3. Export a default wrapper that includes Suspense
+export default function BlogsAdminPage() {
+  return (
+    <Suspense fallback={<div>Loading Admin Dashboard...</div>}>
+      <BlogsAdminContent />
+    </Suspense>
   );
 }
