@@ -75,6 +75,13 @@ export default function Header() {
         }`}
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 w-full max-w-[1600px] mx-auto h-full items-center">
+          <div 
+            className="absolute right-10 top-6 p-1 rounded-full font-bold text-black text-5xl cursor-pointer
+             hover:scale
+            "
+            onClick={closeMenu}>
+            X
+          </div>
           <nav className="flex flex-col space-y-4 md:space-y-6">
             {[
               { label: "Home", href: "/" },

@@ -2,12 +2,23 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { MediaAsset } from "@/lib/media"; // Adjust this path if you saved your types elsewhere
-import MediaSlot from "@/lib/media"; // Adjust this path based on where you saved the component
+import { MediaAsset } from "@/lib/media"; 
+import MediaSlot from "@/lib/media"; 
 
 export default function HomePage() {
   const [media, setMedia] = useState<Record<string, MediaAsset>>({});
   const [isLoading, setIsLoading] = useState(true);
+
+  // Form State
+  const [formData, setFormData] = useState({
+    f_name: '',
+    l_name: '',
+    email: '',
+    phone: '',
+  });
+  const [citySelection, setCitySelection] = useState("");
+  const [customCity, setCustomCity] = useState("");
+  const [formStatus, setFormStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
 
   // 1. Fetch Media from your GET Route
   useEffect(() => {
@@ -28,17 +39,15 @@ export default function HomePage() {
     fetchMedia();
   }, []);
 
-  // 2. Scroll reveal animations (Re-runs when loading state changes)
+  // 2. Scroll reveal animations
   useEffect(() => {
-    if (isLoading) return; // Wait for dynamic content to mount before observing
+    if (isLoading) return; 
 
-    // Image reveal on load
     const reveals = document.querySelectorAll(".img-reveal");
     const timer = setTimeout(() => {
       reveals.forEach((r) => r.classList.add("active"));
     }, 100);
 
-    // Intersection observer for fade-up elements
     const fadeElements = document.querySelectorAll(".fade-up");
     const observer = new IntersectionObserver(
       (entries) => {
@@ -60,19 +69,51 @@ export default function HomePage() {
     };
   }, [isLoading]);
 
+  // 3. Handle Form Submission
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFormStatus('loading');
+
+    // Determine final city based on dropdown vs custom input
+    const finalCity = citySelection === 'Other' ? customCity : citySelection;
+
+    try {
+      const res = await fetch('/api/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          form_type: 'home_newsletter',
+          f_name: formData.f_name,
+          l_name: formData.l_name,
+          email: formData.email,
+          phone: formData.phone,
+          city: finalCity
+        })
+      });
+
+      if (res.ok) {
+        setFormStatus('success');
+        setFormData({ f_name: '', l_name: '', email: '', phone: '' });
+        setCitySelection("");
+        setCustomCity("");
+      } else {
+        setFormStatus('error');
+      }
+    } catch (error) {
+      setFormStatus('error');
+    }
+  };
+
   return (
     <>
       {/* ── Hero ── */}
       <section className="relative h-[100svh] w-full flex flex-col justify-end px-6 md:px-12 pb-12 pt-32">
         <div className="absolute inset-0 top-[88px] bottom-6 left-6 right-6 rounded-[2rem] overflow-hidden bg-brand-offwhite img-reveal -z-10">
-          
-          {/* REFACTORED: MediaSlot completely handles loading, video vs image, and dimensions */}
           <MediaSlot 
             id="hero-video" 
             mediaMap={media} 
             className="w-full h-full object-cover opacity-90 mix-blend-multiply grayscale-[10%]" 
           />
-
           <div className="absolute inset-0 bg-gradient-to-t from-white/90 via-white/30 to-transparent" />
         </div>
 
@@ -89,16 +130,10 @@ export default function HomePage() {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
-            <Link
-              href="/vip"
-              className="btn-outline px-10 py-4 rounded-full text-xs font-bold tracking-[0.15em] uppercase w-full sm:w-auto text-center"
-            >
+            <Link href="/vip" className="btn-outline px-10 py-4 rounded-full text-xs font-bold tracking-[0.15em] uppercase w-full sm:w-auto text-center">
               <span>VIP Access</span>
             </Link>
-            <Link
-              href="#events"
-              className="btn-monumental px-10 py-4 rounded-full text-xs font-bold tracking-[0.15em] uppercase w-full sm:w-auto text-center"
-            >
+            <Link href="#events" className="btn-monumental px-10 py-4 rounded-full text-xs font-bold tracking-[0.15em] uppercase w-full sm:w-auto text-center">
               <span>Reserve Tickets</span>
             </Link>
           </div>
@@ -107,6 +142,7 @@ export default function HomePage() {
 
       {/* ── Upcoming Events ── */}
       <section id="events" className="pt-24 pb-32 bg-brand-white px-6 md:px-12">
+        {/* ... (Unchanged content omitted for brevity, keep your existing events map here) ... */}
         <div className="max-w-[1600px] mx-auto">
           <div className="flex justify-between items-end mb-16 fade-up">
             <h2 className="text-5xl md:text-7xl font-display font-bold tracking-tighter uppercase">
@@ -145,32 +181,15 @@ export default function HomePage() {
                 delay: "300ms",
               },
             ].map((event) => (
-              <div
-                key={event.title}
-                className="group flex flex-col fade-up scale-hover"
-                style={{ transitionDelay: event.delay }}
-              >
+              <div key={event.title} className="group flex flex-col fade-up scale-hover" style={{ transitionDelay: event.delay }}>
                 <div className="w-full aspect-[3/4] overflow-hidden bg-brand-offwhite mb-6">
-                  <img
-                    src={event.img}
-                    className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-500"
-                    alt={`${event.title} flyer`}
-                  />
+                  <img src={event.img} className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-500" alt={`${event.title} flyer`} />
                 </div>
                 <div className="flex flex-col flex-1">
-                  <h3 className="text-2xl font-display font-bold uppercase tracking-tighter mb-1 line-clamp-1">
-                    {event.title}
-                  </h3>
-                  <p className="text-xs font-bold tracking-[0.15em] uppercase text-brand-gray mb-4">
-                    {event.city}
-                  </p>
-                  <p className="text-sm font-medium text-brand-black mb-6 flex-1">
-                    {event.venue}
-                  </p>
-                  <Link
-                    href="#"
-                    className="btn-outline w-full py-3 rounded-full text-xs font-bold tracking-[0.15em] uppercase text-center"
-                  >
+                  <h3 className="text-2xl font-display font-bold uppercase tracking-tighter mb-1 line-clamp-1">{event.title}</h3>
+                  <p className="text-xs font-bold tracking-[0.15em] uppercase text-brand-gray mb-4">{event.city}</p>
+                  <p className="text-sm font-medium text-brand-black mb-6 flex-1">{event.venue}</p>
+                  <Link href="#" className="btn-outline w-full py-3 rounded-full text-xs font-bold tracking-[0.15em] uppercase text-center">
                     Reserve Tickets
                   </Link>
                 </div>
@@ -182,24 +201,16 @@ export default function HomePage() {
 
       {/* ── Cinematic Highlights ── */}
       <section className="py-24 bg-brand-black text-white px-6 md:px-12 overflow-hidden">
+        {/* ... (Unchanged content) ... */}
         <div className="max-w-[1600px] mx-auto fade-up">
           <h2 className="text-4xl md:text-5xl font-display font-bold tracking-tighter uppercase mb-12">
             Cinematic Highlights
           </h2>
         </div>
-
         <div className="max-w-[1600px] mx-auto flex gap-6 overflow-x-auto snap-x snap-mandatory hide-scroll fade-up">
-          {/* REFACTORED: Map over your database IDs instead of hardcoded URLs */}
           {['cinematic-1', 'cinematic-2'].map((id) => (
-            <div
-              key={id}
-              className="snap-center shrink-0 w-[85vw] md:w-[60vw] lg:w-[45vw] aspect-video relative group cursor-pointer overflow-hidden bg-brand-offwhite/10"
-            >
-              <MediaSlot 
-                id={id} 
-                mediaMap={media} 
-                className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700"
-              />
+            <div key={id} className="snap-center shrink-0 w-[85vw] md:w-[60vw] lg:w-[45vw] aspect-video relative group cursor-pointer overflow-hidden bg-brand-offwhite/10">
+              <MediaSlot id={id} mediaMap={media} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" />
               <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500" />
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="w-20 h-20 rounded-full border border-white/50 backdrop-blur-sm flex items-center justify-center group-hover:bg-white group-hover:text-brand-black transition-all duration-300">
@@ -213,6 +224,7 @@ export default function HomePage() {
 
       {/* ── Redefining Luxury ── */}
       <section className="py-32 bg-brand-white px-6 md:px-12 border-b border-brand-border">
+        {/* ... (Unchanged content) ... */}
         <div className="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-8">
           <div className="lg:col-span-5 fade-up">
             <div className="sticky top-32">
@@ -226,10 +238,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div
-            className="lg:col-span-6 lg:col-start-7 flex flex-col gap-12 fade-up"
-            style={{ transitionDelay: "200ms" }}
-          >
+          <div className="lg:col-span-6 lg:col-start-7 flex flex-col gap-12 fade-up" style={{ transitionDelay: "200ms" }}>
             {[
               {
                 heading: "The Phenomenon",
@@ -241,29 +250,14 @@ export default function HomePage() {
               },
             ].map((section) => (
               <div key={section.heading}>
-                <h3 className="text-2xl font-display font-bold uppercase tracking-tighter mb-4 border-b border-brand-border pb-4">
-                  {section.heading}
-                </h3>
+                <h3 className="text-2xl font-display font-bold uppercase tracking-tighter mb-4 border-b border-brand-border pb-4">{section.heading}</h3>
                 <p className="text-base text-brand-gray leading-relaxed font-medium">{section.body}</p>
               </div>
             ))}
-
             <div>
-              <h3 className="text-2xl font-display font-bold uppercase tracking-tighter mb-4 border-b border-brand-border pb-4">
-                The Spectacle
-              </h3>
-              <p className="text-base text-brand-gray leading-relaxed font-medium mb-4">
-                Our distinction lies in the immersive experiences we craft. Beyond the music, Bollywood Club delivers a visual spectacle featuring captivating live performances, state-of-the-art production, and bespoke VIP services. It is an elevated sensory journey designed for the discerning individual.
-              </p>
-              <p className="text-base text-brand-gray leading-relaxed font-medium">
-                Join us at iconic global venues where the cinematic glamour of Bollywood meets the sophistication of premier entertainment destinations. Secure your access and become part of an exclusive community—your vibrant home away from home.
-              </p>
-            </div>
-
-            <div className="mt-8 pt-8 border-t border-brand-border">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-brand-gray/60 text-justify leading-relaxed">
-                Bollywood Club™ is a registered trademark proudly owned and operated by Louder World Pty. Ltd. We are committed to delivering an unparalleled and authentic nightlife experience. Our brand stands for exclusivity and excellence; any unauthorized reproduction or imitation of our properties is strictly prohibited. Your journey into the heart of luxury entertainment begins here.
-              </p>
+              <h3 className="text-2xl font-display font-bold uppercase tracking-tighter mb-4 border-b border-brand-border pb-4">The Spectacle</h3>
+              <p className="text-base text-brand-gray leading-relaxed font-medium mb-4">Our distinction lies in the immersive experiences we craft. Beyond the music, Bollywood Club delivers a visual spectacle featuring captivating live performances, state-of-the-art production, and bespoke VIP services. It is an elevated sensory journey designed for the discerning individual.</p>
+              <p className="text-base text-brand-gray leading-relaxed font-medium">Join us at iconic global venues where the cinematic glamour of Bollywood meets the sophistication of premier entertainment destinations. Secure your access and become part of an exclusive community—your vibrant home away from home.</p>
             </div>
           </div>
         </div>
@@ -287,52 +281,110 @@ export default function HomePage() {
               Receive priority access to ticket drops, exclusive VIP offers, and secret venue reveals delivered directly to your inbox.
             </p>
 
-            <form className="flex flex-col gap-8">
-              <div className="grid grid-cols-2 gap-6">
+            {formStatus === 'success' ? (
+              <div className="bg-brand-black text-white p-8 text-center rounded-xl animate-in fade-in zoom-in duration-500">
+                <h3 className="text-2xl font-display font-bold tracking-tighter uppercase mb-2">Welcome to the Club</h3>
+                <p className="text-sm tracking-[0.1em] uppercase text-brand-gray">We'll be in touch soon.</p>
+              </div>
+            ) : (
+              <form onSubmit={handleSubscribe} className="flex flex-col gap-8">
+                
+                {formStatus === 'error' && (
+                  <div className="text-red-500 text-xs font-bold uppercase tracking-widest">
+                    An error occurred. Please try again.
+                  </div>
+                )}
+
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="border-b border-brand-black pb-2">
+                    <input
+                      type="text"
+                      placeholder="FIRST NAME *"
+                      value={formData.f_name}
+                      onChange={(e) => setFormData({...formData, f_name: e.target.value})}
+                      className="w-full bg-transparent text-xs font-bold tracking-[0.15em] uppercase placeholder-brand-gray focus:outline-none"
+                      required
+                    />
+                  </div>
+                  <div className="border-b border-brand-black pb-2">
+                    <input
+                      type="text"
+                      placeholder="LAST NAME"
+                      value={formData.l_name}
+                      onChange={(e) => setFormData({...formData, l_name: e.target.value})}
+                      className="w-full bg-transparent text-xs font-bold tracking-[0.15em] uppercase placeholder-brand-gray focus:outline-none"
+                    />
+                  </div>
+                </div>
+
                 <div className="border-b border-brand-black pb-2">
                   <input
-                    type="text"
-                    placeholder="FIRST NAME"
+                    type="email"
+                    placeholder="EMAIL ADDRESS"
+                    value={formData.email}
+                    onChange={(e) => setFormData({...formData, email: e.target.value})}
+                    className="w-full bg-transparent text-xs font-bold tracking-[0.15em] uppercase placeholder-brand-gray focus:outline-none"
+                  />
+                </div>
+
+                <div className="border-b border-brand-black pb-2 flex items-center gap-4">
+                  <span className="text-xs font-bold tracking-[0.15em] uppercase text-brand-black">+61</span>
+                  <input
+                    type="tel"
+                    placeholder="PHONE NO. *"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({...formData, phone: e.target.value})}
                     className="w-full bg-transparent text-xs font-bold tracking-[0.15em] uppercase placeholder-brand-gray focus:outline-none"
                     required
                   />
                 </div>
-                <div className="border-b border-brand-black pb-2">
-                  <input
-                    type="text"
-                    placeholder="LAST NAME"
-                    className="w-full bg-transparent text-xs font-bold tracking-[0.15em] uppercase placeholder-brand-gray focus:outline-none"
+
+                {/* The New City Dropdown */}
+                <div className="border-b border-brand-black pb-2 relative">
+                  <select
+                    value={citySelection}
+                    onChange={(e) => setCitySelection(e.target.value)}
+                    className={`w-full bg-transparent text-xs font-bold tracking-[0.15em] uppercase focus:outline-none appearance-none cursor-pointer ${citySelection === "" ? 'text-brand-gray' : 'text-brand-black'}`}
                     required
-                  />
+                  >
+                    <option value="" disabled className="text-brand-gray">SELECT CITY *</option>
+                    <option value="Melbourne" className="text-brand-black">Melbourne</option>
+                    <option value="Sydney" className="text-brand-black">Sydney</option>
+                    <option value="Perth" className="text-brand-black">Perth</option>
+                    <option value="Adelaide" className="text-brand-black">Adelaide</option>
+                    <option value="Brisbane" className="text-brand-black">Brisbane</option>
+                    <option value="Singapore" className="text-brand-black">Singapore</option>
+                    <option value="Other" className="text-brand-black">Other</option>
+                  </select>
+                  {/* Custom dropdown arrow */}
+                  <div className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none">
+                    <i className="fa-solid fa-chevron-down text-brand-gray text-xs"></i>
+                  </div>
                 </div>
-              </div>
 
-              <div className="border-b border-brand-black pb-2">
-                <input
-                  type="email"
-                  placeholder="EMAIL ADDRESS"
-                  className="w-full bg-transparent text-xs font-bold tracking-[0.15em] uppercase placeholder-brand-gray focus:outline-none"
-                  required
-                />
-              </div>
+                {/* Conditional Input for "Other" City */}
+                {citySelection === 'Other' && (
+                  <div className="border-b border-brand-black pb-2 animate-in slide-in-from-top-2 duration-300">
+                    <input
+                      type="text"
+                      placeholder="ENTER YOUR CITY *"
+                      value={customCity}
+                      onChange={(e) => setCustomCity(e.target.value)}
+                      className="w-full bg-transparent text-xs font-bold tracking-[0.15em] uppercase placeholder-brand-gray focus:outline-none"
+                      required
+                    />
+                  </div>
+                )}
 
-              <div className="border-b border-brand-black pb-2 flex items-center gap-4">
-                <span className="text-xs font-bold tracking-[0.15em] uppercase text-brand-black">+61</span>
-                <input
-                  type="tel"
-                  placeholder="PHONE NO."
-                  className="w-full bg-transparent text-xs font-bold tracking-[0.15em] uppercase placeholder-brand-gray focus:outline-none"
-                  required
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="btn-monumental w-full py-5 text-xs font-bold tracking-[0.15em] uppercase mt-4"
-              >
-                <span>Subscribe</span>
-              </button>
-            </form>
+                <button
+                  type="submit"
+                  disabled={formStatus === 'loading'}
+                  className="btn-monumental w-full py-5 text-xs font-bold tracking-[0.15em] uppercase mt-4 disabled:opacity-50"
+                >
+                  <span>{formStatus === 'loading' ? 'Submitting...' : 'Subscribe'}</span>
+                </button>
+              </form>
+            )}
           </div>
         </div>
       </section>

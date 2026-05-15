@@ -1,289 +1,315 @@
 "use client";
 
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { MediaAsset } from '@/lib/media';
-import MediaSlot from '@/lib/media'; // Adjust path as needed
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { MediaAsset } from "@/lib/media"; // Adjust this path if you saved your types elsewhere
+import MediaSlot from "@/lib/media"; // Adjust this path based on where you saved the component
 
 export default function BirthdayPage() {
-    // State for media fetching
-    const [media, setMedia] = useState<Record<string, MediaAsset>>({});
-    const [isLoading, setIsLoading] = useState(true);
-    
-    // State for the cinematic image reveal on load
-    const [isRevealed, setIsRevealed] = useState(false);
+  // 1. Media State
+  const [media, setMedia] = useState<Record<string, MediaAsset>>({});
+  const [isLoading, setIsLoading] = useState(true);
 
-    const features = [
-        {
-            id: "card-1",
-            num: "01",
-            title: "The VIP Experience",
-            desc: "Lights, Camera, BOLLYWOOD – where every birthday is a blockbuster! Elevate your celebration. Skip the lines, dance in the VIP lounge, and enjoy top-shelf drinks.",
-            delay: "0ms"
-        },
-        {
-            id: "card-2",
-            num: "02",
-            title: "Hottest Beats & Glamour",
-            desc: "Dance to the hottest Bollywood beats, sip on exotic cocktails, and capture the glamour with our professional in-house photographers to remember the night forever.",
-            delay: "100ms"
-        },
-        {
-            id: "card-3",
-            num: "03",
-            title: "Exclusive Offers",
-            desc: "Book now for exclusive birthday offers and make your special day a true sensation! Limited slots are available, so grab your tickets now before they sell out.",
-            delay: "200ms"
+  // 2. Form State
+  const [formData, setFormData] = useState({
+    f_name: '',
+    l_name: '',
+    email: '',
+    phone: '',
+  });
+  const [citySelection, setCitySelection] = useState("");
+  const [customCity, setCustomCity] = useState("");
+  const [formStatus, setFormStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+
+  // Fetch Media
+  useEffect(() => {
+    const fetchMedia = async () => {
+      try {
+        const res = await fetch('/api/media?page=/birthday');
+        if (res.ok) {
+          const data = await res.json();
+          setMedia(data);
         }
-    ];
+      } catch (error) {
+        console.error("Failed to fetch media:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-    // 1. Fetch Media from your GET Route
-    useEffect(() => {
-        const fetchMedia = async () => {
-            try {
-                const res = await fetch('/api/media?page=/birthday');
-                if (res.ok) {
-                    const data = await res.json();
-                    setMedia(data);
-                }
-            } catch (error) {
-                console.error("Failed to fetch media:", error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
+    fetchMedia();
+  }, []);
 
-        fetchMedia();
-    }, []);
+  // Scroll Animations
+  useEffect(() => {
+    if (isLoading) return; 
 
-    // 2. Scroll reveal animations (Re-runs when loading state changes)
-    useEffect(() => {
-        if (isLoading) return; // Wait for dynamic content to mount before observing
+    const reveals = document.querySelectorAll(".img-reveal");
+    const timer = setTimeout(() => {
+      reveals.forEach((r) => r.classList.add("active"));
+    }, 100);
 
-        // Trigger the clip-path and zoom reveal slightly after mount
-        const revealTimer = setTimeout(() => setIsRevealed(true), 100);
-
-        // Scroll Reveal Animations (Ensure .fade-up is in your globals.css)
-        const fadeElements = document.querySelectorAll('.fade-up');
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('active');
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
-
-        fadeElements.forEach(el => observer.observe(el));
-
-        return () => {
-            clearTimeout(revealTimer);
-            observer.disconnect();
-        };
-    }, [isLoading]);
-
-    return (
-        <main className="w-full selection:bg-brand-black selection:text-white">
-            
-            {/* ── HERO SECTION ── */}
-            <section className="relative h-[75svh] min-h-[500px] w-full px-6 md:px-12 pt-28 pb-12 flex flex-col">
-                <div 
-                    className={`relative w-full h-full rounded-[2rem] overflow-hidden bg-brand-black shadow-xl transition-[clip-path] duration-[1200ms] ease-custom ${
-                        isRevealed ? '[clip-path:polygon(0_0,_100%_0,_100%_100%,_0_100%)]' : '[clip-path:polygon(0_100%,_100%_100%,_100%_100%,_0_100%)]'
-                    }`}
-                >
-                    {/* Replaced hardcoded image with MediaSlot */}
-                    <MediaSlot 
-                        id="hero-video" 
-                        mediaMap={media} 
-                        className={`absolute inset-0 w-full h-full object-cover filter grayscale-[20%] opacity-70 transition-transform duration-[8000ms] ease-out ${
-                            isRevealed ? 'scale-100' : 'scale-[1.05]'
-                        }`}
-                    />
-                    
-                    <div className="absolute inset-0 bg-gradient-to-t from-brand-black via-brand-black/40 to-transparent"></div>
-                    
-                    <div className="absolute inset-0 flex flex-col justify-end pb-16 px-8 md:px-16 lg:px-24 z-20">
-                        <div className="fade-up">
-                            <span className="inline-block text-[10px] font-bold tracking-[0.2em] uppercase text-brand-white bg-brand-accent px-4 py-2 rounded-full mb-6">
-                                Celebrate With Us
-                            </span>
-                            <h1 className="text-5xl md:text-7xl lg:text-[8vw] leading-[0.9] font-display font-extrabold uppercase tracking-tighter text-brand-white">
-                                Birth<span className="text-transparent [-webkit-text-stroke:1px_#FFFFFF]">day</span>
-                            </h1>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* ── TEXT INTRO SECTION ── */}
-            <section className="py-20 px-6 md:px-12 bg-brand-white text-center">
-                <div className="max-w-4xl mx-auto fade-up">
-                    <h2 className="text-3xl md:text-5xl lg:text-6xl font-display font-bold tracking-tighter uppercase text-brand-black mb-6 leading-[0.95]">
-                        YOLO! Get Your B-Day <br />
-                        <span className="text-transparent [-webkit-text-stroke:1px_#0A0A0A] text-brand-gray">Vibes On With A Friend For Free</span>
-                    </h2>
-                    <div className="w-16 h-[2px] bg-brand-accent mx-auto mb-8"></div>
-                    <p className="text-sm md:text-base font-medium text-brand-gray leading-relaxed max-w-2xl mx-auto">
-                        If your birthday falls within 14 days before or after the party date, you can enjoy <strong className="text-brand-black font-bold">1 + 1 complimentary tickets</strong>. This exclusive offer is valid if you either purchase a VIP package or have 10 or more paid tickets in your group.
-                    </p>
-                    <p className="text-xs font-bold tracking-[0.2em] uppercase text-brand-black mt-8">
-                        Don't miss out on this special treat.
-                    </p>
-                </div>
-            </section>
-
-            {/* ── BOOKING FORM SECTION ── */}
-            <section className="py-12 px-6 md:px-12 bg-brand-white border-t border-brand-border">
-                <div className="max-w-[1600px] mx-auto flex flex-col lg:flex-row gap-12 lg:gap-16 items-stretch">
-                    
-                    {/* Image Reveal */}
-                    <div 
-                        className={`w-full lg:w-1/2 relative rounded-[2rem] overflow-hidden min-h-[600px] transition-[clip-path] duration-[1200ms] ease-custom ${
-                            isRevealed ? '[clip-path:polygon(0_0,_100%_0,_100%_100%,_0_100%)]' : '[clip-path:polygon(0_100%,_100%_100%,_100%_100%,_0_100%)]'
-                        }`}
-                    >
-                        {/* Replaced hardcoded image with MediaSlot */}
-                        <MediaSlot 
-                            id="form-media" 
-                            mediaMap={media} 
-                            className="absolute inset-0 w-full h-full object-cover filter grayscale-[10%]" 
-                        />
-
-                        <div className="absolute inset-0 bg-brand-black/20"></div>
-                        
-                        <div className="absolute bottom-12 left-12 mix-blend-difference text-brand-white z-10">
-                            <h3 className="text-6xl md:text-8xl font-display font-extrabold uppercase tracking-tighter leading-none">
-                                Your <br /> Special <br /> <span className="text-brand-accent">Night</span>
-                            </h3>
-                        </div>
-                    </div>
-
-                    {/* Right Form */}
-                    <div className="w-full lg:w-1/2 flex flex-col justify-center py-8 fade-up" style={{ transitionDelay: '200ms' }}>
-                        <div className="max-w-xl w-full mx-auto lg:mx-0">
-                            <h3 className="text-4xl md:text-5xl font-display font-bold uppercase tracking-tighter text-brand-black mb-2">Claim Your Offer</h3>
-                            <p className="text-xs font-bold tracking-[0.15em] uppercase text-brand-gray mb-12">Register your birthday details below.</p>
-                            
-                            <form className="space-y-8" onSubmit={(e) => e.preventDefault()}>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                    <div>
-                                        <input type="text" placeholder="FIRST NAME *" required className="w-full bg-transparent border-b border-brand-black pb-2 text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray rounded-none" />
-                                    </div>
-                                    <div>
-                                        <input type="text" placeholder="LAST NAME *" required className="w-full bg-transparent border-b border-brand-black pb-2 text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray rounded-none" />
-                                    </div>
-                                </div>
-
-                                <div className="flex items-end border-b border-brand-black pb-2 transition-colors focus-within:border-brand-accent group">
-                                    <div className="flex items-center gap-2 mr-4 text-xs font-bold tracking-widest text-brand-black">
-                                        <span>+61</span>
-                                    </div>
-                                    <input type="tel" placeholder="PHONE NUMBER *" required className="w-full bg-transparent text-xs font-bold tracking-[0.15em] uppercase outline-none placeholder-brand-gray text-brand-black rounded-none" />
-                                </div>
-
-                                <div>
-                                    <input type="email" placeholder="EMAIL ADDRESS *" required className="w-full bg-transparent border-b border-brand-black pb-2 text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray rounded-none" />
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                    <div>
-                                        <input type="date" required className="w-full bg-transparent border-b border-brand-black pb-2 text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-gray [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-50 hover:[&::-webkit-calendar-picker-indicator]:opacity-100 transition-opacity rounded-none" />
-                                    </div>
-                                    <div>
-                                        <input type="text" placeholder="CITY *" required className="w-full bg-transparent border-b border-brand-black pb-2 text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray rounded-none" />
-                                    </div>
-                                </div>
-
-                                <button type="submit" className="group relative overflow-hidden inline-flex items-center justify-center w-full py-5 text-xs font-bold tracking-[0.15em] uppercase mt-8 bg-brand-black text-white transition-colors duration-300">
-                                    <div className="absolute top-full left-0 w-full h-full bg-brand-accent transition-all duration-[400ms] ease-custom z-10 group-hover:top-0"></div>
-                                    <span className="relative z-20">Submit Details</span>
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-
-                </div>
-            </section>
-
-            {/* ── FEATURES GRID SECTION ── */}
-            <section className="py-24 px-6 md:px-12 bg-brand-offwhite">
-                <div className="max-w-[1600px] mx-auto">
-                    
-                    <div className="flex flex-col md:flex-row justify-between items-end mb-16 fade-up">
-                        <div className="max-w-2xl">
-                            <h3 className="text-sm font-bold tracking-[0.2em] uppercase text-brand-gray mb-4">Spice Up Your Bash</h3>
-                            <h2 className="text-4xl md:text-6xl font-display font-bold tracking-tighter uppercase text-brand-black leading-[0.9]">
-                                Make It A <br /> 
-                                <span className="text-transparent [-webkit-text-stroke:1px_#0A0A0A]">Blockbuster</span>
-                            </h2>
-                        </div>
-                        <div className="mt-6 md:mt-0 max-w-sm">
-                            <p className="text-sm font-medium text-brand-gray leading-relaxed">
-                                Why settle for a regular party when you can celebrate with the ultimate cinematic glamour?
-                            </p>
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {features.map((feature, i) => (
-                            <div 
-                                key={i} 
-                                className="bg-brand-offwhite border border-transparent p-10 flex flex-col justify-start min-h-[300px] transition-all duration-[400ms] ease-custom hover:bg-white hover:border-brand-black hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(0,0,0,0.05)] fade-up group"
-                                style={{ transitionDelay: feature.delay }}
-                            >
-                                {/* Added MediaSlot container inside the card */}
-                                <div className="w-full h-40 mb-6 overflow-hidden rounded-lg bg-brand-border/20">
-                                    <MediaSlot 
-                                        id={feature.id} 
-                                        mediaMap={media} 
-                                        className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-500" 
-                                    />
-                                </div>
-                                <div className="mb-4">
-                                    <span className="text-5xl font-display font-extrabold text-brand-black/10 group-hover:text-brand-accent transition-colors duration-500">
-                                        {feature.num}
-                                    </span>
-                                </div>
-                                <div>
-                                    <h4 className="text-lg font-display font-bold uppercase tracking-tighter text-brand-black mb-3">
-                                        {feature.title}
-                                    </h4>
-                                    <p className="text-xs text-brand-gray leading-relaxed font-medium">
-                                        {feature.desc}
-                                    </p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-
-                </div>
-            </section>
-
-            {/* ── VIP CTA SECTION ── */}
-            {/* Assuming no explicit slot was defined for this in the admin panel, keeping it hardcoded */}
-            <section className="py-32 px-6 md:px-12 bg-brand-black text-brand-white relative overflow-hidden flex items-center justify-center text-center">
-                <img 
-                    src="https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?q=80&w=1600&auto=format&fit=crop" 
-                    className="absolute inset-0 w-full h-full object-cover opacity-30 filter grayscale-[50%]" 
-                    alt="VIP Crowd"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-brand-black via-brand-black/80 to-brand-black/40"></div>
-                
-                <div className="relative z-10 max-w-3xl mx-auto fade-up">
-                    <h2 className="text-5xl md:text-7xl lg:text-8xl font-display font-extrabold uppercase tracking-tighter leading-[0.9] mb-8">
-                        Upgrade To <br /> 
-                        <span className="text-transparent [-webkit-text-stroke:1px_#FFFFFF]">VIP Booth</span>
-                    </h2>
-                    <p className="text-sm md:text-base font-medium text-brand-gray mb-12 max-w-xl mx-auto leading-relaxed">
-                        Book a VIP Booth Package for an exclusive seating area, a dedicated host, and premium bottle service. Experience the ultimate luxury.
-                    </p>
-                    <Link href="/vip" className="relative inline-flex items-center justify-center bg-transparent text-white border border-white px-12 py-5 rounded-full text-xs font-bold tracking-[0.15em] uppercase transition-all duration-300 hover:bg-white hover:text-brand-black">
-                        View VIP Packages
-                    </Link>
-                </div>
-            </section>
-
-        </main>
+    const fadeElements = document.querySelectorAll(".fade-up");
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("active");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
     );
+    
+    fadeElements.forEach((el) => observer.observe(el));
+
+    return () => {
+      clearTimeout(timer);
+      observer.disconnect();
+    };
+  }, [isLoading]);
+
+  // 3. Handle Form Submission
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFormStatus('loading');
+
+    const finalCity = citySelection === 'Other' ? customCity : citySelection;
+
+    try {
+      const res = await fetch('/api/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          form_type: 'birthday_lead', 
+          f_name: formData.f_name,
+          l_name: formData.l_name,
+          email: formData.email,
+          phone: formData.phone,
+          city: finalCity
+        })
+      });
+
+      if (res.ok) {
+        setFormStatus('success');
+        setFormData({ f_name: '', l_name: '', email: '', phone: '' });
+        setCitySelection("");
+        setCustomCity("");
+      } else {
+        setFormStatus('error');
+      }
+    } catch (error) {
+      setFormStatus('error');
+    }
+  };
+
+  const features = [
+      {
+          id: "card-1",
+          num: "01",
+          title: "The VIP Experience",
+          desc: "Lights, Camera, BOLLYWOOD – where every birthday is a blockbuster! Elevate your celebration. Skip the lines, dance in the VIP lounge, and enjoy top-shelf drinks.",
+          delay: "0ms"
+      },
+      {
+          id: "card-2",
+          num: "02",
+          title: "Hottest Beats & Glamour",
+          desc: "Dance to the hottest Bollywood beats, sip on exotic cocktails, and capture the glamour with our professional in-house photographers to remember the night forever.",
+          delay: "100ms"
+      },
+      {
+          id: "card-3",
+          num: "03",
+          title: "Exclusive Offers",
+          desc: "Book now for exclusive birthday offers and make your special day a true sensation! Limited slots available.",
+          delay: "200ms"
+      }
+  ];
+
+  return (
+    <>
+      {/* HERO SECTION */}
+      <section className="relative w-full h-[85svh] min-h-[600px] flex flex-col justify-center items-center text-center px-4 md:px-8 pt-20">
+          <img 
+              src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=1600&auto=format&fit=crop" 
+              className="absolute inset-0 w-full h-full object-cover opacity-40 filter grayscale-[30%]" 
+              alt="Birthday Celebration"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-brand-black/80 via-brand-black/60 to-brand-black"></div>
+          
+          <div className="relative z-10 fade-up max-w-4xl mx-auto">
+              <span className="inline-block text-[10px] font-bold tracking-[0.2em] uppercase text-brand-black bg-brand-white px-5 py-2.5 rounded-full shadow-lg mb-6">
+                  Celebrate With Us
+              </span>
+              <h1 className="text-5xl md:text-7xl lg:text-[7vw] leading-[1] font-display font-extrabold uppercase tracking-tighter text-brand-white mb-6">
+                  Your <br className="md:hidden" />
+                  <span className="text-transparent [-webkit-text-stroke:1.5px_#FFFFFF] py-[0.15em] inline-block">Birthday</span>
+                  <br className="hidden md:block" /> Masterpiece
+              </h1>
+              <p className="text-sm md:text-base font-medium text-brand-white/80 max-w-xl mx-auto leading-relaxed mb-10">
+                  Transform your special day into a cinematic Bollywood experience. Premium VIP treatment, exclusive booths, and unforgettable memories.
+              </p>
+              <Link href="#inquire" className="btn-monumental px-12 py-5 rounded-full text-xs font-bold tracking-[0.15em] uppercase inline-block">
+                  <span>Plan Your Night</span>
+              </Link>
+          </div>
+      </section>
+
+      {/* FEATURES SECTION */}
+      <section className="py-24 md:py-32 bg-brand-black px-6 md:px-12 border-t border-white/10">
+          <div className="max-w-[1600px] mx-auto">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 lg:gap-16">
+                  {features.map((feature) => (
+                      <div key={feature.id} className="fade-up flex flex-col group" style={{ transitionDelay: feature.delay }}>
+                          <span className="text-4xl md:text-5xl font-display font-bold text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.3)] group-hover:[-webkit-text-stroke:1px_#FFFFFF] transition-all duration-300 mb-6 block">
+                              {feature.num}
+                          </span>
+                          <h3 className="text-xl md:text-2xl font-display font-bold uppercase tracking-tighter text-brand-white mb-4">
+                              {feature.title}
+                          </h3>
+                          <p className="text-sm text-brand-gray leading-relaxed font-medium">
+                              {feature.desc}
+                          </p>
+                      </div>
+                  ))}
+              </div>
+          </div>
+      </section>
+
+      {/* CALL TO ACTION / FORM SECTION */}
+      <section id="inquire" className="py-24 md:py-32 bg-brand-white px-6 md:px-12 relative overflow-hidden">
+        <div className="max-w-[1600px] mx-auto flex flex-col lg:flex-row gap-16 lg:gap-24 items-center">
+          
+          <div className="w-full lg:w-1/2 fade-up">
+            <h2 className="text-5xl md:text-7xl font-display font-extrabold uppercase tracking-tighter leading-[0.9] text-brand-black mb-6">
+              Let's Make It <br />
+              <span className="text-outline text-transparent [-webkit-text-stroke:1.5px_#0A0A0A]">Happen</span>
+            </h2>
+            <p className="text-sm md:text-base font-medium text-brand-gray mb-12 max-w-md leading-relaxed">
+              Fill out the form below and our VIP concierge team will get back to you within 24 hours to plan your perfect celebration.
+            </p>
+
+            {/* FORM OR SUCCESS STATE */}
+            {formStatus === 'success' ? (
+                <div className="bg-brand-black text-white p-8 text-center rounded-xl animate-in fade-in zoom-in duration-500">
+                    <h3 className="text-2xl font-display font-bold tracking-tighter uppercase mb-2">Request Received</h3>
+                    <p className="text-sm tracking-[0.1em] uppercase text-brand-gray">Our concierge team will contact you shortly.</p>
+                </div>
+            ) : (
+                <form onSubmit={handleSubscribe} className="flex flex-col gap-8 max-w-md">
+                
+                {formStatus === 'error' && (
+                    <div className="text-red-500 text-xs font-bold uppercase tracking-widest">
+                        An error occurred. Please try again.
+                    </div>
+                )}
+
+                <div className="grid grid-cols-2 gap-6">
+                    <div className="border-b border-brand-black pb-2">
+                    <input
+                        type="text"
+                        placeholder="FIRST NAME *"
+                        value={formData.f_name}
+                        onChange={(e) => setFormData({...formData, f_name: e.target.value})}
+                        className="w-full bg-transparent text-xs font-bold tracking-[0.15em] uppercase placeholder-brand-gray focus:outline-none"
+                        required
+                    />
+                    </div>
+                    <div className="border-b border-brand-black pb-2">
+                    <input
+                        type="text"
+                        placeholder="LAST NAME"
+                        value={formData.l_name}
+                        onChange={(e) => setFormData({...formData, l_name: e.target.value})}
+                        className="w-full bg-transparent text-xs font-bold tracking-[0.15em] uppercase placeholder-brand-gray focus:outline-none"
+                    />
+                    </div>
+                </div>
+
+                <div className="border-b border-brand-black pb-2">
+                    <input
+                    type="email"
+                    placeholder="EMAIL ADDRESS"
+                    value={formData.email}
+                    onChange={(e) => setFormData({...formData, email: e.target.value})}
+                    className="w-full bg-transparent text-xs font-bold tracking-[0.15em] uppercase placeholder-brand-gray focus:outline-none"
+                    required
+                    />
+                </div>
+
+                <div className="border-b border-brand-black pb-2 flex items-center gap-4">
+                    <span className="text-xs font-bold tracking-[0.15em] uppercase text-brand-black">+61</span>
+                    <input
+                    type="tel"
+                    placeholder="PHONE NO. *"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                    className="w-full bg-transparent text-xs font-bold tracking-[0.15em] uppercase placeholder-brand-gray focus:outline-none"
+                    required
+                    />
+                </div>
+
+                {/* THE NEW CITY DROPDOWN */}
+                <div className="border-b border-brand-black pb-2 relative">
+                    <select
+                        value={citySelection}
+                        onChange={(e) => setCitySelection(e.target.value)}
+                        className={`w-full bg-transparent text-xs font-bold tracking-[0.15em] uppercase focus:outline-none appearance-none cursor-pointer ${citySelection === "" ? 'text-brand-gray' : 'text-brand-black'}`}
+                        required
+                    >
+                        <option value="" disabled className="text-brand-gray">SELECT CITY *</option>
+                        <option value="Melbourne" className="text-brand-black">Melbourne</option>
+                        <option value="Sydney" className="text-brand-black">Sydney</option>
+                        <option value="Perth" className="text-brand-black">Perth</option>
+                        <option value="Adelaide" className="text-brand-black">Adelaide</option>
+                        <option value="Brisbane" className="text-brand-black">Brisbane</option>
+                        <option value="Singapore" className="text-brand-black">Singapore</option>
+                        <option value="Other" className="text-brand-black">Other</option>
+                    </select>
+                    {/* Custom dropdown arrow */}
+                    <div className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none">
+                        <i className="fa-solid fa-chevron-down text-brand-gray text-xs"></i>
+                    </div>
+                </div>
+
+                {/* Conditional Input for "Other" City */}
+                {citySelection === 'Other' && (
+                    <div className="border-b border-brand-black pb-2 animate-in slide-in-from-top-2 duration-300">
+                        <input
+                            type="text"
+                            placeholder="ENTER YOUR CITY *"
+                            value={customCity}
+                            onChange={(e) => setCustomCity(e.target.value)}
+                            className="w-full bg-transparent text-xs font-bold tracking-[0.15em] uppercase placeholder-brand-gray focus:outline-none"
+                            required
+                        />
+                    </div>
+                )}
+
+                <button
+                    type="submit"
+                    disabled={formStatus === 'loading'}
+                    className="btn-monumental w-full py-5 text-xs font-bold tracking-[0.15em] uppercase mt-4 disabled:opacity-50"
+                >
+                    <span>{formStatus === 'loading' ? 'Submitting...' : 'Submit Request'}</span>
+                </button>
+                </form>
+            )}
+          </div>
+
+          <div className="w-full lg:w-1/2 aspect-square lg:aspect-[4/5] rounded-2xl overflow-hidden relative img-reveal img-wrapper">
+            <img 
+              src="https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=1200&auto=format&fit=crop" 
+              className="w-full h-full object-cover filter grayscale-[20%]"
+              alt="VIP Experience"
+            />
+          </div>
+
+        </div>
+      </section>
+
+    </>
+  );
 }

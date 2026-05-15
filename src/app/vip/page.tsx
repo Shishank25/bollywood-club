@@ -5,41 +5,33 @@ import { MediaAsset } from '@/lib/media';
 import MediaSlot from '@/lib/media';
 
 export default function VipPage() {
-    // State for media fetching
     const [media, setMedia] = useState<Record<string, MediaAsset>>({});
     const [isLoading, setIsLoading] = useState(true);
-
-    // State for the cinematic image reveal
     const [isRevealed, setIsRevealed] = useState(false);
 
+    // --- FORM STATE ---
+    const [formData, setFormData] = useState({
+        f_name: '',
+        l_name: '',
+        email: '',
+        phone: '',
+        date: '',
+        total_guests: ''
+    });
+    
+    // City Selection State
+    const [citySelection, setCitySelection] = useState("");
+    const [customCity, setCustomCity] = useState("");
+    
+    const [formStatus, setFormStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+
     const vipFeatures = [
-        { 
-            num: "01", 
-            title: "Exclusive Lounge", 
-            desc: "Your group will enjoy the best seats in the house, strategically positioned for optimal views of the electrifying dance floor and the pulsating beats.", 
-            delay: "0ms" 
-        },
-        { 
-            num: "02", 
-            title: "Premium Bottles", 
-            desc: "Bottle service that steals the show. Sip on top-shelf spirits and let the beats move you while our dedicated staff keep your glasses filled.", 
-            delay: "100ms" 
-        },
-        { 
-            num: "03", 
-            title: "Fast-Track Entry", 
-            desc: "Skip the lines and make a grand entrance. Our priority entry ensures you're in the spotlight immediately. Walk in like you own the place.", 
-            delay: "200ms" 
-        },
-        { 
-            num: "04", 
-            title: "Bespoke Packages", 
-            desc: "Tailor your VIP experience to perfection by choosing from our customizable packages, whether celebrating a milestone or a casual night out.", 
-            delay: "300ms" 
-        }
+        { num: "01", title: "Exclusive Lounge", desc: "Your group will enjoy the best seats in the house, strategically positioned for optimal views of the electrifying dance floor and the pulsating beats.", delay: "0ms" },
+        { num: "02", title: "Premium Bottles", desc: "Bottle service that steals the show. Sip on top-shelf spirits and let the beats move you while our dedicated staff keep your glasses filled.", delay: "100ms" },
+        { num: "03", title: "Fast-Track Entry", desc: "Skip the lines and make a grand entrance. Our priority entry ensures you're in the spotlight immediately. Walk in like you own the place.", delay: "200ms" },
+        { num: "04", title: "Bespoke Packages", desc: "Tailor your VIP experience to perfection by choosing from our customizable packages, whether celebrating a milestone or a casual night out.", delay: "300ms" }
     ];
 
-    // 1. Fetch Media from your GET Route
     useEffect(() => {
         const fetchMedia = async () => {
             try {
@@ -54,18 +46,13 @@ export default function VipPage() {
                 setIsLoading(false);
             }
         };
-
         fetchMedia();
     }, []);
 
-    // 2. Scroll reveal animations (Re-runs when loading state changes)
     useEffect(() => {
-        if (isLoading) return; // Wait for dynamic content to mount before observing
+        if (isLoading) return; 
 
-        // Trigger the clip-path reveal slightly after mount
         const revealTimer = setTimeout(() => setIsRevealed(true), 100);
-
-        // Scroll Reveal Animations (.fade-up is in globals.css from previous steps)
         const fadeElements = document.querySelectorAll('.fade-up');
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
@@ -84,6 +71,46 @@ export default function VipPage() {
         };
     }, [isLoading]);
 
+    // --- FORM SUBMIT HANDLER ---
+    const handleSubscribe = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setFormStatus('loading');
+
+        // Determine final city based on dropdown vs custom input
+        const finalCity = citySelection === 'Other' ? customCity : citySelection;
+        
+        // Package the requested date into the new description field
+        const finalDescription = formData.date ? `Requested Date: ${formData.date}` : '';
+
+        try {
+            const res = await fetch('/api/leads', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    form_type: 'vip_table_request',
+                    f_name: formData.f_name,
+                    l_name: formData.l_name,
+                    email: formData.email,
+                    phone: formData.phone,
+                    city: finalCity,
+                    total_guests: formData.total_guests, 
+                    description: finalDescription
+                })
+            });
+
+            if (res.ok) {
+                setFormStatus('success');
+                setFormData({ f_name: '', l_name: '', email: '', phone: '', date: '', total_guests: '' });
+                setCitySelection("");
+                setCustomCity("");
+            } else {
+                setFormStatus('error');
+            }
+        } catch (error) {
+            setFormStatus('error');
+        }
+    };
+
     return (
         <main className="w-full selection:bg-brand-black selection:text-white">
             
@@ -94,7 +121,6 @@ export default function VipPage() {
                         isRevealed ? '[clip-path:polygon(0_0,_100%_0,_100%_100%,_0_100%)]' : '[clip-path:polygon(0_100%,_100%_100%,_100%_100%,_0_100%)]'
                     }`}
                 >
-                    {/* Replaced hardcoded image with MediaSlot */}
                     <MediaSlot 
                         id="hero-media" 
                         mediaMap={media} 
@@ -135,13 +161,11 @@ export default function VipPage() {
             <section className="py-12 px-6 md:px-12 bg-brand-white border-t border-brand-border">
                 <div className="max-w-[1600px] mx-auto flex flex-col lg:flex-row gap-12 lg:gap-16 items-stretch">
                     
-                    {/* Left Image Reveal */}
                     <div 
                         className={`w-full lg:w-1/2 relative rounded-[2rem] overflow-hidden min-h-[600px] transition-[clip-path] duration-[1200ms] ease-custom ${
                             isRevealed ? '[clip-path:polygon(0_0,_100%_0,_100%_100%,_0_100%)]' : '[clip-path:polygon(0_100%,_100%_100%,_100%_100%,_0_100%)]'
                         }`}
                     >
-                        {/* Replaced hardcoded image with MediaSlot */}
                         <MediaSlot 
                             id="form-media" 
                             mediaMap={media} 
@@ -156,50 +180,145 @@ export default function VipPage() {
                         </div>
                     </div>
 
-                    {/* Right Form */}
                     <div className="w-full lg:w-1/2 flex flex-col justify-center py-8 fade-up" style={{ transitionDelay: '200ms' }}>
                         <div className="max-w-xl w-full mx-auto lg:mx-0">
                             <h3 className="text-4xl md:text-5xl font-display font-bold uppercase tracking-tighter text-brand-black mb-2">Request A Table</h3>
                             <p className="text-xs font-bold tracking-[0.15em] uppercase text-brand-gray mb-12">Secure your premium access.</p>
                             
-                            <form className="space-y-8" onSubmit={(e) => e.preventDefault()}>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            {formStatus === 'success' ? (
+                                <div className="bg-brand-black text-white p-8 rounded-xl text-center animate-in fade-in zoom-in duration-500">
+                                    <h3 className="text-2xl font-display font-bold uppercase tracking-tighter mb-2">Request Sent</h3>
+                                    <p className="text-xs font-bold tracking-[0.15em] uppercase text-brand-gray">A VIP Host will contact you shortly.</p>
+                                </div>
+                            ) : (
+                                <form className="space-y-8" onSubmit={handleSubscribe}>
+
+                                    {formStatus === 'error' && (
+                                        <div className="text-red-500 text-xs font-bold uppercase tracking-widest">
+                                            An error occurred. Please try again.
+                                        </div>
+                                    )}
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                        <div>
+                                            <input 
+                                                type="text" 
+                                                placeholder="FIRST NAME *" 
+                                                required 
+                                                value={formData.f_name}
+                                                onChange={(e) => setFormData({...formData, f_name: e.target.value})}
+                                                className="w-full bg-transparent border-b border-brand-black pb-2 text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray rounded-none" 
+                                            />
+                                        </div>
+                                        <div>
+                                            <input 
+                                                type="text" 
+                                                placeholder="LAST NAME *" 
+                                                required 
+                                                value={formData.l_name}
+                                                onChange={(e) => setFormData({...formData, l_name: e.target.value})}
+                                                className="w-full bg-transparent border-b border-brand-black pb-2 text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray rounded-none" 
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-end border-b border-brand-black pb-2 transition-colors focus-within:border-brand-accent group">
+                                        <div className="flex items-center gap-2 mr-4 text-xs font-bold tracking-widest text-brand-black">
+                                            <span>+61</span>
+                                        </div>
+                                        <input 
+                                            type="tel" 
+                                            placeholder="PHONE NUMBER *" 
+                                            required 
+                                            value={formData.phone}
+                                            onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                                            className="w-full bg-transparent text-xs font-bold tracking-[0.15em] uppercase outline-none placeholder-brand-gray text-brand-black rounded-none" 
+                                        />
+                                    </div>
+
                                     <div>
-                                        <input type="text" placeholder="FIRST NAME *" required className="w-full bg-transparent border-b border-brand-black pb-2 text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray rounded-none" />
+                                        <input 
+                                            type="email" 
+                                            placeholder="EMAIL ADDRESS *" 
+                                            required 
+                                            value={formData.email}
+                                            onChange={(e) => setFormData({...formData, email: e.target.value})}
+                                            className="w-full bg-transparent border-b border-brand-black pb-2 text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray rounded-none" 
+                                        />
                                     </div>
-                                    <div>
-                                        <input type="text" placeholder="LAST NAME *" required className="w-full bg-transparent border-b border-brand-black pb-2 text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray rounded-none" />
-                                    </div>
-                                </div>
 
-                                <div className="flex items-end border-b border-brand-black pb-2 transition-colors focus-within:border-brand-accent group">
-                                    <div className="flex items-center gap-2 mr-4 text-xs font-bold tracking-widest text-brand-black">
-                                        <span>+61</span>
-                                    </div>
-                                    <input type="tel" placeholder="PHONE NUMBER *" required className="w-full bg-transparent text-xs font-bold tracking-[0.15em] uppercase outline-none placeholder-brand-gray text-brand-black rounded-none" />
-                                </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                                        
+                                        {/* ── THE CITY DROPDOWN ── */}
+                                        <div className="md:col-span-1 relative border-b border-brand-black pb-2 focus-within:border-brand-accent transition-colors duration-300">
+                                            <select
+                                                value={citySelection}
+                                                onChange={(e) => setCitySelection(e.target.value)}
+                                                className={`w-full bg-transparent text-xs font-bold tracking-[0.15em] uppercase outline-none appearance-none cursor-pointer rounded-none ${citySelection === "" ? 'text-brand-gray' : 'text-brand-black'}`}
+                                                required
+                                            >
+                                                <option value="" disabled className="text-brand-gray">CITY *</option>
+                                                <option value="Melbourne" className="text-brand-black">Melbourne</option>
+                                                <option value="Sydney" className="text-brand-black">Sydney</option>
+                                                <option value="Perth" className="text-brand-black">Perth</option>
+                                                <option value="Adelaide" className="text-brand-black">Adelaide</option>
+                                                <option value="Brisbane" className="text-brand-black">Brisbane</option>
+                                                <option value="Singapore" className="text-brand-black">Singapore</option>
+                                                <option value="Other" className="text-brand-black">Other</option>
+                                            </select>
+                                            {/* Dropdown Arrow */}
+                                            <div className="absolute right-0 top-[20%] pointer-events-none">
+                                                <i className="fa-solid fa-chevron-down text-brand-gray text-xs"></i>
+                                            </div>
+                                        </div>
 
-                                <div>
-                                    <input type="email" placeholder="EMAIL ADDRESS *" required className="w-full bg-transparent border-b border-brand-black pb-2 text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray rounded-none" />
-                                </div>
+                                        {/* ── DATE INPUT ── */}
+                                        <div className="md:col-span-1">
+                                            <input 
+                                                type="date" 
+                                                value={formData.date}
+                                                onChange={(e) => setFormData({...formData, date: e.target.value})}
+                                                className="w-full bg-transparent border-b border-brand-black pb-2 text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-50 hover:[&::-webkit-calendar-picker-indicator]:opacity-100 transition-opacity rounded-none" 
+                                            />
+                                        </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                                    <div className="md:col-span-1">
-                                        <input type="text" placeholder="CITY" className="w-full bg-transparent border-b border-brand-black pb-2 text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray rounded-none" />
+                                        {/* ── EST. GUESTS INPUT ── */}
+                                        <div className="md:col-span-1">
+                                            <input 
+                                                type="number" 
+                                                min="1" 
+                                                placeholder="EST. GUESTS" 
+                                                value={formData.total_guests}
+                                                onChange={(e) => setFormData({...formData, total_guests: e.target.value})}
+                                                className="w-full bg-transparent border-b border-brand-black pb-2 text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray rounded-none" 
+                                            />
+                                        </div>
                                     </div>
-                                    <div className="md:col-span-1">
-                                        <input type="date" className="w-full bg-transparent border-b border-brand-black pb-2 text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-gray [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-50 hover:[&::-webkit-calendar-picker-indicator]:opacity-100 transition-opacity rounded-none" />
-                                    </div>
-                                    <div className="md:col-span-1">
-                                        <input type="number" min="1" placeholder="EST. GUESTS" className="w-full bg-transparent border-b border-brand-black pb-2 text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray rounded-none" />
-                                    </div>
-                                </div>
 
-                                <button type="submit" className="group relative overflow-hidden inline-flex items-center justify-center w-full py-5 text-xs font-bold tracking-[0.15em] uppercase mt-8 bg-brand-black text-white transition-colors duration-300">
-                                    <div className="absolute top-full left-0 w-full h-full bg-brand-accent transition-all duration-[400ms] ease-custom z-10 group-hover:top-0"></div>
-                                    <span className="relative z-20">Submit Request</span>
-                                </button>
-                            </form>
+                                    {/* ── CONDITIONAL "OTHER" CITY INPUT ── */}
+                                    {citySelection === 'Other' && (
+                                        <div className="animate-in slide-in-from-top-2 duration-300">
+                                            <input
+                                                type="text"
+                                                placeholder="ENTER YOUR CITY *"
+                                                value={customCity}
+                                                onChange={(e) => setCustomCity(e.target.value)}
+                                                className="w-full bg-transparent border-b border-brand-black pb-2 text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray rounded-none"
+                                                required
+                                            />
+                                        </div>
+                                    )}
+
+                                    <button 
+                                        type="submit" 
+                                        disabled={formStatus === 'loading'}
+                                        className="group relative overflow-hidden inline-flex items-center justify-center w-full py-5 text-xs font-bold tracking-[0.15em] uppercase mt-8 bg-brand-black text-white transition-colors duration-300 disabled:opacity-50"
+                                    >
+                                        <div className="absolute top-full left-0 w-full h-full bg-brand-accent transition-all duration-[400ms] ease-custom z-10 group-hover:top-0"></div>
+                                        <span className="relative z-20">{formStatus === 'loading' ? 'Submitting...' : 'Submit Request'}</span>
+                                    </button>
+                                </form>
+                            )}
                         </div>
                     </div>
 
