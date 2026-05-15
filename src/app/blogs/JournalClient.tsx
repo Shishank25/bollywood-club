@@ -169,7 +169,7 @@ export default function JournalClient({ initialPosts }: { initialPosts: BlogPost
 
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
                         {featuredPost && (
-                            <a href={`/journal/${featuredPost.slug}`} className="editorial-card lg:col-span-8 flex flex-col group fade-up">
+                            <a href={`/blogs/${featuredPost.slug}`} className="editorial-card lg:col-span-8 flex flex-col group fade-up">
                                 <div className="relative w-full aspect-video md:aspect-[16/9] lg:aspect-auto lg:h-[600px] rounded-2xl bg-brand-offwhite img-wrapper mb-6">
                                     <img src={featuredPost.coverImage} alt={featuredPost.title} className="absolute inset-0 w-full h-full object-cover filter grayscale-[100%]" />
                                     <div className="absolute top-6 left-6 z-10">
@@ -195,7 +195,7 @@ export default function JournalClient({ initialPosts }: { initialPosts: BlogPost
 
                         <div className="lg:col-span-4 flex flex-col gap-8 md:gap-12 lg:gap-0 lg:justify-between fade-up" style={{ transitionDelay: '200ms' }}>
                             {sidePosts.map((post, idx) => (
-                                <a href={`/journal/${post.slug}`} key={post._id} className="editorial-card flex flex-col group">
+                                <a href={`/blogs/${post.slug}`} key={post._id} className="editorial-card flex flex-col group">
                                     <div className="relative w-full aspect-video rounded-xl bg-brand-offwhite img-wrapper mb-4 md:mb-5">
                                         <img src={post.coverImage} alt={post.title} className="absolute inset-0 w-full h-full object-cover filter grayscale-[100%]" />
                                         <div className="absolute top-4 left-4 z-10">
@@ -249,7 +249,7 @@ export default function JournalClient({ initialPosts }: { initialPosts: BlogPost
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
                         {archivePosts.length > 0 ? (
                             archivePosts.map((post, i) => (
-                                <a href={`/journal/${post.slug}`} key={post._id} className="editorial-card flex flex-col group fade-up" style={{ transitionDelay: `${(i % 3) * 100}ms` }}>
+                                <a href={`/blogs/${post.slug}`} key={post._id} className="editorial-card flex flex-col group fade-up" style={{ transitionDelay: `${(i % 3) * 100}ms` }}>
                                     <div className="relative w-full aspect-[4/3] rounded-xl bg-brand-white img-wrapper mb-5">
                                         <img src={post.coverImage} className="absolute inset-0 w-full h-full object-cover filter grayscale-[100%]" alt={post.title} />
                                         <div className="absolute top-4 left-4 z-10">
