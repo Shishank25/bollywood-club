@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
       crmForm.append('folder', folder);
 
       // const crmRes = await fetch(CRM_UPLOAD_URL, {
-      const crmRes = await fetch('http://localhost:9000/api/media', {
+      const crmRes = await fetch('https://147.79.70.30.nip.io:8990/api/media', {
         method: 'POST',
         body: crmForm,
         headers: {
