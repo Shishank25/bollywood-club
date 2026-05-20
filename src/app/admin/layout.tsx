@@ -15,7 +15,7 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="admin-layout">
+    <div className="admin-layout mt-4" style={{ marginTop: '40px' }}>
       <AdminSidebar />
       <main className="admin-main">
         <div className="admin-header">
