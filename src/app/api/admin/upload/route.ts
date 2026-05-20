@@ -1,121 +1,108 @@
-import { uploadImage } from '@/lib/imageUpload';
 import { NextRequest, NextResponse } from 'next/server';
-import { unlink, readdir, stat } from 'fs/promises';
-import { existsSync } from 'fs';
-import path from 'path';
+import { query } from '@/lib/database/db'; // your existing db query utility
 
-const UPLOAD_DIR = path.join(process.cwd(), 'public', 'uploads');
-const MAX_FILE_SIZE = 30 * 1024 * 1024; // 30MB
-const ALLOWED_TYPES = [
-  'image/jpeg',
-  'image/png',
-  'image/gif',
-  'image/webp',
-  'image/svg+xml',
-  'image/avif',
-  'video/mp4',
-  'video/webm',
-  'video/ogg',
-  'video/quicktime',
-];
+const CRM_UPLOAD_URL = process.env.CRM_API_URL
+  ? `${process.env.CRM_API_URL}/api/media`
+  : 'http://localhost:9000/api/media';
 
-// POST /api/admin/upload — upload a file
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
-    const file = formData.get('file') as File;
-    const folder = (formData.get('folder') as string) || 'uploads';
 
-    if (!file) {
+    // ── Extract fields ──────────────────────────────────────────────────────
+    const file      = formData.get('file') as File | null;
+    const pageRoute = formData.get('pageRoute') as string;
+    const htmlId    = formData.get('htmlId') as string;
+    const mediaType = (formData.get('mediaType') as string) || 'image';
+    const altText   = formData.get('altText') as string | null;
+    const width     = formData.get('width') ? Number(formData.get('width')) : null;
+    const height    = formData.get('height') ? Number(formData.get('height')) : null;
+    const folder    = (formData.get('folder') as string) || 'uploads';
+
+    if (!pageRoute || !htmlId) {
       return NextResponse.json(
-        { error: 'No file provided' },
+        { error: 'pageRoute and htmlId are required' },
         { status: 400 }
       );
     }
 
-    if (!ALLOWED_TYPES.includes(file.type)) {
+    // ── If a file was provided, forward it to the CRM backend ───────────────
+    let mediaUrl: string | null = formData.get('mediaUrl') as string | null;
+
+    if (file) {
+      const crmForm = new FormData();
+      crmForm.append('file', file);
+      crmForm.append('folder', folder);
+
+      const crmRes = await fetch(CRM_UPLOAD_URL, {
+        method: 'POST',
+        body: crmForm,
+        headers: {
+          // Forward auth to CRM if needed
+          ...(process.env.CRM_API_SECRET && {
+            Authorization: `Bearer ${process.env.CRM_API_SECRET}`,
+          }),
+        },
+      });
+
+      if (!crmRes.ok) {
+        const err = await crmRes.json().catch(() => ({}));
+        return NextResponse.json(
+          { error: err.error ?? 'CRM upload failed' },
+          { status: 502 }
+        );
+      }
+
+      const crmData = await crmRes.json();
+      mediaUrl = crmData.file?.url ?? crmData.url ?? null;
+
+      if (!mediaUrl) {
+        return NextResponse.json(
+          { error: 'CRM did not return a file URL' },
+          { status: 502 }
+        );
+      }
+    }
+
+    if (!mediaUrl) {
       return NextResponse.json(
-        { error: `File type "${file.type}" is not allowed. Only images and videos are accepted.` },
+        { error: 'Either a file or a mediaUrl must be provided' },
         { status: 400 }
       );
     }
 
-    if (file.size > MAX_FILE_SIZE) {
-      return NextResponse.json(
-        { error: `File exceeds the 30MB size limit (received ${(file.size / 1024 / 1024).toFixed(1)}MB)` },
-        { status: 400 }
-      );
-    }
+    // ── Upsert into MediaAssets ─────────────────────────────────────────────
+    const sql = `
+      INSERT INTO "MediaAssets" (
+        page_route,
+        html_id,
+        media_url,
+        media_type,
+        alt_text,
+        width,
+        height
+      )
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      ON CONFLICT (page_route, html_id)
+      DO UPDATE SET
+        media_url  = EXCLUDED.media_url,
+        media_type = EXCLUDED.media_type,
+        alt_text   = EXCLUDED.alt_text,
+        width      = EXCLUDED.width,
+        height     = EXCLUDED.height,
+        updated_at = CURRENT_TIMESTAMP
+      RETURNING *;
+    `;
 
-    const result = await uploadImage(file, { folder });
-    return NextResponse.json(result, { status: 200 });
+    const values = [pageRoute, htmlId, mediaUrl, mediaType, altText, width, height];
+    const result = await query(sql, values);
+
+    return NextResponse.json(result.rows[0]);
   } catch (error) {
-    console.error('Upload error:', error);
+    console.error('[POST /api/media-assets]', error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Upload failed' },
+      { error: error instanceof Error ? error.message : 'Request failed' },
       { status: 500 }
     );
-  }
-}
-
-// GET /api/admin/upload — list all uploaded files
-export async function GET() {
-  try {
-    const files = await readdir(UPLOAD_DIR);
-    const fileDetails = await Promise.all(
-      files
-        .filter((f) => !f.startsWith('.'))
-        .map(async (fileName) => {
-          const filePath = path.join(UPLOAD_DIR, fileName);
-          const fileStats = await stat(filePath);
-          const ext = path.extname(fileName).toLowerCase();
-          const isVideo = ['.mp4', '.webm', '.ogg', '.mov'].includes(ext);
-
-          return {
-            name: fileName,
-            url: `/uploads/${fileName}`,
-            type: isVideo ? 'video' : 'image',
-            size: fileStats.size,
-            uploadedAt: fileStats.birthtime.toISOString(),
-          };
-        })
-    );
-
-    // Sort newest first
-    fileDetails.sort(
-      (a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime()
-    );
-
-    return NextResponse.json({ files: fileDetails });
-  } catch (error) {
-    console.error('List error:', error);
-    return NextResponse.json({ error: 'Failed to list files' }, { status: 500 });
-  }
-}
-
-// DELETE /api/admin/upload — delete a file by name
-export async function DELETE(request: NextRequest) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const fileName = searchParams.get('name');
-
-    if (!fileName) {
-      return NextResponse.json({ error: 'No filename provided' }, { status: 400 });
-    }
-
-    // Security: prevent path traversal
-    const safeName = path.basename(fileName);
-    const filePath = path.join(UPLOAD_DIR, safeName);
-
-    if (!existsSync(filePath)) {
-      return NextResponse.json({ error: 'File not found' }, { status: 404 });
-    }
-
-    await unlink(filePath);
-
-    return NextResponse.json({ success: true, deleted: safeName });
-  } catch (error) {
-    console.error('Delete error:', error);
-    return NextResponse.json({ error: 'Delete failed' }, { status: 500 });
   }
 }
