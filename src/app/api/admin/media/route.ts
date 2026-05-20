@@ -10,6 +10,7 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData();
 
     // ── Extract fields ──────────────────────────────────────────────────────
+    const folder    = (formData.get('folder') as string) || 'uploads';
     const file      = formData.get('file') as File | null;
     const pageRoute = formData.get('pageRoute') as string;
     const htmlId    = formData.get('htmlId') as string;
@@ -17,7 +18,6 @@ export async function POST(request: NextRequest) {
     const altText   = formData.get('altText') as string | null;
     const width     = formData.get('width') ? Number(formData.get('width')) : null;
     const height    = formData.get('height') ? Number(formData.get('height')) : null;
-    const folder    = (formData.get('folder') as string) || 'uploads';
 
     if (!pageRoute || !htmlId) {
       return NextResponse.json(
