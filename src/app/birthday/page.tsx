@@ -29,6 +29,7 @@ export default function BirthdayPage() {
         if (res.ok) {
           const data = await res.json();
           setMedia(data);
+          console.log("Fetched media:", data);
         }
       } catch (error) {
         console.error("Failed to fetch media:", error);
@@ -131,12 +132,25 @@ export default function BirthdayPage() {
   return (
     <>
       {/* HERO SECTION */}
-      <section className="relative w-full h-[85svh] min-h-[600px] flex flex-col justify-center items-center text-center px-4 md:px-8 pt-20">
-          <img 
-              src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=1600&auto=format&fit=crop" 
+      <section className="relative w-full h-[85svh] min-h-[600px] flex flex-col justify-center items-center text-center px-4 md:px-8 pt-20 overflow-hidden">
+          {/* Dynamic Hero Media Rendering */}
+          {media['hero-video']?.media_type === 'video' ? (
+            <video 
+              src={media['hero-video'].media_url} 
+              className="absolute inset-0 w-full h-full object-cover opacity-40 filter grayscale-[30%]"
+              autoPlay 
+              loop 
+              muted 
+              playsInline
+            />
+          ) : (
+            <img 
+              src={media['hero-video']?.media_url || "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=1600&auto=format&fit=crop"} 
               className="absolute inset-0 w-full h-full object-cover opacity-40 filter grayscale-[30%]" 
-              alt="Birthday Celebration"
-          />
+              alt={media['hero-video']?.alt_text || "Birthday Celebration"}
+            />
+          )}
+
           <div className="absolute inset-0 bg-gradient-to-b from-brand-black/80 via-brand-black/60 to-brand-black"></div>
           
           <div className="relative z-10 fade-up max-w-4xl mx-auto">
@@ -300,11 +314,23 @@ export default function BirthdayPage() {
           </div>
 
           <div className="w-full lg:w-1/2 aspect-square lg:aspect-[4/5] rounded-2xl overflow-hidden relative img-reveal img-wrapper">
-            <img 
-              src="https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=1200&auto=format&fit=crop" 
-              className="w-full h-full object-cover filter grayscale-[20%]"
-              alt="VIP Experience"
-            />
+            {/* Dynamic Form Media Rendering */}
+            {media['form-media']?.media_type === 'video' ? (
+              <video 
+                src={media['form-media'].media_url} 
+                className="w-full h-full object-cover filter grayscale-[20%]"
+                autoPlay 
+                loop 
+                muted 
+                playsInline
+              />
+            ) : (
+              <img 
+                src={media['form-media']?.media_url || "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=1200&auto=format&fit=crop"} 
+                className="w-full h-full object-cover filter grayscale-[20%]"
+                alt={media['form-media']?.alt_text || "VIP Experience"}
+              />
+            )}
           </div>
 
         </div>

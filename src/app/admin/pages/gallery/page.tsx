@@ -1,11 +1,61 @@
 "use client";
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, ChangeEvent, DragEvent } from 'react';
+
+// ─── Types & Configuration (Media Slots) ──────────────────────────────────────
+
+interface MediaAsset {
+  html_id: string;
+  media_url: string;
+  media_type: 'image' | 'video';
+  alt_text: string | null;
+  width: number | null;
+  height: number | null;
+}
+
+const GALLERY_SLOTS = [
+  { id: 'hero-video', label: '🎬 Hero Media', description: 'Main background video or image at the top of the gallery page', folder: 'gallery' },
+  { id: 'latest-aftermovie', label: '🎥 Latest Aftermovie', description: 'Featured aftermovie video slot', folder: 'gallery' },
+];
+
+const MAX_IMAGE_SIZE = 30 * 1024 * 1024;  // 30 MB
+const MAX_VIDEO_SIZE = 24 * 1024 * 1024;  // 24 MB
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/avif'];
+const ALLOWED_VIDEO_TYPES = ['video/mp4', 'video/webm', 'video/ogg', 'video/quicktime'];
+
+function validateFile(file: File): string | null {
+  const isImage = ALLOWED_IMAGE_TYPES.includes(file.type);
+  const isVideo = ALLOWED_VIDEO_TYPES.includes(file.type);
+
+  if (!isImage && !isVideo) {
+    return `Unsupported file type: ${file.type}. Use JPG, PNG, WebP, GIF, AVIF, MP4, WebM, or MOV.`;
+  }
+  if (isVideo && file.size > MAX_VIDEO_SIZE) {
+    return `Video exceeds the 24 MB limit (${(file.size / 1024 / 1024).toFixed(1)} MB).`;
+  }
+  if (isImage && file.size > MAX_IMAGE_SIZE) {
+    return `Image exceeds the 30 MB limit (${(file.size / 1024 / 1024).toFixed(1)} MB).`;
+  }
+  return null;
+}
+
+function formatBytes(bytes: number): string {
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+// ─── Main Admin Component ─────────────────────────────────────────────────────
 
 export default function GalleryAdmin() {
+  // Post Grid State
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentSort, setCurrentSort] = useState('display_order');
   const [editingPost, setEditingPost] = useState<any>(null);
+
+  // Page Media State
+  const [mediaAssets, setMediaAssets] = useState<Record<string, MediaAsset>>({});
+  const [mediaLoading, setMediaLoading] = useState(true);
+  const [mediaError, setMediaError] = useState('');
 
   const fetchPosts = async (sort = 'display_order') => {
     setLoading(true);
@@ -16,7 +66,25 @@ export default function GalleryAdmin() {
     setLoading(false);
   };
 
-  useEffect(() => { fetchPosts(); }, []);
+  const fetchGalleryMedia = async () => {
+    try {
+      setMediaLoading(true);
+      const res = await fetch('/api/media?page=/gallery');
+      if (!res.ok) throw new Error('Failed to fetch gallery page media');
+      
+      const data = await res.json();
+      setMediaAssets(data);
+    } catch (err) {
+      setMediaError(err instanceof Error ? err.message : 'Error loading gallery page media');
+    } finally {
+      setMediaLoading(false);
+    }
+  };
+
+  useEffect(() => { 
+    fetchPosts(); 
+    fetchGalleryMedia();
+  }, []);
 
   const handleDelete = async (id: number) => {
     if (!confirm("Delete this post?")) return;
@@ -30,125 +98,60 @@ export default function GalleryAdmin() {
     }}>
       <style>{`
         @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
         }
-
         @keyframes fadeInScale {
-          from {
-            opacity: 0;
-            transform: scale(0.95);
-          }
-          to {
-            opacity: 1;
-            transform: scale(1);
-          }
+          from { opacity: 0; transform: scale(0.95); }
+          to { opacity: 1; transform: scale(1); }
         }
-
         @keyframes slideInLeft {
-          from {
-            opacity: 0;
-            transform: translateX(-12px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
+          from { opacity: 0; transform: translateX(-12px); }
+          to { opacity: 1; transform: translateX(0); }
         }
-
-        .animate-in {
-          animation: fadeInUp 0.6s ease-out forwards;
-        }
-
-        .animate-card {
-          animation: fadeInScale 0.5s ease-out forwards;
-        }
-
-        .stagger-1 { animation-delay: 0.1s; }
-        .stagger-2 { animation-delay: 0.2s; }
-        .stagger-3 { animation-delay: 0.3s; }
-        .stagger-4 { animation-delay: 0.4s; }
-        .stagger-5 { animation-delay: 0.5s; }
-        .stagger-6 { animation-delay: 0.6s; }
-
-        .card-hover {
-          transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
-        }
-
+        .animate-in { animation: fadeInUp 0.6s ease-out forwards; }
+        .animate-card { animation: fadeInScale 0.5s ease-out forwards; }
+        .card-hover { transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1); }
         .card-hover:hover {
           border-color: rgba(255, 0, 127, 0.4);
           transform: translateY(-4px);
           box-shadow: 0 12px 24px rgba(255, 0, 127, 0.08);
         }
-
         .button-primary {
           position: relative;
           overflow: hidden;
           transition: all 0.2s ease;
         }
-
         .button-primary::before {
           content: '';
           position: absolute;
-          top: 0;
-          left: -100%;
-          width: 100%;
-          height: 100%;
+          top: 0; left: -100%; width: 100%; height: 100%;
           background: rgba(255, 255, 255, 0.1);
           transition: left 0.3s ease;
           z-index: -1;
         }
-
-        .button-primary:hover::before {
-          left: 100%;
-        }
-
-        .sort-button {
-          transition: all 0.2s ease;
-          position: relative;
-        }
-
-        .sort-button:hover {
-          border-color: rgba(255, 0, 127, 0.3);
-        }
-
-        .modal-backdrop {
-          animation: fadeInUp 0.3s ease-out;
-        }
-
-        .modal-content {
-          animation: fadeInScale 0.3s ease-out;
-        }
-
-        input:focus, textarea:focus {
+        .button-primary:hover::before { left: 100%; }
+        .sort-button { transition: all 0.2s ease; position: relative; }
+        .sort-button:hover { border-color: rgba(255, 0, 127, 0.3); }
+        .modal-backdrop { animation: fadeInUp 0.3s ease-out; }
+        .modal-content { animation: fadeInScale 0.3s ease-out; }
+        input:focus, textarea:focus, select:focus {
           outline: none;
           border-color: rgba(255, 0, 127, 0.5) !important;
           background-color: rgba(255, 0, 127, 0.02) !important;
           transition: all 0.2s ease;
         }
-
-        .image-preview {
-          transition: opacity 0.3s ease;
-        }
-
-        .image-preview:hover {
-          opacity: 1 !important;
-        }
+        .image-preview { transition: opacity 0.3s ease; }
+        .image-preview:hover { opacity: 1 !important; }
       `}</style>
 
       <div className="max-w-7xl mx-auto px-6 py-12">
         {/* Header Section */}
-        <header className="mb-16 animate-in">
+        <header className="mb-12 animate-in">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
             <div className="flex-1">
               <h1 className="text-5xl md:text-6xl font-bold tracking-tight mb-2">
-                Gallery Posts
+                Gallery Admin
               </h1>
               <div className="w-12 h-1 bg-gradient-to-r from-pink-600 to-transparent mb-8"></div>
               
@@ -180,7 +183,34 @@ export default function GalleryAdmin() {
           </div>
         </header>
 
-        {/* Loading State */}
+        {/* ── Page Media Slots Section ── */}
+        <div className="mb-16 animate-in" style={{ animationDelay: '0.1s' }}>
+          <h2 className="text-2xl font-bold mb-6 tracking-tight text-gray-200">Page Settings (Hero & Features)</h2>
+          {mediaError && (
+            <div className="p-4 bg-red-900/30 border border-red-700/50 rounded-lg text-red-200 mb-6">
+              <p className="font-medium">Error</p>
+              <p className="text-sm mt-1">{mediaError}</p>
+            </div>
+          )}
+          {mediaLoading ? (
+            <div className="text-gray-500 text-sm py-4">Loading page media assets...</div>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {GALLERY_SLOTS.map((slot) => (
+                <MediaEditorCard 
+                  key={slot.id}
+                  slotConfig={slot}
+                  initialData={mediaAssets[slot.id]}
+                  onRefresh={fetchGalleryMedia}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="w-full h-px bg-gray-800/60 mb-12"></div>
+
+        {/* ── Gallery Posts Grid Loading State ── */}
         {loading && (
           <div className="flex items-center justify-center py-24">
             <div className="flex gap-2">
@@ -198,7 +228,7 @@ export default function GalleryAdmin() {
           </div>
         )}
 
-        {/* Gallery Grid */}
+        {/* ── Gallery Posts Grid ── */}
         {!loading && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {posts.map((post: any, idx: number) => (
@@ -298,7 +328,7 @@ export default function GalleryAdmin() {
         )}
       </div>
 
-      {/* Edit Modal */}
+      {/* Edit Modal (Untouched) */}
       {editingPost && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 modal-backdrop">
           <div className="bg-gray-950 border border-gray-800 rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto modal-content" style={{ boxShadow: '0 20px 60px rgba(0, 0, 0, 0.8)' }}>
@@ -322,8 +352,8 @@ export default function GalleryAdmin() {
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify(editingPost)
                 });
-                // setEditingPost(null);
                 fetchPosts(currentSort);
+                setEditingPost(null);
               }} 
               className="p-8 space-y-8"
             >
@@ -509,6 +539,282 @@ export default function GalleryAdmin() {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+// ─── Media Editor Card (Styled for Gallery Admin) ─────────────────────────────
+
+type UploadMode = 'file' | 'url';
+
+function MediaEditorCard({ 
+  slotConfig, 
+  initialData, 
+  onRefresh 
+}: { 
+  slotConfig: { id: string; label: string; description: string; folder: string };
+  initialData?: MediaAsset;
+  onRefresh: () => void;
+}) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [uploadMode, setUploadMode] = useState<UploadMode>('file');
+  const [saving, setSaving]         = useState(false);
+  const [dragging, setDragging]     = useState(false);
+
+  // Staged file state
+  const [stagedFile, setStagedFile]       = useState<File | null>(null);
+  const [stagedPreview, setStagedPreview] = useState<string | null>(null);
+  const [fileError, setFileError]         = useState('');
+  const [uploadProgress, setUploadProgress] = useState<'idle' | 'uploading' | 'done'>('idle');
+
+  const [formData, setFormData] = useState({
+    mediaUrl:  initialData?.media_url   || '',
+    mediaType: (initialData?.media_type || 'image') as 'image' | 'video',
+    altText:   initialData?.alt_text    || '',
+    width:     initialData?.width?.toString()  || '',
+    height:    initialData?.height?.toString() || '',
+  });
+
+  useEffect(() => {
+    if (initialData) {
+      setFormData({
+        mediaUrl:  initialData.media_url,
+        mediaType: initialData.media_type,
+        altText:   initialData.alt_text    || '',
+        width:     initialData.width?.toString()  || '',
+        height:    initialData.height?.toString() || '',
+      });
+    }
+  }, [initialData]);
+
+  const stageFile = (file: File) => {
+    setFileError('');
+    const err = validateFile(file);
+    if (err) { setFileError(err); return; }
+
+    setStagedFile(file);
+    setUploadProgress('idle');
+
+    const isVideo = ALLOWED_VIDEO_TYPES.includes(file.type);
+    setFormData((prev) => ({ ...prev, mediaType: isVideo ? 'video' : 'image' }));
+
+    const objectUrl = URL.createObjectURL(file);
+    setStagedPreview(objectUrl);
+  };
+
+  const clearStaged = () => {
+    if (stagedPreview) URL.revokeObjectURL(stagedPreview);
+    setStagedFile(null);
+    setStagedPreview(null);
+    setFileError('');
+    setUploadProgress('idle');
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const handleFileInput = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) stageFile(file);
+  };
+
+  const handleDrop = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) stageFile(file);
+  };
+
+  const handleSave = async () => {
+    try {
+      setSaving(true);
+      const fd = new FormData();
+
+      // Route mapping specifically to the gallery page
+      fd.append('pageRoute', '/gallery');
+      fd.append('htmlId', slotConfig.id);
+      fd.append('mediaType', formData.mediaType);
+      fd.append('altText', formData.altText);
+      if (formData.width) fd.append('width', formData.width);
+      if (formData.height) fd.append('height', formData.height);
+
+      if (uploadMode === 'file' && stagedFile) {
+        setUploadProgress('uploading');
+        fd.append('file', stagedFile);
+        fd.append('folder', slotConfig.folder);
+      } else if (uploadMode === 'url') {
+        if (!formData.mediaUrl) throw new Error('Please enter a media URL');
+        fd.append('mediaUrl', formData.mediaUrl);
+      }
+
+      const res = await fetch('/api/admin/media', {
+        method: 'POST',
+        body: fd,
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error ?? 'Failed to save asset');
+      }
+
+      const saved = await res.json();
+      setFormData((prev) => ({ ...prev, mediaUrl: saved.media_url ?? prev.mediaUrl }));
+      setUploadProgress('done');
+      clearStaged();
+      onRefresh();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Error saving asset');
+      setUploadProgress('idle');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const canSave = 
+    !saving && 
+    ((uploadMode === 'file' && stagedFile != null) || 
+     (uploadMode === 'url'  && formData.mediaUrl.trim() !== ''));
+
+  const previewUrl  = stagedPreview ?? formData.mediaUrl;
+  const previewType = stagedFile 
+    ? (ALLOWED_VIDEO_TYPES.includes(stagedFile.type) ? 'video' : 'image') 
+    : formData.mediaType;
+
+  return (
+    <div className="bg-gray-950 border border-gray-800 rounded-xl overflow-hidden shadow-lg transition-colors">
+      <div className="p-4 border-b border-gray-800 bg-black/40 flex justify-between items-start">
+        <div>
+          <h3 className="text-lg font-semibold text-white">{slotConfig.label}</h3>
+          <p className="text-xs text-gray-400 mt-1">{slotConfig.description}</p>
+        </div>
+        <div className="text-[10px] uppercase font-bold tracking-widest bg-gray-900 px-3 py-1.5 rounded-sm text-gray-400 border border-gray-800">
+          {slotConfig.id}
+        </div>
+      </div>
+
+      <div className="p-6 space-y-5">
+        <div className="flex gap-1 bg-black border border-gray-800 rounded-sm p-1 w-fit">
+          {(['file', 'url'] as UploadMode[]).map((m) => (
+            <button
+              key={m}
+              onClick={() => { setUploadMode(m); clearStaged(); }}
+              className={`px-4 py-1.5 text-xs font-semibold tracking-wider uppercase rounded-sm transition ${
+                uploadMode === m ? 'bg-pink-600 text-white' : 'text-gray-400 hover:text-gray-200'
+              }`}
+            >
+              {m === 'file' ? '📁 Upload' : '🔗 Link'}
+            </button>
+          ))}
+        </div>
+
+        {uploadMode === 'file' && (
+          <div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept={[...ALLOWED_IMAGE_TYPES, ...ALLOWED_VIDEO_TYPES].join(',')}
+              className="hidden"
+              onChange={handleFileInput}
+            />
+            {!stagedFile ? (
+              <div
+                className={`border border-dashed rounded-sm p-8 text-center cursor-pointer transition-all ${
+                  dragging ? 'border-pink-500 bg-pink-950/20' : 'border-gray-700 hover:border-pink-500 hover:bg-gray-900/50'
+                }`}
+                onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+                onDragLeave={() => setDragging(false)}
+                onDrop={handleDrop}
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <div className="text-3xl mb-2">{dragging ? '📂' : '☁️'}</div>
+                <p className="text-gray-300 text-sm font-medium mb-1">
+                  {dragging ? 'Drop to stage' : 'Drag & drop or click to browse'}
+                </p>
+                <p className="text-gray-500 text-xs font-mono mt-1">Images up to 30MB · Videos up to 24MB</p>
+              </div>
+            ) : (
+              <div className="flex items-center gap-3 px-4 py-3 bg-black border border-gray-800 rounded-sm">
+                <span className="text-2xl">{previewType === 'video' ? '🎬' : '🖼️'}</span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm text-white truncate font-medium">{stagedFile.name}</p>
+                  <p className="text-xs text-gray-500 font-mono">{formatBytes(stagedFile.size)}</p>
+                </div>
+                {uploadProgress === 'uploading' && <div className="w-4 h-4 border-2 border-gray-700 border-t-pink-500 rounded-full animate-spin" />}
+                {uploadProgress === 'done' && <span className="text-green-500 text-sm">✓</span>}
+                <button onClick={clearStaged} className="text-gray-500 hover:text-red-400 transition text-lg leading-none px-1">✕</button>
+              </div>
+            )}
+            {fileError && <p className="mt-2 text-xs font-semibold tracking-wider uppercase text-red-400 flex items-center gap-1.5"><span>⚠️</span> {fileError}</p>}
+          </div>
+        )}
+
+        {uploadMode === 'url' && (
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Media URL</label>
+            <input 
+              type="text" 
+              className="w-full bg-black border border-gray-800 rounded-sm p-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-pink-500 transition-all"
+              placeholder="https://example.com/media.jpg"
+              value={formData.mediaUrl}
+              onChange={(e) => setFormData({...formData, mediaUrl: e.target.value})}
+            />
+          </div>
+        )}
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Media Type</label>
+            <select 
+              className="w-full bg-black border border-gray-800 rounded-sm p-3 text-sm text-white focus:outline-none focus:border-pink-500 transition-all cursor-pointer"
+              value={formData.mediaType}
+              onChange={(e) => setFormData({...formData, mediaType: e.target.value as 'image' | 'video'})}
+            >
+              <option value="image">📷 Image</option>
+              <option value="video">🎥 Video</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Alt Text</label>
+            <input 
+              type="text" 
+              className="w-full bg-black border border-gray-800 rounded-sm p-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-pink-500 transition-all"
+              placeholder="Describe media..."
+              value={formData.altText}
+              onChange={(e) => setFormData({...formData, altText: e.target.value})}
+            />
+          </div>
+        </div>
+
+        {previewUrl && (
+          <div className="pt-4 border-t border-gray-800/60">
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Preview</p>
+              {stagedFile && <span className="text-[10px] text-amber-500 font-bold tracking-widest uppercase bg-amber-950/30 border border-amber-900/50 px-2 py-0.5 rounded-sm">Not Saved</span>}
+              {!stagedFile && formData.mediaUrl && <span className="text-[10px] text-green-500 font-bold tracking-widest uppercase bg-green-950/30 border border-green-900/50 px-2 py-0.5 rounded-sm">Live</span>}
+            </div>
+            {previewType === 'video' ? (
+              <video src={previewUrl} className="w-full h-40 bg-black rounded-sm object-cover border border-gray-800" controls />
+            ) : (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={previewUrl} alt={formData.altText || 'Media preview'} className="w-full h-40 bg-black rounded-sm object-cover border border-gray-800" />
+            )}
+          </div>
+        )}
+      </div>
+
+      <div className="p-4 bg-black/40 border-t border-gray-800 flex justify-end gap-3">
+        <button 
+          onClick={handleSave}
+          disabled={!canSave}
+          className="px-6 py-2.5 bg-pink-600 text-white text-xs font-bold uppercase tracking-widest rounded-sm hover:bg-pink-700 disabled:bg-gray-800 disabled:text-gray-500 disabled:cursor-not-allowed transition-all duration-200 flex items-center gap-2"
+        >
+          {saving ? (
+            <>
+              <div className="w-3 h-3 border border-white/30 border-t-white rounded-full animate-spin" />
+              {uploadMode === 'file' && stagedFile ? 'Uploading' : 'Saving'}
+            </>
+          ) : 'Save Asset'}
+        </button>
+      </div>
     </div>
   );
 }
