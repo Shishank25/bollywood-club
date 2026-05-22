@@ -49,6 +49,7 @@ export interface Event {
     thumbnailImage: string; 
     coverImage: string 
   };
+  publishedAt: string;
 }
 
 export interface EventsApiResponse {
