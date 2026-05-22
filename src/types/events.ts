@@ -49,6 +49,7 @@ export interface Event {
 
 export interface EventsApiResponse {
   events: Event[];
+  data: Event[];
   total: number;
   page: number;
   limit: number;
