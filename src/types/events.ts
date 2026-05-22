@@ -23,7 +23,7 @@ export interface EventQueryParams {
 }
 
 export interface EventBasicInfo {
-  title: string;
+  name: string;
   date: string;
   city?: string;
   location?: string;
@@ -45,6 +45,10 @@ export interface Event {
   };
   // Extend with whatever additional fields your ticketing backend returns
   [key: string]: unknown;
+  media: { 
+    thumbnailImage: string; 
+    coverImage: string 
+  };
 }
 
 export interface EventsApiResponse {
