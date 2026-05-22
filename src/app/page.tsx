@@ -9,6 +9,9 @@ export default function HomePage() {
   const [media, setMedia] = useState<Record<string, MediaAsset>>({});
   const [isLoading, setIsLoading] = useState(true);
 
+  const [events, setEvents] = useState<any[]>([]);
+  const [isEventsLoading, setIsEventsLoading] = useState(true);
+
   // Form State
   const [formData, setFormData] = useState({
     f_name: '',
@@ -69,6 +72,28 @@ export default function HomePage() {
     };
   }, [isLoading]);
 
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        // Calling your new proxy route with a limit of 4
+        const res = await fetch('/api/v1/events?limit=4');
+        if (res.ok) {
+          const data = await res.json();
+          // Adjust based on your backend response structure. 
+          // If it returns an object like { data: [...] } or { events: [...] }, map accordingly.
+          const eventsArray = Array.isArray(data) ? data : (data.events || data.data || []);
+          setEvents(eventsArray);
+        }
+      } catch (error) {
+        console.error("Failed to fetch events:", error);
+      } finally {
+        setIsEventsLoading(false);
+      }
+    };
+
+    fetchEvents();
+  }, []);
+
   // 3. Handle Form Submission
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -102,6 +127,23 @@ export default function HomePage() {
     } catch (error) {
       setFormStatus('error');
     }
+  };
+
+  const getVenueFromTitle = (title: string) => {
+    if (!title) return "";
+
+    // Convert to lowercase for reliable matching
+    const normalizedTitle = title.toLowerCase();
+
+    if (normalizedTitle.includes("melbourne")) {
+      return "Crown L3";
+    }
+    
+    if (normalizedTitle.includes("sydney")) {
+      return "Barrio Cellar";
+    }
+
+    return "";
   };
 
   return (
@@ -142,7 +184,6 @@ export default function HomePage() {
 
       {/* ── Upcoming Events ── */}
       <section id="events" className="pt-24 pb-32 bg-brand-white px-6 md:px-12">
-        {/* ... (Unchanged content omitted for brevity, keep your existing events map here) ... */}
         <div className="max-w-[1600px] mx-auto">
           <div className="flex justify-between items-end mb-16 fade-up">
             <h2 className="text-5xl md:text-7xl font-display font-bold tracking-tighter uppercase">
@@ -151,50 +192,44 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12 border-t border-brand-border pt-10">
-            {[
-              {
-                title: "P-POP Weekender",
-                city: "Melbourne",
-                venue: "Crown L3 Nightclub",
-                img: "https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=800&auto=format&fit=crop",
-                delay: "0ms",
-              },
-              {
-                title: "Gulabo Welcome",
-                city: "Sydney",
-                venue: "The Ivy Precinct",
-                img: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=800&auto=format&fit=crop",
-                delay: "100ms",
-              },
-              {
-                title: "Desi House",
-                city: "Singapore",
-                venue: "Marquee Marina Bay",
-                img: "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?q=80&w=800&auto=format&fit=crop",
-                delay: "200ms",
-              },
-              {
-                title: "The Grand Shaadi",
-                city: "Brisbane",
-                venue: "The Met",
-                img: "https://images.unsplash.com/photo-1545128485-c400e7702796?q=80&w=800&auto=format&fit=crop",
-                delay: "300ms",
-              },
-            ].map((event) => (
-              <div key={event.title} className="group flex flex-col fade-up scale-hover" style={{ transitionDelay: event.delay }}>
-                <div className="w-full aspect-[3/4] overflow-hidden bg-brand-offwhite mb-6">
-                  <img src={event.img} className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-500" alt={`${event.title} flyer`} />
-                </div>
-                <div className="flex flex-col flex-1">
-                  <h3 className="text-2xl font-display font-bold uppercase tracking-tighter mb-1 line-clamp-1">{event.title}</h3>
-                  <p className="text-xs font-bold tracking-[0.15em] uppercase text-brand-gray mb-4">{event.city}</p>
-                  <p className="text-sm font-medium text-brand-black mb-6 flex-1">{event.venue}</p>
-                  <Link href="#" className="btn-outline w-full py-3 rounded-full text-xs font-bold tracking-[0.15em] uppercase text-center">
-                    Reserve Tickets
-                  </Link>
-                </div>
-              </div>
-            ))}
+            {isEventsLoading ? (
+               // Optional: Add a loading skeleton or simple text here
+               <div className="col-span-full text-center text-brand-gray font-bold tracking-[0.15em] uppercase">
+                 Loading events...
+               </div>
+            ) : (
+              events.map((event, index) => {
+                // FALLBACKS: Update these mappings to match your exact DB schema
+                const title = event.basicInfo?.name || event.title || "TBA";
+                const city = event.location?.city || event.city || "TBA";
+                const venue = getVenueFromTitle(title);
+                const image = event.media?.coverImage || event.img || "https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=800&auto=format&fit=crop"; // Fallback image
+
+                return (
+                  <div 
+                    key={event._id || index} 
+                    className="group flex flex-col fade-up scale-hover justify-between flex-grow" 
+                    style={{ transitionDelay: `${index * 100}ms` }}
+                  >
+                    <div className="w-full aspect-[3/4] overflow-hidden bg-brand-offwhite mb-4">
+                      <img 
+                        src={`https://tixmojo.com/wapi${image}`} 
+                        className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-500" 
+                        alt={`${title} flyer`} 
+                      />
+                    </div>
+                    <div className="flex flex-col flex-1 justify-between">
+                      <h3 className="text-2xl font-display font-bold uppercase tracking-tighter mb-1 text-wrap">{title}</h3>
+                      {/* <p className="text-xs font-bold tracking-[0.15em] uppercase text-brand-gray mb-4">{city}</p> */}
+                      <p className="text-sm font-medium text-brand-black mb-6 flex-1">{venue}</p>
+                      <Link href={`/events/${event._id || '#'}`} className="btn-outline w-full py-3 rounded-full text-xs font-bold tracking-[0.15em] uppercase text-center">
+                        Reserve Tickets
+                      </Link>
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </div>
         </div>
       </section>

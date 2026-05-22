@@ -47,14 +47,14 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         <main className="w-full bg-brand-white min-h-screen">
             
             {/* HERO SECTION */}
-            <section className="relative w-full h-[60svh] min-h-[400px] bg-brand-black">
-                {post.cover_image && (
+            <section className="relative w-full h-[16svh] min-h-[400px] bg-brand-black">
+                {/* {post.cover_image && (
                     <img 
                         src={post.cover_image} 
                         alt={post.title} 
                         className="absolute inset-0 w-full h-full object-cover filter grayscale-[20%] opacity-70"
                     />
-                )}
+                )} */}
                 {/* Cinematic Gradient Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-brand-black via-brand-black/40 to-transparent"></div>
                 
@@ -117,9 +117,12 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
             {/* BACK TO JOURNAL CTA */}
             <section className="py-20 border-t border-brand-border bg-brand-offwhite text-center">
-                <a href="/journal" className="inline-block border border-brand-black px-12 py-5 rounded-full text-xs font-bold tracking-[0.15em] uppercase text-brand-black hover:bg-brand-black hover:text-brand-white transition-colors">
-                    ← Back to The Journal
-                </a>
+                <button 
+                onClick={() => window.history.back()} 
+                className="inline-block border border-brand-black px-12 py-5 rounded-full text-xs font-bold tracking-[0.15em] uppercase text-brand-black hover:bg-brand-black hover:text-brand-white transition-colors"
+                >
+                ← Back to The Journal
+                </button>
             </section>
 
         </main>
