@@ -34,6 +34,7 @@ export interface EventBasicInfo {
 
 export interface Event {
   _id: string;
+  badge?: string;   
   basicInfo: EventBasicInfo;
   status: string;
   category?: string;
