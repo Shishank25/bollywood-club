@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { MediaAsset } from "@/lib/media"; 
 import MediaSlot from "@/lib/media"; 
@@ -12,6 +12,9 @@ export default function HomePage() {
   const [events, setEvents] = useState<any[]>([]);
   const [isEventsLoading, setIsEventsLoading] = useState(true);
 
+  // Modal State
+  const [ticketModalEventId, setTicketModalEventId] = useState<string | null>(null);
+
   // Form State
   const [formData, setFormData] = useState({
     f_name: '',
@@ -22,6 +25,25 @@ export default function HomePage() {
   const [citySelection, setCitySelection] = useState("");
   const [customCity, setCustomCity] = useState("");
   const [formStatus, setFormStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+
+  // Close modal on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setTicketModalEventId(null);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (ticketModalEventId) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => { document.body.style.overflow = ""; };
+  }, [ticketModalEventId]);
 
   // 1. Fetch Media from your GET Route
   useEffect(() => {
@@ -75,12 +97,9 @@ export default function HomePage() {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        // Calling your new proxy route with a limit of 4
         const res = await fetch('/api/v1/events?limit=4');
         if (res.ok) {
           const data = await res.json();
-          // Adjust based on your backend response structure. 
-          // If it returns an object like { data: [...] } or { events: [...] }, map accordingly.
           const eventsArray = Array.isArray(data) ? data : (data.events || data.data || []);
           setEvents(eventsArray);
         }
@@ -99,7 +118,6 @@ export default function HomePage() {
     e.preventDefault();
     setFormStatus('loading');
 
-    // Determine final city based on dropdown vs custom input
     const finalCity = citySelection === 'Other' ? customCity : citySelection;
 
     try {
@@ -131,23 +149,74 @@ export default function HomePage() {
 
   const getVenueFromTitle = (title: string) => {
     if (!title) return "";
-
-    // Convert to lowercase for reliable matching
     const normalizedTitle = title.toLowerCase();
-
-    if (normalizedTitle.includes("melbourne")) {
-      return "Crown L3";
-    }
-    
-    if (normalizedTitle.includes("sydney")) {
-      return "Barrio Cellar";
-    }
-
+    if (normalizedTitle.includes("melbourne")) return "Crown L3";
+    if (normalizedTitle.includes("sydney")) return "Barrio Cellar";
     return "";
   };
 
   return (
     <>
+      {/* ── Ticket Modal ── */}
+      {ticketModalEventId && (
+        <div
+          className="fixed inset-0 z-[999] flex items-center justify-center p-4 md:p-8"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Reserve Tickets"
+        >
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-brand-black/80 backdrop-blur-sm"
+            onClick={() => setTicketModalEventId(null)}
+          />
+
+          {/* Modal Panel */}
+          <div className="relative z-10 w-full max-w-3xl bg-brand-white rounded-2xl overflow-hidden shadow-2xl flex flex-col"
+               style={{ height: "min(85vh, 720px)" }}>
+
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-brand-border shrink-0">
+              <span className="text-xs font-bold tracking-[0.2em] uppercase text-brand-black">
+                Reserve Tickets
+              </span>
+              <button
+                onClick={() => setTicketModalEventId(null)}
+                className="w-9 h-9 rounded-full flex items-center justify-center text-brand-gray hover:text-brand-black hover:bg-brand-offwhite transition-colors"
+                aria-label="Close modal"
+              >
+                <i className="fa-solid fa-xmark text-base" />
+              </button>
+            </div>
+
+            {/* iFrame */}
+            <div className="flex-1 relative bg-brand-offwhite">
+              {/* Loading shimmer behind the iframe */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="flex flex-col items-center gap-3 text-brand-gray">
+                  <div className="w-8 h-8 border-2 border-brand-gray/30 border-t-brand-black rounded-full animate-spin" />
+                  <span className="text-[10px] font-bold tracking-[0.2em] uppercase">Loading</span>
+                </div>
+              </div>
+              <iframe
+                src={`https://147.79.70.30.nip.io:8444/events/frame/detail/${ticketModalEventId}`}
+                title="Reserve Tickets"
+                className="relative z-10 w-full h-full border-0"
+                allow="payment"
+              />
+            </div>
+
+            {/* Footer */}
+            <div className="px-6 py-3 border-t border-brand-border shrink-0 flex items-center gap-2">
+              <i className="fa-solid fa-lock text-[10px] text-brand-gray" />
+              <span className="text-[10px] font-bold tracking-[0.15em] uppercase text-brand-gray">
+                Secure checkout powered by Tixmojo
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ── Hero ── */}
       <section className="relative h-[100svh] w-full flex flex-col justify-end px-6 md:px-12 pb-12 pt-32">
         <div className="absolute inset-0 top-[88px] bottom-6 left-6 right-6 rounded-[2rem] overflow-hidden bg-brand-offwhite img-reveal -z-10">
@@ -193,21 +262,19 @@ export default function HomePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12 border-t border-brand-border pt-10">
             {isEventsLoading ? (
-               // Optional: Add a loading skeleton or simple text here
-               <div className="col-span-full text-center text-brand-gray font-bold tracking-[0.15em] uppercase">
-                 Loading events...
-               </div>
+              <div className="col-span-full text-center text-brand-gray font-bold tracking-[0.15em] uppercase">
+                Loading events...
+              </div>
             ) : (
               events.map((event, index) => {
-                // FALLBACKS: Update these mappings to match your exact DB schema
                 const title = event.basicInfo?.name || event.title || "TBA";
-                const city = event.location?.city || event.city || "TBA";
                 const venue = getVenueFromTitle(title);
-                const image = event.media?.coverImage || event.img || "https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=800&auto=format&fit=crop"; // Fallback image
+                const image = event.media?.coverImage || event.img || "https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=800&auto=format&fit=crop";
+                const eventId = event._id;
 
                 return (
                   <div 
-                    key={event._id || index} 
+                    key={eventId || index} 
                     className="group flex flex-col fade-up scale-hover justify-between flex-grow" 
                     style={{ transitionDelay: `${index * 100}ms` }}
                   >
@@ -220,11 +287,14 @@ export default function HomePage() {
                     </div>
                     <div className="flex flex-col flex-1 justify-between">
                       <h3 className="text-2xl font-display font-bold uppercase tracking-tighter mb-1 text-wrap">{title}</h3>
-                      {/* <p className="text-xs font-bold tracking-[0.15em] uppercase text-brand-gray mb-4">{city}</p> */}
                       <p className="text-sm font-medium text-brand-black mb-6 flex-1">{venue}</p>
-                      <Link href={`/events/${event._id || '#'}`} className="btn-outline w-full py-3 rounded-full text-xs font-bold tracking-[0.15em] uppercase text-center">
+                      {/* Reserve Tickets — opens modal with this event's ID */}
+                      <button
+                        onClick={() => setTicketModalEventId(eventId)}
+                        className="btn-outline w-full py-3 rounded-full text-xs font-bold tracking-[0.15em] uppercase text-center"
+                      >
                         Reserve Tickets
-                      </Link>
+                      </button>
                     </div>
                   </div>
                 );
@@ -236,7 +306,6 @@ export default function HomePage() {
 
       {/* ── Cinematic Highlights ── */}
       <section className="py-24 bg-brand-black text-white px-6 md:px-12 overflow-hidden">
-        {/* ... (Unchanged content) ... */}
         <div className="max-w-[1600px] mx-auto fade-up">
           <h2 className="text-4xl md:text-5xl font-display font-bold tracking-tighter uppercase mb-12">
             Cinematic Highlights
@@ -259,7 +328,6 @@ export default function HomePage() {
 
       {/* ── Redefining Luxury ── */}
       <section className="py-32 bg-brand-white px-6 md:px-12 border-b border-brand-border">
-        {/* ... (Unchanged content) ... */}
         <div className="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-8">
           <div className="lg:col-span-5 fade-up">
             <div className="sticky top-32">
@@ -374,7 +442,6 @@ export default function HomePage() {
                   />
                 </div>
 
-                {/* The New City Dropdown */}
                 <div className="border-b border-brand-black pb-2 relative">
                   <select
                     value={citySelection}
@@ -391,13 +458,11 @@ export default function HomePage() {
                     <option value="Singapore" className="text-brand-black">Singapore</option>
                     <option value="Other" className="text-brand-black">Other</option>
                   </select>
-                  {/* Custom dropdown arrow */}
                   <div className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none">
                     <i className="fa-solid fa-chevron-down text-brand-gray text-xs"></i>
                   </div>
                 </div>
 
-                {/* Conditional Input for "Other" City */}
                 {citySelection === 'Other' && (
                   <div className="border-b border-brand-black pb-2 animate-in slide-in-from-top-2 duration-300">
                     <input
