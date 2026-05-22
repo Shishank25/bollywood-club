@@ -155,7 +155,8 @@ export default function GalleryClient({
                             className="w-full h-full object-cover filter grayscale-[10%]" 
                         />
                         
-                        <div className="absolute inset-0 bg-brand-black/30 group-hover:bg-brand-black/10 transition-colors duration-500"></div>
+                        {/* ADDED pointer-events-none HERE */}
+                        <div className="absolute inset-0 bg-brand-black/30 group-hover:bg-brand-black/10 transition-colors duration-500 pointer-events-none"></div>
                     </div>
                 </div>
             </section>
