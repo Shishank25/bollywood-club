@@ -102,15 +102,17 @@ export default function GalleryClient({
                 <div className="relative w-full h-auto min-h-[500px] rounded-[2rem] overflow-hidden bg-brand-black img-reveal shadow-2xl img-wrapper">
                     
                     {/* Correctly Implemented Media Slot */}
-                    <MediaSlot 
-                        id="hero-video"
-                        mediaMap={mediaSlots} 
-                        className="hero-img-anim absolute inset-0 w-full h-full object-cover filter grayscale-[20%] opacity-60" 
-                    />
+                    <div className="h-[700px]">
+                        <MediaSlot 
+                            id="hero-video"
+                            mediaMap={mediaSlots} 
+                            className="hero-img-anim absolute inset-0 w-full h-full object-fit filter grayscale-[20%] opacity-60" 
+                        />
+                    </div>
 
                     <div className="absolute inset-0 bg-gradient-to-t from-brand-black/95 via-brand-black/40 to-transparent"></div>
                     
-                    <div className="inset-0 flex flex-col justify-end p-8 md:p-16 z-20">
+                    <div className="absolute inset-0 flex flex-col justify-start p-8 md:p-16 z-20">
                         <div className="fade-up max-w-4xl text-center mx-auto">
                             <span className="inline-block text-[10px] font-bold tracking-[0.2em] uppercase text-brand-black bg-brand-white px-5 py-2.5 rounded-full shadow-lg mb-6">
                                 Captured Moments
@@ -154,20 +156,6 @@ export default function GalleryClient({
                         />
                         
                         <div className="absolute inset-0 bg-brand-black/30 group-hover:bg-brand-black/10 transition-colors duration-500"></div>
-                        
-                        <div className="absolute inset-0 flex items-center justify-center z-10">
-                            <div className="w-20 h-20 md:w-28 md:h-28 rounded-full bg-white/20 backdrop-blur-md border border-white/40 flex items-center justify-center text-white group-hover:scale-110 group-hover:bg-white group-hover:text-brand-black transition-all duration-500">
-                                <i className="fa-solid fa-play ml-1 md:ml-2 text-2xl md:text-3xl"></i>
-                            </div>
-                        </div>
-
-                        <div className="absolute bottom-6 left-6 right-6 flex justify-between items-end z-10">
-                            <div>
-                                <h3 className="text-white font-display font-bold text-2xl md:text-4xl uppercase tracking-tighter drop-shadow-md">P-POP Weekender</h3>
-                                <p className="text-white/80 text-xs font-bold tracking-[0.15em] uppercase drop-shadow-md mt-1">Melbourne • Crown L3</p>
-                            </div>
-                            <span className="bg-brand-black/50 backdrop-blur-sm text-white text-[10px] font-bold px-3 py-1.5 rounded-full uppercase tracking-widest border border-white/20">03:45</span>
-                        </div>
                     </div>
                 </div>
             </section>

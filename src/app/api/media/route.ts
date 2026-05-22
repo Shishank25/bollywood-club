@@ -12,7 +12,7 @@ export async function GET(request: Request) {
   try {
     // Standard SQL query instead of Prisma 
     const sql = `
-      SELECT html_id, media_url, media_type, alt_text, width, height 
+      SELECT html_id, media_url, media_type, alt_text, width, height, thumbnail_url
       FROM "MediaAssets" 
       WHERE page_route = $1
     `;

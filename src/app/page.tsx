@@ -314,13 +314,19 @@ export default function HomePage() {
         <div className="max-w-[1600px] mx-auto flex gap-6 overflow-x-auto snap-x snap-mandatory hide-scroll fade-up">
           {['cinematic-1', 'cinematic-2'].map((id) => (
             <div key={id} className="snap-center shrink-0 w-[85vw] md:w-[60vw] lg:w-[45vw] aspect-video relative group cursor-pointer overflow-hidden bg-brand-offwhite/10">
+              
               <MediaSlot id={id} mediaMap={media} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" />
-              <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500" />
-              <div className="absolute inset-0 flex items-center justify-center">
+              
+              {/* Added pointer-events-none here */}
+              <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500 pointer-events-none" />
+              
+              {/* Added pointer-events-none here as well */}
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <div className="w-20 h-20 rounded-full border border-white/50 backdrop-blur-sm flex items-center justify-center group-hover:bg-white group-hover:text-brand-black transition-all duration-300">
                   <i className="fa-solid fa-play ml-1 text-2xl" />
                 </div>
               </div>
+
             </div>
           ))}
         </div>

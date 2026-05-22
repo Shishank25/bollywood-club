@@ -12,9 +12,9 @@ interface MediaAsset {
   alt_text: string | null;
   width: number | null;
   height: number | null;
+  thumbnail_url?: string; // NEW: Added for video posters
 }
 
-// Added 'folder' property to align with the backend upload path
 const BIRTHDAY_SLOTS = [
   { id: 'hero-video', label: '🎬 Hero Video', description: 'Main background video at the top of the birthday page', folder: 'birthday' },
   { id: 'form-media', label: '📝 Form Media', description: 'Image or video displayed next to the inquiry form', folder: 'birthday' },
@@ -129,15 +129,25 @@ function MediaEditorCard({
   onRefresh: () => void;
 }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const thumbInputRef = useRef<HTMLInputElement>(null); // NEW: Ref for thumbnail upload
 
   const [uploadMode, setUploadMode] = useState<UploadMode>('file');
   const [saving, setSaving]         = useState(false);
-  const [dragging, setDragging]     = useState(false);
+  
+  // Drag states
+  const [draggingMain, setDraggingMain]   = useState(false);
+  const [draggingThumb, setDraggingThumb] = useState(false);
 
-  // Staged file state
+  // Staged Main File state
   const [stagedFile, setStagedFile]       = useState<File | null>(null);
   const [stagedPreview, setStagedPreview] = useState<string | null>(null);
   const [fileError, setFileError]         = useState('');
+
+  // NEW: Staged Thumbnail state
+  const [stagedThumbFile, setStagedThumbFile]       = useState<File | null>(null);
+  const [stagedThumbPreview, setStagedThumbPreview] = useState<string | null>(null);
+  const [thumbError, setThumbError]                 = useState('');
+
   const [uploadProgress, setUploadProgress] = useState<'idle' | 'uploading' | 'done'>('idle');
 
   const [formData, setFormData] = useState({
@@ -146,6 +156,7 @@ function MediaEditorCard({
     altText:   initialData?.alt_text    || '',
     width:     initialData?.width?.toString()  || '',
     height:    initialData?.height?.toString() || '',
+    thumbnailUrl: initialData?.thumbnail_url || '', 
   });
 
   useEffect(() => {
@@ -156,6 +167,7 @@ function MediaEditorCard({
         altText:   initialData.alt_text    || '',
         width:     initialData.width?.toString()  || '',
         height:    initialData.height?.toString() || '',
+        thumbnailUrl: initialData.thumbnail_url || '',
       });
     }
   }, [initialData]);
@@ -176,25 +188,61 @@ function MediaEditorCard({
     setStagedPreview(objectUrl);
   };
 
+  // NEW: Thumbnail Staging
+  const stageThumbFile = (file: File) => {
+    setThumbError('');
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      setThumbError(`Unsupported thumbnail. Use JPG, PNG, WebP, GIF, or AVIF.`);
+      return;
+    }
+    if (file.size > MAX_IMAGE_SIZE) {
+      setThumbError(`Thumbnail exceeds the 30 MB limit.`);
+      return;
+    }
+    setStagedThumbFile(file);
+    const objectUrl = URL.createObjectURL(file);
+    setStagedThumbPreview(objectUrl);
+  };
+
   const clearStaged = () => {
     if (stagedPreview) URL.revokeObjectURL(stagedPreview);
+    if (stagedThumbPreview) URL.revokeObjectURL(stagedThumbPreview);
+    
     setStagedFile(null);
     setStagedPreview(null);
     setFileError('');
+    
+    setStagedThumbFile(null);
+    setStagedThumbPreview(null);
+    setThumbError('');
+
     setUploadProgress('idle');
     if (fileInputRef.current) fileInputRef.current.value = '';
+    if (thumbInputRef.current) thumbInputRef.current.value = '';
   };
 
+  // Main Drop/Input Handlers
   const handleFileInput = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) stageFile(file);
   };
-
-  const handleDrop = (e: DragEvent<HTMLDivElement>) => {
+  const handleDropMain = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    setDragging(false);
+    setDraggingMain(false);
     const file = e.dataTransfer.files?.[0];
     if (file) stageFile(file);
+  };
+
+  // Thumbnail Drop/Input Handlers
+  const handleThumbInput = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) stageThumbFile(file);
+  };
+  const handleDropThumb = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setDraggingThumb(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) stageThumbFile(file);
   };
 
   // ── Save Logic ──
@@ -203,24 +251,34 @@ function MediaEditorCard({
       setSaving(true);
       const fd = new FormData();
 
-      // Ensure we hit the Birthday route
       fd.append('pageRoute', '/birthday');
       fd.append('htmlId', slotConfig.id);
       fd.append('mediaType', formData.mediaType);
       fd.append('altText', formData.altText);
       if (formData.width) fd.append('width', formData.width);
       if (formData.height) fd.append('height', formData.height);
-
-      if (uploadMode === 'file' && stagedFile) {
-        setUploadProgress('uploading');
-        fd.append('file', stagedFile);
-        fd.append('folder', slotConfig.folder);
-      } else if (uploadMode === 'url') {
+      
+      // Handle URL Mode
+      if (uploadMode === 'url') {
         if (!formData.mediaUrl) throw new Error('Please enter a media URL');
         fd.append('mediaUrl', formData.mediaUrl);
+        if (formData.mediaType === 'video' && formData.thumbnailUrl) {
+          fd.append('thumbnailUrl', formData.thumbnailUrl);
+        }
+      } 
+      // Handle File Mode
+      else {
+        if (stagedFile) {
+          setUploadProgress('uploading');
+          fd.append('file', stagedFile);
+          fd.append('folder', slotConfig.folder);
+        }
+        // NEW: Send the thumbnail file to your backend if it's a video
+        if (formData.mediaType === 'video' && stagedThumbFile) {
+          fd.append('thumbnailFile', stagedThumbFile); 
+        }
       }
 
-      // Ensure the endpoint matches your API route structure
       const res = await fetch('/api/admin/media', {
         method: 'POST',
         body: fd,
@@ -233,7 +291,12 @@ function MediaEditorCard({
 
       const saved = await res.json();
 
-      setFormData((prev) => ({ ...prev, mediaUrl: saved.media_url ?? prev.mediaUrl }));
+      setFormData((prev) => ({ 
+        ...prev, 
+        mediaUrl: saved.media_url ?? prev.mediaUrl,
+        thumbnailUrl: saved.thumbnail_url ?? prev.thumbnailUrl 
+      }));
+      
       setUploadProgress('done');
       clearStaged();
       onRefresh();
@@ -247,13 +310,18 @@ function MediaEditorCard({
 
   const canSave = 
     !saving && 
-    ((uploadMode === 'file' && stagedFile != null) || 
+    ((uploadMode === 'file' && (stagedFile != null || stagedThumbFile != null)) || 
      (uploadMode === 'url'  && formData.mediaUrl.trim() !== ''));
 
   const previewUrl  = stagedPreview ?? formData.mediaUrl;
+  const thumbPreviewUrl = stagedThumbPreview ?? formData.thumbnailUrl;
+  
   const previewType = stagedFile 
     ? (ALLOWED_VIDEO_TYPES.includes(stagedFile.type) ? 'video' : 'image') 
     : formData.mediaType;
+
+  // Determine grid columns based on media type
+  const isVideoMode = formData.mediaType === 'video';
 
   return (
     <div className="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden shadow-lg hover:border-slate-600 transition-colors">
@@ -268,103 +336,168 @@ function MediaEditorCard({
       </div>
 
       <div className="p-6 space-y-5">
-        {/* Toggle Mode */}
-        <div className="flex gap-1 bg-slate-900 border border-slate-700 rounded-lg p-1 w-fit">
-          {(['file', 'url'] as UploadMode[]).map((m) => (
-            <button
-              key={m}
-              onClick={() => { setUploadMode(m); clearStaged(); }}
-              className={`px-4 py-1.5 text-sm font-medium rounded transition ${
-                uploadMode === m ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-slate-200'
-              }`}
+        {/* Top Controls Row: Mode Toggle & Type Select */}
+        <div className="flex flex-wrap items-center gap-4 border-b border-slate-700 pb-4">
+          <div className="flex gap-1 bg-slate-900 border border-slate-700 rounded-lg p-1 w-fit">
+            {(['file', 'url'] as UploadMode[]).map((m) => (
+              <button
+                key={m}
+                onClick={() => { setUploadMode(m); clearStaged(); }}
+                className={`px-4 py-1.5 text-sm font-medium rounded transition ${
+                  uploadMode === m ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                {m === 'file' ? '📁 Upload file' : '🔗 Paste URL'}
+              </button>
+            ))}
+          </div>
+          <div className="flex-1 max-w-[200px]">
+            <select 
+              className="w-full px-4 py-1.5 h-full bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-blue-500 transition-all cursor-pointer"
+              value={formData.mediaType}
+              onChange={(e) => setFormData({...formData, mediaType: e.target.value as 'image' | 'video'})}
             >
-              {m === 'file' ? '📁 Upload file' : '🔗 Paste URL'}
-            </button>
-          ))}
+              <option value="image">📷 Image</option>
+              <option value="video">🎥 Video</option>
+            </select>
+          </div>
         </div>
 
-        {/* File Mode */}
+        {/* ── File Mode ── */}
         {uploadMode === 'file' && (
-          <div>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept={[...ALLOWED_IMAGE_TYPES, ...ALLOWED_VIDEO_TYPES].join(',')}
-              className="hidden"
-              onChange={handleFileInput}
-            />
-            {!stagedFile ? (
-              <div
-                className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-all ${
-                  dragging ? 'border-blue-500 bg-blue-950/40' : 'border-slate-600 hover:border-blue-500 hover:bg-slate-900/60'
-                }`}
-                onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
-                onDragLeave={() => setDragging(false)}
-                onDrop={handleDrop}
-                onClick={() => fileInputRef.current?.click()}
-              >
-                <div className="text-3xl mb-2">{dragging ? '📂' : '☁️'}</div>
-                <p className="text-slate-300 text-sm font-medium mb-1">
-                  {dragging ? 'Drop to stage' : 'Drag & drop or click to browse'}
-                </p>
-                <p className="text-slate-500 text-xs font-mono">Images up to 30 MB · Videos up to 24 MB</p>
-              </div>
-            ) : (
-              <div className="flex items-center gap-3 px-4 py-3 bg-slate-900 border border-slate-600 rounded-lg">
-                <span className="text-2xl">{previewType === 'video' ? '🎬' : '🖼️'}</span>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm text-white truncate font-medium">{stagedFile.name}</p>
-                  <p className="text-xs text-slate-400 font-mono">{formatBytes(stagedFile.size)}</p>
+          <div className={`grid gap-4 ${isVideoMode ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'}`}>
+            
+            {/* 1. Main Media Column */}
+            <div>
+              <label className="block text-sm font-medium text-white mb-2">
+                {isVideoMode ? 'Main Video File' : 'Image File'}
+              </label>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept={[...ALLOWED_IMAGE_TYPES, ...ALLOWED_VIDEO_TYPES].join(',')}
+                className="hidden"
+                onChange={handleFileInput}
+              />
+              {!stagedFile ? (
+                <div
+                  className={`border-2 border-dashed rounded-lg py-6 px-4 text-center cursor-pointer transition-all ${
+                    draggingMain ? 'border-blue-500 bg-blue-950/40' : 'border-slate-600 hover:border-blue-500 hover:bg-slate-900/60'
+                  }`}
+                  onDragOver={(e) => { e.preventDefault(); setDraggingMain(true); }}
+                  onDragLeave={() => setDraggingMain(false)}
+                  onDrop={handleDropMain}
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <div className="text-2xl mb-2">{draggingMain ? '📂' : '☁️'}</div>
+                  <p className="text-slate-300 text-sm font-medium mb-1 line-clamp-1">
+                    {draggingMain ? 'Drop main media' : 'Browse or drop'}
+                  </p>
+                  <p className="text-slate-500 text-xs font-mono truncate">Max: 30MB</p>
                 </div>
-                {uploadProgress === 'uploading' && <div className="w-4 h-4 border-2 border-slate-600 border-t-blue-400 rounded-full animate-spin" />}
-                {uploadProgress === 'done' && <span className="text-green-400 text-sm">✓</span>}
-                <button onClick={clearStaged} className="text-slate-400 hover:text-red-400 transition text-lg leading-none px-1">✕</button>
+              ) : (
+                <div className="flex items-center gap-3 px-3 py-3 bg-slate-900 border border-slate-600 rounded-lg h-[108px]">
+                  <span className="text-2xl">{previewType === 'video' ? '🎬' : '🖼️'}</span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-white truncate font-medium">{stagedFile.name}</p>
+                    <p className="text-xs text-slate-400 font-mono">{formatBytes(stagedFile.size)}</p>
+                  </div>
+                  {uploadProgress === 'uploading' && <div className="w-4 h-4 border-2 border-slate-600 border-t-blue-400 rounded-full animate-spin shrink-0" />}
+                  {uploadProgress === 'done' && <span className="text-green-400 text-sm shrink-0">✓</span>}
+                  <button onClick={() => { setStagedFile(null); setStagedPreview(null); }} className="text-slate-400 hover:text-red-400 transition text-lg leading-none px-1 shrink-0">✕</button>
+                </div>
+              )}
+              {fileError && <p className="mt-2 text-xs text-red-400 flex items-center gap-1.5"><span>⚠️</span> {fileError}</p>}
+            </div>
+
+            {/* 2. Thumbnail Column (Videos Only) */}
+            {isVideoMode && (
+              <div className="animate-in fade-in slide-in-from-right-4 duration-300">
+                <label className="block text-sm font-medium text-white mb-2">
+                  Thumbnail / Cover Image
+                </label>
+                <input
+                  ref={thumbInputRef}
+                  type="file"
+                  accept={ALLOWED_IMAGE_TYPES.join(',')}
+                  className="hidden"
+                  onChange={handleThumbInput}
+                />
+                {!stagedThumbFile ? (
+                  <div
+                    className={`border-2 border-dashed rounded-lg py-6 px-4 text-center cursor-pointer transition-all ${
+                      draggingThumb ? 'border-amber-500 bg-amber-950/40' : 'border-slate-600 hover:border-amber-500 hover:bg-slate-900/60'
+                    }`}
+                    onDragOver={(e) => { e.preventDefault(); setDraggingThumb(true); }}
+                    onDragLeave={() => setDraggingThumb(false)}
+                    onDrop={handleDropThumb}
+                    onClick={() => thumbInputRef.current?.click()}
+                  >
+                    <div className="text-2xl mb-2">{draggingThumb ? '🖼️' : '📸'}</div>
+                    <p className="text-slate-300 text-sm font-medium mb-1 line-clamp-1">
+                      {draggingThumb ? 'Drop thumbnail' : 'Browse cover image'}
+                    </p>
+                    <p className="text-slate-500 text-xs font-mono truncate">Shows before playing</p>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-3 px-3 py-3 bg-slate-900 border border-slate-600 rounded-lg h-[108px]">
+                    <span className="text-2xl">📸</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm text-white truncate font-medium">{stagedThumbFile.name}</p>
+                      <p className="text-xs text-slate-400 font-mono">{formatBytes(stagedThumbFile.size)}</p>
+                    </div>
+                    {uploadProgress === 'uploading' && <div className="w-4 h-4 border-2 border-slate-600 border-t-amber-400 rounded-full animate-spin shrink-0" />}
+                    {uploadProgress === 'done' && <span className="text-green-400 text-sm shrink-0">✓</span>}
+                    <button onClick={() => { setStagedThumbFile(null); setStagedThumbPreview(null); }} className="text-slate-400 hover:text-red-400 transition text-lg leading-none px-1 shrink-0">✕</button>
+                  </div>
+                )}
+                {thumbError && <p className="mt-2 text-xs text-red-400 flex items-center gap-1.5"><span>⚠️</span> {thumbError}</p>}
               </div>
             )}
-            {fileError && <p className="mt-2 text-sm text-red-400 flex items-center gap-1.5"><span>⚠️</span> {fileError}</p>}
           </div>
         )}
 
-        {/* URL Mode */}
+        {/* ── URL Mode ── */}
         {uploadMode === 'url' && (
-          <div>
-            <label className="block text-sm font-medium text-white mb-2">Media URL</label>
+          <div className={`grid gap-4 ${isVideoMode ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'}`}>
+            <div>
+              <label className="block text-sm font-medium text-white mb-2">Media URL</label>
+              <input 
+                type="text" 
+                className="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                placeholder="https://example.com/media.mp4"
+                value={formData.mediaUrl}
+                onChange={(e) => setFormData({...formData, mediaUrl: e.target.value})}
+              />
+            </div>
+            {isVideoMode && (
+              <div className="animate-in fade-in slide-in-from-right-4 duration-300">
+                <label className="block text-sm font-medium text-white mb-2">Video Cover / Thumbnail URL</label>
+                <input 
+                  type="text" 
+                  className="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all"
+                  placeholder="https://example.com/poster.jpg"
+                  value={formData.thumbnailUrl}
+                  onChange={(e) => setFormData({...formData, thumbnailUrl: e.target.value})}
+                />
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Alt Text & Dimensions row */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+          <div className="lg:col-span-6">
+            <label className="block text-sm font-medium text-white mb-2">Alt Text (SEO / Accessibility)</label>
             <input 
               type="text" 
               className="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-              placeholder="https://example.com/image.jpg"
-              value={formData.mediaUrl}
-              onChange={(e) => setFormData({...formData, mediaUrl: e.target.value})}
+              placeholder="Describe the media content..."
+              value={formData.altText}
+              onChange={(e) => setFormData({...formData, altText: e.target.value})}
             />
           </div>
-        )}
-
-        {/* Type & Alt Text */}
-        <div>
-          <label className="block text-sm font-medium text-white mb-2">Media Type</label>
-          <select 
-            className="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all cursor-pointer"
-            value={formData.mediaType}
-            onChange={(e) => setFormData({...formData, mediaType: e.target.value as 'image' | 'video'})}
-          >
-            <option value="image">📷 Image</option>
-            <option value="video">🎥 Video</option>
-          </select>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-white mb-2">Alt Text (SEO / Accessibility)</label>
-          <input 
-            type="text" 
-            className="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-            placeholder="Describe the media content..."
-            value={formData.altText}
-            onChange={(e) => setFormData({...formData, altText: e.target.value})}
-          />
-        </div>
-
-        {/* Dimensions */}
-        <div className="grid grid-cols-2 gap-4">
-          <div>
+          <div className="lg:col-span-3">
             <label className="block text-sm font-medium text-white mb-2">Width (px)</label>
             <input 
               type="number" 
@@ -374,7 +507,7 @@ function MediaEditorCard({
               onChange={(e) => setFormData({...formData, width: e.target.value})}
             />
           </div>
-          <div>
+          <div className="lg:col-span-3">
             <label className="block text-sm font-medium text-white mb-2">Height (px)</label>
             <input 
               type="number" 
@@ -387,18 +520,26 @@ function MediaEditorCard({
         </div>
 
         {/* Preview */}
-        {previewUrl && (
+        {(previewUrl || thumbPreviewUrl) && (
           <div className="pt-4 border-t border-slate-700">
             <div className="flex items-center justify-between mb-3">
               <p className="text-xs font-medium text-slate-400 uppercase tracking-wide">Preview</p>
-              {stagedFile && <span className="text-xs text-amber-400 font-mono bg-amber-900/30 border border-amber-700/40 px-2 py-0.5 rounded">⏳ Not yet saved</span>}
-              {!stagedFile && formData.mediaUrl && <span className="text-xs text-green-400 font-mono bg-green-900/30 border border-green-700/40 px-2 py-0.5 rounded">✓ Live</span>}
+              {(stagedFile || stagedThumbFile) && <span className="text-xs text-amber-400 font-mono bg-amber-900/30 border border-amber-700/40 px-2 py-0.5 rounded">⏳ Unsaved Changes</span>}
+              {!stagedFile && !stagedThumbFile && (formData.mediaUrl || formData.thumbnailUrl) && <span className="text-xs text-green-400 font-mono bg-green-900/30 border border-green-700/40 px-2 py-0.5 rounded">✓ Live</span>}
             </div>
             {previewType === 'video' ? (
-              <video src={previewUrl} className="w-full h-48 bg-slate-900 rounded-lg object-cover border border-slate-600" controls />
+              <video 
+                src={previewUrl || undefined} 
+                poster={thumbPreviewUrl || undefined} 
+                className="w-full h-56 bg-slate-900 rounded-lg object-cover border border-slate-600" 
+                controls 
+              />
             ) : (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={previewUrl} alt={formData.altText || 'Media preview'} className="w-full h-48 bg-slate-900 rounded-lg object-cover border border-slate-600" />
+              <img 
+                src={previewUrl || undefined} 
+                alt={formData.altText || 'Media preview'} 
+                className="w-full h-56 bg-slate-900 rounded-lg object-cover border border-slate-600" 
+              />
             )}
           </div>
         )}
@@ -413,7 +554,7 @@ function MediaEditorCard({
           {saving ? (
             <>
               <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              {uploadMode === 'file' && stagedFile ? 'Uploading...' : 'Saving...'}
+              Saving...
             </>
           ) : '💾 Save'}
         </button>
