@@ -52,7 +52,7 @@ export default function Footer() {
           <div className="flex flex-col gap-6">
             <p className="text-xs font-bold tracking-[0.2em] uppercase text-brand-black">Legal</p>
             <div className="flex flex-col gap-3 text-brand-gray">
-              <Link href="/privacy" className="hover:text-brand-black transition-colors">Privacy Policy</Link>
+              <Link href="/privacy-policy" className="hover:text-brand-black transition-colors">Privacy Policy</Link>
               <Link href="/dress-code" className="hover:text-brand-black transition-colors">Dress Code</Link>
               <Link href="/terms" className="hover:text-brand-black transition-colors">Terms &amp; Conditions</Link>
             </div>

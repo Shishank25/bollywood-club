@@ -51,13 +51,19 @@ export default function PagesLayout({
   // Determine current selected page from pathname
   const getCurrentPage = () => {
     const lastSegment = pathname.split('/').pop();
-    return pages.find(p => p.slug === lastSegment) || pages[0];
+    return pages.find(p => p.slug === lastSegment) || "";
   };
 
   const currentPage = getCurrentPage();
 
   const handlePageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    console.log('Selected page slug:', e.target.value);
     const selectedSlug = e.target.value;
+    if (!selectedSlug) {
+      router.push('/admin/pages');
+      return;
+    }
+
     const selectedPage = pages.find(p => p.slug === selectedSlug);
     if (selectedPage) {
       router.push(`/admin/pages/${selectedPage.slug}`);
@@ -86,10 +92,12 @@ export default function PagesLayout({
                   id="page-select"
                   value={currentPage?.slug || ''}
                   onChange={handlePageChange}
+                  defaultValue=""
                   className="px-4 py-2 bg-slate-800 border border-slate-600 rounded-lg text-white font-medium 
                              hover:border-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
                              transition-all duration-200 cursor-pointer min-w-[200px]"
                 >
+                  <option key={0} value = "">Select Page</option>
                   {pages.map((page) => (
                     <option key={page.id} value={page.slug}>
                       {page.title}

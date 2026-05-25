@@ -319,14 +319,6 @@ export default function HomePage() {
               
               {/* Added pointer-events-none here */}
               <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500 pointer-events-none" />
-              
-              {/* Added pointer-events-none here as well */}
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="w-20 h-20 rounded-full border border-white/50 backdrop-blur-sm flex items-center justify-center group-hover:bg-white group-hover:text-brand-black transition-all duration-300">
-                  <i className="fa-solid fa-play ml-1 text-2xl" />
-                </div>
-              </div>
-
             </div>
           ))}
         </div>

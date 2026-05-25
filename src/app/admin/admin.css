@@ -1,5 +1,5 @@
 /* app/admin/admin.css */
-
+/* 
 :root {
   --primary: #0f172a;
   --secondary: #1e293b;
@@ -42,12 +42,12 @@ body {
   background: var(--primary);
   color: var(--text-primary);
   line-height: 1.6;
-}
+} */
 
 /* ============================================
    ADMIN LAYOUT
    ============================================ */
-
+/* 
 .admin-layout {
   display: flex;
   min-height: 100vh;
@@ -105,12 +105,12 @@ body {
   flex: 1;
   padding: 2rem;
   overflow-y: auto;
-}
+} */
 
 /* ============================================
    SIDEBAR
    ============================================ */
-
+/* 
 .admin-sidebar {
   width: 280px;
   background: var(--secondary);
@@ -257,12 +257,12 @@ body {
 .logout-btn:hover {
   background: rgba(239, 68, 68, 0.2);
   border-color: #ef4444;
-}
+} */
 
 /* ============================================
    DASHBOARD
    ============================================ */
-
+/* 
 .dashboard {
   max-width: 1400px;
   margin: 0 auto;
@@ -378,12 +378,12 @@ body {
 .action-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
-}
+} */
 
 /* ============================================
    FORM ELEMENTS
    ============================================ */
-
+/* 
 .form-group {
   margin-bottom: 1.5rem;
   display: flex;
@@ -422,12 +422,12 @@ body {
 .form-textarea {
   resize: vertical;
   min-height: 120px;
-}
+} */
 
 /* ============================================
    BUTTONS
    ============================================ */
-
+/* 
 .btn {
   padding: 0.75rem 1.5rem;
   border: none;
@@ -477,13 +477,13 @@ body {
 .btn-small {
   padding: 0.5rem 1rem;
   font-size: 0.85rem;
-}
+} */
 
 /* ============================================
    RESPONSIVE
    ============================================ */
 
-@media (max-width: 768px) {
+/* @media (max-width: 768px) {
   .admin-layout {
     flex-direction: column;
   }
@@ -544,10 +544,10 @@ body {
     flex-direction: column;
     text-align: center;
   }
-}
+} */
 
 /* Scrollbar styling */
-::-webkit-scrollbar {
+/* ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
@@ -563,4 +563,4 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--accent);
-}
+} */

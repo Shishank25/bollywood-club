@@ -23,7 +23,7 @@ export default function PagesIndexPage() {
   const fetchPages = async () => {
     try {
       setLoading(true);
-      const res = await fetch('/api/pages');
+      const res = await fetch('/api/admin/pages');
       if (!res.ok) throw new Error('Failed to fetch pages');
       
       const data = await res.json();
