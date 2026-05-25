@@ -51,11 +51,11 @@ export default function PagesLayout({
   // Determine current selected page from pathname
   const getCurrentPage = () => {
     const lastSegment = pathname.split('/').pop();
-    return pages.find(p => p.slug === lastSegment) || "";
+    return pages.find(p => p.slug === lastSegment) || { id: 0, title: 'Unknown', slug: '', route: '' };
   };
 
-  const currentPage = getCurrentPage();
-
+  const currentPage: Page = getCurrentPage();
+  
   const handlePageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     console.log('Selected page slug:', e.target.value);
     const selectedSlug = e.target.value;
