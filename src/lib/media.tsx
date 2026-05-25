@@ -104,7 +104,7 @@ export default function MediaSlot({
     <>
       {/* ── Base Media Slot (Clickable) ── */}
       <div 
-        className={`relative cursor-pointer group ${className}`}
+        className={`cursor-pointer group ${className}`}
         onClick={() => setIsModalOpen(true)}
       >
         {asset.media_type === 'video' ? (

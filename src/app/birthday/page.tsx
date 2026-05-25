@@ -132,7 +132,7 @@ export default function BirthdayPage() {
   return (
     <>
       {/* HERO SECTION */}
-      <section className="relative w-full h-[85svh] min-h-[600px] flex flex-col justify-center items-center text-center px-4 md:px-8 pt-20 overflow-hidden">
+      <section className="relative w-full h-[85svh] min-h-[500px] sm:min-h-[600px] flex flex-col justify-center items-center text-center px-3 sm:px-4 md:px-8 pt-16 sm:pt-20 md:pt-20 overflow-hidden">
           {/* Dynamic Hero Media Rendering */}
           {media['hero-video']?.media_type === 'video' ? (
             <video 
@@ -153,37 +153,37 @@ export default function BirthdayPage() {
 
           <div className="absolute inset-0 bg-gradient-to-b from-brand-black/80 via-brand-black/60 to-brand-black"></div>
           
-          <div className="relative z-10 fade-up max-w-4xl mx-auto">
-              <span className="inline-block text-[10px] font-bold tracking-[0.2em] uppercase text-brand-black bg-brand-white px-5 py-2.5 rounded-full shadow-lg mb-6">
+          <div className="relative z-10 fade-up max-w-4xl mx-auto px-3 sm:px-4">
+              <span className="inline-block text-[9px] sm:text-[10px] md:text-xs font-bold tracking-[0.2em] uppercase text-brand-black bg-brand-white px-3 sm:px-5 py-2 sm:py-2.5 rounded-full shadow-lg mb-3 sm:mb-6">
                   Celebrate With Us
               </span>
-              <h1 className="text-5xl md:text-7xl lg:text-[7vw] leading-[1] font-display font-extrabold uppercase tracking-tighter text-brand-white mb-6">
+              <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-7xl xl:text-[7vw] leading-[1] font-display font-extrabold uppercase tracking-tighter text-brand-white mb-2 sm:mb-4 md:mb-6">
                   Your <br className="md:hidden" />
-                  <span className="text-transparent [-webkit-text-stroke:1.5px_#FFFFFF] py-[0.15em] inline-block">Birthday</span>
+                  <span className="text-transparent [-webkit-text-stroke:1px_#FFFFFF] py-[0.15em] inline-block">Birthday</span>
                   <br className="hidden md:block" /> Masterpiece
               </h1>
-              <p className="text-sm md:text-base font-medium text-brand-white/80 max-w-xl mx-auto leading-relaxed mb-10">
+              <p className="text-[9px] sm:text-xs md:text-base font-medium text-brand-white/80 max-w-xl mx-auto leading-relaxed mb-6 sm:mb-10">
                   Transform your special day into a cinematic Bollywood experience. Premium VIP treatment, exclusive booths, and unforgettable memories.
               </p>
-              <Link href="#inquire" className="btn-monumental px-12 py-5 rounded-full text-xs font-bold tracking-[0.15em] uppercase inline-block">
+              <Link href="#inquire" className="btn-monumental px-6 sm:px-8 md:px-12 py-3 sm:py-4 md:py-5 rounded-full text-[9px] sm:text-[10px] md:text-xs lg:text-sm font-bold tracking-[0.15em] uppercase inline-block">
                   <span>Plan Your Night</span>
               </Link>
           </div>
       </section>
 
       {/* FEATURES SECTION */}
-      <section className="py-24 md:py-32 bg-brand-black px-6 md:px-12 border-t border-white/10">
+      <section className="py-16 sm:py-20 md:py-32 bg-brand-black px-3 sm:px-4 md:px-6 lg:px-12 border-t border-white/10">
           <div className="max-w-[1600px] mx-auto">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 lg:gap-16">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 md:gap-12 lg:gap-16">
                   {features.map((feature) => (
                       <div key={feature.id} className="fade-up flex flex-col group" style={{ transitionDelay: feature.delay }}>
-                          <span className="text-4xl md:text-5xl font-display font-bold text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.3)] group-hover:[-webkit-text-stroke:1px_#FFFFFF] transition-all duration-300 mb-6 block">
+                          <span className="text-3xl sm:text-4xl md:text-5xl font-display font-bold text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.3)] group-hover:[-webkit-text-stroke:1px_#FFFFFF] transition-all duration-300 mb-4 sm:mb-6 block">
                               {feature.num}
                           </span>
-                          <h3 className="text-xl md:text-2xl font-display font-bold uppercase tracking-tighter text-brand-white mb-4">
+                          <h3 className="text-base sm:text-lg md:text-2xl font-display font-bold uppercase tracking-tighter text-brand-white mb-2 sm:mb-3 md:mb-4">
                               {feature.title}
                           </h3>
-                          <p className="text-sm text-brand-gray leading-relaxed font-medium">
+                          <p className="text-[9px] sm:text-xs md:text-sm text-brand-gray leading-relaxed font-medium">
                               {feature.desc}
                           </p>
                       </div>
@@ -193,41 +193,41 @@ export default function BirthdayPage() {
       </section>
 
       {/* CALL TO ACTION / FORM SECTION */}
-      <section id="inquire" className="py-24 md:py-32 bg-brand-white px-6 md:px-12 relative overflow-hidden">
-        <div className="max-w-[1600px] mx-auto flex flex-col lg:flex-row gap-16 lg:gap-24 items-center">
+      <section id="inquire" className="py-12 sm:py-16 md:py-24 lg:py-32 bg-brand-white px-3 sm:px-4 md:px-6 lg:px-12 relative overflow-hidden">
+        <div className="max-w-[1600px] mx-auto flex flex-col lg:flex-row gap-8 sm:gap-12 md:gap-16 lg:gap-24 items-center">
           
           <div className="w-full lg:w-1/2 fade-up">
-            <h2 className="text-5xl md:text-7xl font-display font-extrabold uppercase tracking-tighter leading-[0.9] text-brand-black mb-6">
+            <h2 className="text-2xl sm:text-3xl md:text-5xl lg:text-7xl font-display font-extrabold uppercase tracking-tighter leading-[0.9] text-brand-black mb-3 sm:mb-4 md:mb-6">
               Let's Make It <br />
-              <span className="text-outline text-transparent [-webkit-text-stroke:1.5px_#0A0A0A]">Happen</span>
+              <span className="text-outline text-transparent [-webkit-text-stroke:1px_#0A0A0A]">Happen</span>
             </h2>
-            <p className="text-sm md:text-base font-medium text-brand-gray mb-12 max-w-md leading-relaxed">
+            <p className="text-[9px] sm:text-xs md:text-sm lg:text-base font-medium text-brand-gray mb-6 sm:mb-8 md:mb-12 max-w-md leading-relaxed">
               Fill out the form below and our VIP concierge team will get back to you within 24 hours to plan your perfect celebration.
             </p>
 
             {/* FORM OR SUCCESS STATE */}
             {formStatus === 'success' ? (
-                <div className="bg-brand-black text-white p-8 text-center rounded-xl animate-in fade-in zoom-in duration-500">
-                    <h3 className="text-2xl font-display font-bold tracking-tighter uppercase mb-2">Request Received</h3>
-                    <p className="text-sm tracking-[0.1em] uppercase text-brand-gray">Our concierge team will contact you shortly.</p>
+                <div className="bg-brand-black text-white p-6 sm:p-8 text-center rounded-xl animate-in fade-in zoom-in duration-500">
+                    <h3 className="text-lg sm:text-2xl font-display font-bold tracking-tighter uppercase mb-1 sm:mb-2">Request Received</h3>
+                    <p className="text-[9px] sm:text-sm tracking-[0.1em] uppercase text-brand-gray">Our concierge team will contact you shortly.</p>
                 </div>
             ) : (
-                <form onSubmit={handleSubscribe} className="flex flex-col gap-8 max-w-md">
+                <form onSubmit={handleSubscribe} className="flex flex-col gap-4 sm:gap-6 md:gap-8 max-w-md">
                 
                 {formStatus === 'error' && (
-                    <div className="text-red-500 text-xs font-bold uppercase tracking-widest">
+                    <div className="text-red-500 text-[8px] sm:text-xs font-bold uppercase tracking-widest">
                         An error occurred. Please try again.
                     </div>
                 )}
 
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                     <div className="border-b border-brand-black pb-2">
                     <input
                         type="text"
                         placeholder="FIRST NAME *"
                         value={formData.f_name}
                         onChange={(e) => setFormData({...formData, f_name: e.target.value})}
-                        className="w-full bg-transparent text-xs font-bold tracking-[0.15em] uppercase placeholder-brand-gray focus:outline-none"
+                        className="w-full bg-transparent text-[8px] sm:text-[9px] md:text-xs font-bold tracking-[0.15em] uppercase placeholder-brand-gray focus:outline-none"
                         required
                     />
                     </div>
@@ -237,7 +237,7 @@ export default function BirthdayPage() {
                         placeholder="LAST NAME"
                         value={formData.l_name}
                         onChange={(e) => setFormData({...formData, l_name: e.target.value})}
-                        className="w-full bg-transparent text-xs font-bold tracking-[0.15em] uppercase placeholder-brand-gray focus:outline-none"
+                        className="w-full bg-transparent text-[8px] sm:text-[9px] md:text-xs font-bold tracking-[0.15em] uppercase placeholder-brand-gray focus:outline-none"
                     />
                     </div>
                 </div>
@@ -248,19 +248,19 @@ export default function BirthdayPage() {
                     placeholder="EMAIL ADDRESS"
                     value={formData.email}
                     onChange={(e) => setFormData({...formData, email: e.target.value})}
-                    className="w-full bg-transparent text-xs font-bold tracking-[0.15em] uppercase placeholder-brand-gray focus:outline-none"
+                    className="w-full bg-transparent text-[8px] sm:text-[9px] md:text-xs font-bold tracking-[0.15em] uppercase placeholder-brand-gray focus:outline-none"
                     required
                     />
                 </div>
 
-                <div className="border-b border-brand-black pb-2 flex items-center gap-4">
-                    <span className="text-xs font-bold tracking-[0.15em] uppercase text-brand-black">+61</span>
+                <div className="border-b border-brand-black pb-2 flex items-center gap-3 sm:gap-4">
+                    <span className="text-[8px] sm:text-[9px] md:text-xs font-bold tracking-[0.15em] uppercase text-brand-black">+61</span>
                     <input
                     type="tel"
                     placeholder="PHONE NO. *"
                     value={formData.phone}
                     onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                    className="w-full bg-transparent text-xs font-bold tracking-[0.15em] uppercase placeholder-brand-gray focus:outline-none"
+                    className="w-full bg-transparent text-[8px] sm:text-[9px] md:text-xs font-bold tracking-[0.15em] uppercase placeholder-brand-gray focus:outline-none"
                     required
                     />
                 </div>
@@ -270,7 +270,7 @@ export default function BirthdayPage() {
                     <select
                         value={citySelection}
                         onChange={(e) => setCitySelection(e.target.value)}
-                        className={`w-full bg-transparent text-xs font-bold tracking-[0.15em] uppercase focus:outline-none appearance-none cursor-pointer ${citySelection === "" ? 'text-brand-gray' : 'text-brand-black'}`}
+                        className={`w-full bg-transparent text-[8px] sm:text-[9px] md:text-xs font-bold tracking-[0.15em] uppercase focus:outline-none appearance-none cursor-pointer ${citySelection === "" ? 'text-brand-gray' : 'text-brand-black'}`}
                         required
                     >
                         <option value="" disabled className="text-brand-gray">SELECT CITY *</option>
@@ -284,7 +284,7 @@ export default function BirthdayPage() {
                     </select>
                     {/* Custom dropdown arrow */}
                     <div className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none">
-                        <i className="fa-solid fa-chevron-down text-brand-gray text-xs"></i>
+                        <i className="fa-solid fa-chevron-down text-brand-gray text-[8px] sm:text-[9px] md:text-xs"></i>
                     </div>
                 </div>
 
@@ -296,7 +296,7 @@ export default function BirthdayPage() {
                             placeholder="ENTER YOUR CITY *"
                             value={customCity}
                             onChange={(e) => setCustomCity(e.target.value)}
-                            className="w-full bg-transparent text-xs font-bold tracking-[0.15em] uppercase placeholder-brand-gray focus:outline-none"
+                            className="w-full bg-transparent text-[8px] sm:text-[9px] md:text-xs font-bold tracking-[0.15em] uppercase placeholder-brand-gray focus:outline-none"
                             required
                         />
                     </div>
@@ -305,7 +305,7 @@ export default function BirthdayPage() {
                 <button
                     type="submit"
                     disabled={formStatus === 'loading'}
-                    className="btn-monumental w-full py-5 text-xs font-bold tracking-[0.15em] uppercase mt-4 disabled:opacity-50"
+                    className="btn-monumental w-full py-3 sm:py-4 md:py-5 text-[8px] sm:text-[9px] md:text-xs font-bold tracking-[0.15em] uppercase mt-2 sm:mt-4 disabled:opacity-50"
                 >
                     <span>{formStatus === 'loading' ? 'Submitting...' : 'Submit Request'}</span>
                 </button>
@@ -313,7 +313,7 @@ export default function BirthdayPage() {
             )}
           </div>
 
-          <div className="w-full lg:w-1/2 aspect-square lg:aspect-[4/5] rounded-2xl overflow-hidden relative img-reveal img-wrapper">
+          <div className="w-full lg:w-1/2 aspect-square lg:aspect-[4/5] rounded-xl md:rounded-2xl overflow-hidden relative img-reveal img-wrapper">
             {/* Dynamic Form Media Rendering */}
             {media['form-media']?.media_type === 'video' ? (
               <video 

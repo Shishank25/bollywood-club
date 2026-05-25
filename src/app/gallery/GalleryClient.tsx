@@ -102,7 +102,7 @@ export default function GalleryClient({
                 <div className="relative w-full h-auto min-h-[500px] rounded-[2rem] overflow-hidden bg-brand-black img-reveal shadow-2xl img-wrapper">
                     
                     {/* Correctly Implemented Media Slot */}
-                    <div className="h-[700px]">
+                    <div className="h-48 md:h-[700px]">
                         <MediaSlot 
                             id="hero-video"
                             mediaMap={mediaSlots} 
@@ -112,7 +112,7 @@ export default function GalleryClient({
 
                     <div className="absolute inset-0 bg-gradient-to-t from-brand-black/95 via-brand-black/40 to-transparent"></div>
                     
-                    <div className="absolute inset-0 flex flex-col justify-start p-8 md:p-16 z-20">
+                    <div className="absolute inset-0 flex flex-col justify-start py-8 px-4 md:p-16 z-20">
                         <div className="fade-up max-w-4xl text-center mx-auto">
                             <span className="inline-block text-[10px] font-bold tracking-[0.2em] uppercase text-brand-black bg-brand-white px-5 py-2.5 rounded-full shadow-lg mb-6">
                                 Captured Moments

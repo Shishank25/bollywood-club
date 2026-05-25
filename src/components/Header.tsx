@@ -27,19 +27,20 @@ export default function Header() {
       <header
         id="navbar"
         ref={navbarRef}
-        className={`fixed top-0 left-0 w-full z-50 py-6 px-6 md:px-12 flex justify-between items-center bg-white/80 backdrop-blur-md${
+        className={`fixed top-0 left-0 w-full z-50 py-3 sm:py-4 md:py-6 px-4 sm:px-6 md:px-12 flex justify-between items-center bg-white/80 backdrop-blur-md${
           isScrolled ? " scrolled" : ""
         }`}
       >
         <Link
           href="/"
-          className="text-2xl md:text-3xl font-display font-bold tracking-widest uppercase text-brand-black flex items-center gap-1 relative z-[60]"
+          className="text-sm sm:text-base md:text-2xl lg:text-3xl font-display font-bold tracking-widest uppercase text-brand-black flex items-center gap-0.5 sm:gap-1 relative z-[60]"
         >
-          BOLLYWOOD<span className="text-brand-accent">CLUB</span>
+          <span className="hidden sm:inline">BOLLYWOOD</span><span className="sm:hidden">B</span><span className="text-brand-accent">CLUB</span>
         </Link>
         
 
-        <nav className="lg:flex space-x-12 items-center text-xs font-semibold tracking-[0.15em] uppercase text-brand-black">
+        {/* Desktop Navigation */}
+        <nav className="hidden md:flex space-x-8 lg:space-x-12 items-center text-xs font-semibold tracking-[0.15em] uppercase text-brand-black">
           <Link href="/events" className="hover:text-brand-accent transition-colors">
             Events
           </Link>
@@ -51,18 +52,18 @@ export default function Header() {
           </Link>
         </nav>
 
-        <div className="flex items-center gap-6 relative z-[60]">
+        <div className="flex items-center gap-4 sm:gap-6 relative z-[60]">
           <button
             id="menu-btn"
             onClick={() => setIsMenuOpen((prev) => !prev)}
-            className={`w-10 h-10 flex flex-col justify-center items-end gap-1.5 group cursor-pointer${
+            className={`w-9 h-9 sm:w-10 sm:h-10 flex flex-col justify-center items-end gap-1 sm:gap-1.5 group cursor-pointer${
               isMenuOpen ? " menu-open" : ""
             }`}
             aria-label="Toggle Menu"
           >
-            <span className="ham-line ham-top w-8 h-[2px] bg-brand-black group-hover:w-full" />
-            <span className="ham-line ham-mid w-full h-[2px] bg-brand-black" />
-            <span className="ham-line ham-bot w-6 h-[2px] bg-brand-black group-hover:w-full" />
+            <span className="ham-line ham-top w-6 sm:w-8 h-0.5 bg-brand-black group-hover:w-full" />
+            <span className="ham-line ham-mid w-full h-0.5 bg-brand-black" />
+            <span className="ham-line ham-bot w-5 sm:w-6 h-0.5 bg-brand-black group-hover:w-full" />
           </button>
         </div>
       </header>
@@ -70,22 +71,21 @@ export default function Header() {
       {/* Menu Overlay */}
       <div
         id="menu-overlay"
-        className={`fixed inset-0 bg-brand-white z-50 flex flex-col justify-center px-6 md:px-24 pt-20 pb-10 overflow-y-auto${
+        className={`fixed inset-0 bg-brand-white z-50 flex flex-col justify-center px-4 sm:px-6 md:px-24 pt-20 pb-10 overflow-y-auto${
           isMenuOpen ? " open" : ""
         }`}
       >
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 w-full max-w-[1600px] mx-auto h-full items-center">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-12 w-full max-w-[1600px] mx-auto h-full items-center">
           <div 
-            className="absolute right-10 top-6 p-1 rounded-full font-bold text-black text-5xl cursor-pointer
-             hover:scale
-            "
+            className="absolute right-4 sm:right-6 md:right-10 top-4 sm:top-6 p-1 rounded-full font-bold text-black text-4xl sm:text-5xl cursor-pointer
+             hover:scale"
             onClick={closeMenu}>
             X
           </div>
-          <nav className="flex flex-col space-y-4 md:space-y-6">
+          <nav className="flex flex-col space-y-3 sm:space-y-4 md:space-y-6">
             {[
               { label: "Home", href: "/" },
-              { label: "Events", href: "#events" },
+              { label: "Events", href: "/events" },
               { label: "Gallery", href: "/gallery" },
               { label: "Blogs", href: "/blogs" },
             ].map((item, i) => (
@@ -93,7 +93,7 @@ export default function Header() {
                 key={item.label}
                 href={item.href}
                 onClick={closeMenu}
-                className="menu-item text-4xl md:text-6xl lg:text-7xl font-display font-extrabold uppercase tracking-tighter text-brand-black hover:text-outline transition-all duration-300 w-fit"
+                className="menu-item text-2xl sm:text-4xl md:text-6xl lg:text-7xl font-display font-extrabold uppercase tracking-tighter text-brand-black hover:text-outline transition-all duration-300 w-fit"
                 style={{ transitionDelay: `${0.1 + i * 0.05}s` }}
               >
                 {item.label}

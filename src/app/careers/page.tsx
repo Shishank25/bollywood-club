@@ -145,9 +145,9 @@ export default function CareersPage() {
         <main className="w-full selection:bg-brand-black selection:text-white">
             
             {/* ── HERO SECTION ── */}
-            <section className="relative w-full px-4 md:px-8 pt-28 pb-12 flex flex-col">
+            <section className="relative w-full px-3 sm:px-4 md:px-6 lg:px-8 pt-20 sm:pt-24 md:pt-28 pb-8 sm:pb-10 md:pb-12 flex flex-col">
                 <div 
-                    className={`relative w-full h-[40svh] md:h-[50svh] min-h-[350px] rounded-[2rem] overflow-hidden bg-brand-black shadow-2xl flex items-center justify-center text-center transition-[clip-path] duration-[1200ms] ease-custom ${
+                    className={`relative w-full h-[40svh] sm:h-[45svh] md:h-[50svh] min-h-[350px] sm:min-h-[400px] rounded-lg md:rounded-[2rem] overflow-hidden bg-brand-black shadow-2xl flex items-center justify-center text-center transition-[clip-path] duration-[1200ms] ease-custom ${
                         isRevealed ? '[clip-path:polygon(0_0,_100%_0,_100%_100%,_0_100%)]' : '[clip-path:polygon(0_100%,_100%_100%,_100%_100%,_0_100%)]'
                     }`}
                 >
@@ -161,72 +161,72 @@ export default function CareersPage() {
                     
                     <div className="absolute inset-0 bg-brand-black/30"></div>
                     
-                    <div className="relative z-20 fade-up px-6 w-full flex flex-col items-center">
-                        <span className="inline-block text-[10px] md:text-xs font-bold tracking-[0.2em] uppercase text-brand-black bg-brand-white px-5 py-2.5 rounded-full shadow-lg mb-4 md:mb-6">
+                    <div className="relative z-20 fade-up px-3 sm:px-6 w-full flex flex-col items-center">
+                        <span className="inline-block text-[8px] sm:text-[9px] md:text-xs font-bold tracking-[0.2em] uppercase text-brand-black bg-brand-white px-3 sm:px-5 py-1.5 sm:py-2.5 rounded-full shadow-lg mb-2 sm:mb-3 md:mb-4 lg:mb-6">
                             Join The Movement
                         </span>
                         
-                        <h1 className="text-6xl md:text-8xl lg:text-[8vw] leading-none font-display font-extrabold uppercase tracking-tighter text-brand-white whitespace-nowrap">
-                            CA<span className="text-transparent [-webkit-text-stroke:1.5px_#FFFFFF] py-[0.15em] inline-block align-bottom">REERS</span>
+                        <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-7xl xl:text-[8vw] leading-none font-display font-extrabold uppercase tracking-tighter text-brand-white">
+                            CA<span className="text-transparent [-webkit-text-stroke:1px_#FFFFFF] py-[0.15em] inline-block align-bottom">REERS</span>
                         </h1>
                     </div>
                 </div>
             </section>
 
             {/* ── INTRO TEXT SECTION ── */}
-            <section className="py-16 md:py-20 px-6 md:px-12 bg-brand-white text-center">
+            <section className="py-8 sm:py-12 md:py-16 lg:py-20 px-3 sm:px-4 md:px-6 lg:px-12 bg-brand-white text-center">
                 <div className="max-w-4xl mx-auto fade-up">
-                    <h2 className="text-3xl md:text-5xl lg:text-6xl font-display font-bold tracking-tighter uppercase text-brand-black mb-6 leading-[0.95]">
+                    <h2 className="text-xl sm:text-2xl md:text-4xl lg:text-6xl font-display font-bold tracking-tighter uppercase text-brand-black mb-4 sm:mb-6 leading-[0.95]">
                         Build A Career. <br />
                         <span className="text-brand-gray text-transparent [-webkit-text-stroke:1px_#0A0A0A] hover:text-brand-black hover:[-webkit-text-stroke:0px] transition-all duration-400 cursor-default">Build The Hype.</span>
                     </h2>
-                    <div className="w-16 h-[2px] bg-brand-accent mx-auto mb-8"></div>
-                    <p className="text-sm md:text-base font-medium text-brand-gray leading-relaxed max-w-2xl mx-auto mb-6">
+                    <div className="w-12 sm:w-16 h-[2px] bg-brand-accent mx-auto mb-4 sm:mb-6 md:mb-8"></div>
+                    <p className="text-[9px] sm:text-xs md:text-sm lg:text-base font-medium text-brand-gray leading-relaxed max-w-2xl mx-auto mb-4 sm:mb-6">
                         Bollywood Club aspires to build an interconnected community of nightlife enthusiasts. We are looking to connect, collaborate, and build a career while doing something that pushes the boundaries of entertainment.
                     </p>
-                    <p className="text-xs font-bold tracking-[0.2em] uppercase text-brand-black mt-8">
+                    <p className="text-[8px] sm:text-[9px] md:text-xs font-bold tracking-[0.2em] uppercase text-brand-black mt-4 sm:mt-6 md:mt-8">
                         If you believe in us, come join us.
                     </p>
                 </div>
             </section>
 
             {/* ── OPEN POSITIONS GRID (ROSTER) ── */}
-            <section className="py-24 px-6 md:px-12 bg-brand-offwhite border-t border-brand-border">
+            <section className="py-12 sm:py-16 md:py-24 px-3 sm:px-4 md:px-6 lg:px-12 bg-brand-offwhite border-t border-brand-border">
                 <div className="max-w-[1600px] mx-auto">
                     
-                    <div className="flex flex-col md:flex-row justify-between items-end mb-16 fade-up">
+                    <div className="flex flex-col md:flex-row justify-between items-center mb-8 sm:mb-10 md:mb-16 fade-up">
                         <div className="max-w-2xl">
-                            <h3 className="text-sm font-bold tracking-[0.2em] uppercase text-brand-gray mb-4">Talent Roster</h3>
-                            <h2 className="text-4xl md:text-6xl font-display font-bold tracking-tighter uppercase text-brand-black leading-[0.9]">
+                            <h3 className="text-[8px] sm:text-[9px] md:text-sm font-bold tracking-[0.2em] uppercase text-brand-gray mb-2 sm:mb-3 md:mb-4 text-center">Talent Roster</h3>
+                            <h2 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-display font-bold tracking-tighter uppercase text-brand-black leading-[0.9]">
                                 Take The <span className="text-transparent [-webkit-text-stroke:1px_#0A0A0A]">Stage</span>
                             </h2>
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4 sm:gap-5 md:gap-6">
                         {roles.map((role) => (
                             <div 
                                 key={role.id} 
-                                className={`${role.cols} group bg-brand-offwhite border border-transparent p-10 flex flex-col min-h-[350px] rounded-2xl cursor-pointer transition-all duration-[400ms] ease-custom hover:bg-brand-black hover:border-brand-black hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(0,0,0,0.15)] fade-up`}
+                                className={`${role.cols} group bg-brand-offwhite border border-transparent py-6 sm:p-8 md:p-10 flex flex-col min-h-[300px] sm:min-h-[320px] md:min-h-[350px] rounded-lg md:rounded-2xl cursor-pointer transition-all duration-[400ms] ease-custom hover:bg-brand-black hover:border-brand-black hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(0,0,0,0.15)] fade-up`}
                                 style={{ transitionDelay: role.delay }}
                             >
-                                <div className="w-full h-40 mb-6 overflow-hidden rounded-lg bg-brand-border/20">
+                                <div className="w-full h-28 sm:h-32 md:h-40 mb-4 sm:mb-5 md:mb-6 overflow-hidden rounded-lg bg-brand-border/20">
                                     <MediaSlot 
                                         id={role.id} 
                                         mediaMap={media} 
                                         className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-500" 
                                     />
                                 </div>
-                                <div className="flex items-center gap-4 mb-4">
-                                    <div className="text-2xl text-brand-black transition-colors duration-300 group-hover:text-brand-accent">
+                                <div className="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
+                                    <div className="text-base sm:text-lg md:text-2xl text-brand-black transition-colors duration-300 group-hover:text-brand-accent flex-shrink-0">
                                         <i className={role.icon}></i>
                                     </div>
-                                    <h4 className="text-xl font-display font-bold uppercase tracking-tighter text-brand-black transition-colors duration-300 group-hover:text-white">
+                                    <h4 className="text-sm sm:text-base md:text-xl font-display font-bold uppercase tracking-tighter text-brand-black transition-colors duration-300 group-hover:text-white">
                                         {role.title}
                                     </h4>
                                 </div>
                                 <div className="mt-auto">
-                                    <p className="text-xs text-brand-gray leading-relaxed font-medium transition-colors duration-300 group-hover:text-white/80">
+                                    <p className="text-[8px] sm:text-[9px] md:text-xs text-brand-gray leading-relaxed font-medium transition-colors duration-300 group-hover:text-white/80">
                                         {role.desc}
                                     </p>
                                 </div>
@@ -237,30 +237,30 @@ export default function CareersPage() {
             </section>
 
             {/* ── CURRENT OPENINGS (DATABASE JOBS) ── */}
-            <section className="py-24 px-6 md:px-12 bg-brand-white border-t border-brand-border">
+            <section className="py-12 sm:py-16 md:py-24 px-3 sm:px-4 md:px-6 lg:px-12 bg-brand-white border-t border-brand-border">
                 <div className="max-w-[1600px] mx-auto">
                     
-                    <div className="flex flex-col md:flex-row justify-between items-end mb-12 fade-up">
+                    <div className="flex flex-col md:flex-row justify-between items-end mb-8 sm:mb-10 md:mb-12 gap-4 fade-up">
                         <div className="max-w-2xl">
-                            <h3 className="text-sm font-bold tracking-[0.2em] uppercase text-brand-gray mb-4">Corporate & Operations</h3>
-                            <h2 className="text-4xl md:text-6xl font-display font-bold tracking-tighter uppercase text-brand-black leading-[0.9]">
+                            <h3 className="text-[8px] sm:text-[9px] md:text-sm font-bold tracking-[0.2em] uppercase text-brand-gray mb-2 sm:mb-3 md:mb-4">Corporate & Operations</h3>
+                            <h2 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-display font-bold tracking-tighter uppercase text-brand-black leading-[0.9]">
                                 Current <span className="text-transparent [-webkit-text-stroke:1px_#0A0A0A]">Openings</span>
                             </h2>
                         </div>
                         
                         {/* Pagination Buttons */}
-                        <div className="flex gap-4 mt-8 md:mt-0">
+                        <div className="flex gap-2 sm:gap-3 md:gap-4 mt-4 md:mt-0">
                             <button 
                                 onClick={() => setJobPage(p => Math.max(1, p - 1))} 
                                 disabled={jobPage === 1 || isJobsLoading}
-                                className="w-14 h-14 rounded-full border border-brand-black flex items-center justify-center text-brand-black transition-all duration-300 hover:bg-brand-black hover:text-white disabled:opacity-20 disabled:hover:bg-transparent disabled:hover:text-brand-black"
+                                className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-full border border-brand-black flex items-center justify-center text-sm sm:text-base md:text-lg text-brand-black transition-all duration-300 hover:bg-brand-black hover:text-white disabled:opacity-20 disabled:hover:bg-transparent disabled:hover:text-brand-black"
                             >
                                 <i className="fa-solid fa-arrow-left"></i>
                             </button>
                             <button 
                                 onClick={() => setJobPage(p => Math.min(totalJobPages, p + 1))} 
                                 disabled={jobPage >= totalJobPages || isJobsLoading}
-                                className="w-14 h-14 rounded-full border border-brand-black flex items-center justify-center text-brand-black transition-all duration-300 hover:bg-brand-black hover:text-white disabled:opacity-20 disabled:hover:bg-transparent disabled:hover:text-brand-black"
+                                className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-full border border-brand-black flex items-center justify-center text-sm sm:text-base md:text-lg text-brand-black transition-all duration-300 hover:bg-brand-black hover:text-white disabled:opacity-20 disabled:hover:bg-transparent disabled:hover:text-brand-black"
                             >
                                 <i className="fa-solid fa-arrow-right"></i>
                             </button>
@@ -268,55 +268,55 @@ export default function CareersPage() {
                     </div>
 
                     {/* Horizontal Scroll Container */}
-                    <div className="flex gap-6 overflow-x-auto snap-x snap-mandatory pb-8 pt-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                    <div className="flex gap-3 sm:gap-4 md:gap-6 overflow-x-auto snap-x snap-mandatory pb-6 sm:pb-8 pt-3 sm:pt-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                         {isJobsLoading ? (
-                            <div className="w-full py-20 text-center flex flex-col items-center">
-                                <i className="fa-solid fa-circle-notch animate-spin text-3xl text-brand-gray mb-4"></i>
-                                <span className="text-xs font-bold tracking-[0.2em] uppercase text-brand-gray">Loading Opportunities...</span>
+                            <div className="w-full py-16 sm:py-20 text-center flex flex-col items-center">
+                                <i className="fa-solid fa-circle-notch animate-spin text-2xl sm:text-3xl text-brand-gray mb-2 sm:mb-4"></i>
+                                <span className="text-[8px] sm:text-[9px] md:text-xs font-bold tracking-[0.2em] uppercase text-brand-gray">Loading Opportunities...</span>
                             </div>
                         ) : jobs.length === 0 ? (
-                            <div className="w-full py-20 text-center">
-                                <p className="text-xs font-bold tracking-[0.2em] uppercase text-brand-gray">No open positions at the moment.</p>
+                            <div className="w-full py-16 sm:py-20 text-center">
+                                <p className="text-[8px] sm:text-[9px] md:text-xs font-bold tracking-[0.2em] uppercase text-brand-gray">No open positions at the moment.</p>
                             </div>
                         ) : (
                             jobs.map((job, index) => (
                                 <div 
                                     key={job.job_id} 
-                                    className="snap-start shrink-0 w-[85vw] md:w-[420px] group bg-brand-white border border-brand-border p-8 flex flex-col rounded-2xl transition-all duration-[400ms] ease-custom hover:bg-brand-black hover:border-brand-black hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(0,0,0,0.15)] fade-up"
+                                    className="snap-start shrink-0 w-[85vw] sm:w-[90vw] md:w-[420px] group bg-brand-white border border-brand-border p-6 sm:p-7 md:p-8 flex flex-col rounded-lg md:rounded-2xl transition-all duration-[400ms] ease-custom hover:bg-brand-black hover:border-brand-black hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(0,0,0,0.15)] fade-up"
                                     style={{ transitionDelay: `${index * 100}ms` }}
                                 >
                                     {/* Top Tags */}
-                                    <div className="flex justify-between items-start mb-8">
-                                        <span className="text-[10px] font-bold tracking-[0.2em] uppercase px-4 py-1.5 bg-brand-offwhite border border-brand-border rounded-full group-hover:bg-brand-gray group-hover:border-transparent group-hover:text-white transition-colors">
+                                    <div className="flex justify-between items-start mb-6 sm:mb-7 md:mb-8 gap-2">
+                                        <span className="text-[8px] sm:text-[9px] md:text-[10px] font-bold tracking-[0.2em] uppercase px-3 sm:px-4 py-1 sm:py-1.5 bg-brand-offwhite border border-brand-border rounded-full group-hover:bg-brand-gray group-hover:border-transparent group-hover:text-white transition-colors flex-shrink-0">
                                             {job.department || 'General'}
                                         </span>
-                                        <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-brand-gray group-hover:text-white/70 transition-colors">
-                                            <i className="fa-solid fa-location-dot mr-1.5"></i> {job.location || 'Remote'}
+                                        <span className="text-[8px] sm:text-[9px] md:text-[10px] font-bold tracking-[0.2em] uppercase text-brand-gray group-hover:text-white/70 transition-colors flex-shrink-0">
+                                            <i className="fa-solid fa-location-dot mr-1"></i> {job.location || 'Remote'}
                                         </span>
                                     </div>
                                     
                                     {/* Job Title */}
-                                    <h4 className="text-2xl md:text-3xl font-display font-bold uppercase tracking-tighter text-brand-black mb-6 group-hover:text-white transition-colors line-clamp-2">
+                                    <h4 className="text-base sm:text-lg md:text-2xl lg:text-3xl font-display font-bold uppercase tracking-tighter text-brand-black mb-4 sm:mb-5 md:mb-6 group-hover:text-white transition-colors line-clamp-2">
                                         {job.designation}
                                     </h4>
                                     
                                     {/* Bottom Meta */}
-                                    <div className="flex flex-col gap-3 mt-auto pt-6 border-t border-brand-border group-hover:border-white/10 transition-colors">
-                                        <div className="flex items-center gap-3 text-xs font-bold tracking-widest text-brand-gray group-hover:text-brand-accent transition-colors">
-                                            <i className="fa-solid fa-briefcase w-4 text-center"></i>
+                                    <div className="flex flex-col gap-2 sm:gap-3 mt-auto pt-4 sm:pt-5 md:pt-6 border-t border-brand-border group-hover:border-white/10 transition-colors">
+                                        <div className="flex items-center gap-2 sm:gap-3 text-[8px] sm:text-[9px] md:text-xs font-bold tracking-widest text-brand-gray group-hover:text-brand-accent transition-colors">
+                                            <i className="fa-solid fa-briefcase w-4 text-center flex-shrink-0"></i>
                                             <span className="uppercase">{job.employment_type.replace('_', ' ')}</span>
                                         </div>
-                                        <div className="flex items-center gap-3 text-xs font-bold tracking-widest text-brand-gray group-hover:text-white/70 transition-colors">
-                                            <i className="fa-solid fa-star w-4 text-center"></i>
+                                        <div className="flex items-center gap-2 sm:gap-3 text-[8px] sm:text-[9px] md:text-xs font-bold tracking-widest text-brand-gray group-hover:text-white/70 transition-colors">
+                                            <i className="fa-solid fa-star w-4 text-center flex-shrink-0"></i>
                                             <span className="uppercase">{job.experience_label || `${job.experience_min}-${job.experience_max} YRS`}</span>
                                         </div>
                                     </div>
                                     
                                     {/* Call to Action */}
-                                    <Link href={`/careers/${job.slug}`} className="mt-8 text-xs font-bold tracking-[0.2em] uppercase text-brand-black group-hover:text-white transition-colors flex items-center justify-between">
+                                    <Link href={`/careers/${job.slug}`} className="mt-6 sm:mt-7 md:mt-8 text-[8px] sm:text-[9px] md:text-xs font-bold tracking-[0.2em] uppercase text-brand-black group-hover:text-white transition-colors flex items-center justify-between">
                                         View Details 
-                                        <div className="w-8 h-8 rounded-full bg-brand-offwhite flex items-center justify-center group-hover:bg-brand-accent group-hover:text-brand-black transition-all group-hover:translate-x-1">
-                                            <i className="fa-solid fa-arrow-right"></i>
+                                        <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-brand-offwhite flex items-center justify-center group-hover:bg-brand-accent group-hover:text-brand-black transition-all group-hover:translate-x-1 flex-shrink-0">
+                                            <i className="fa-solid fa-arrow-right text-[9px] sm:text-xs"></i>
                                         </div>
                                     </Link>
                                 </div>
@@ -326,13 +326,13 @@ export default function CareersPage() {
                 </div>
             </section>
 
-            {/* ── APPLICATION FORM SECTION (Remains Unchanged) ── */}
-            <section className="py-12 px-6 md:px-12 bg-brand-offwhite border-t border-brand-border">
-                <div className="max-w-[1600px] mx-auto flex flex-col lg:flex-row gap-12 lg:gap-16 items-stretch">
+            {/* ── APPLICATION FORM SECTION ── */}
+            <section className="py-10 sm:py-12 md:py-16 lg:py-20 px-3 sm:px-4 md:px-6 lg:px-12 bg-brand-offwhite border-t border-brand-border">
+                <div className="max-w-[1600px] mx-auto flex flex-col lg:flex-row gap-8 sm:gap-10 md:gap-12 lg:gap-16 items-stretch">
                     
                     {/* Left Image Reveal */}
                     <div 
-                        className={`w-full lg:w-1/2 relative rounded-[2rem] overflow-hidden min-h-[600px] transition-[clip-path] duration-[1200ms] ease-custom ${
+                        className={`w-full lg:w-1/2 relative rounded-lg md:rounded-[2rem] overflow-hidden min-h-[400px] sm:min-h-[500px] md:min-h-[600px] transition-[clip-path] duration-[1200ms] ease-custom ${
                             isRevealed ? '[clip-path:polygon(0_0,_100%_0,_100%_100%,_0_100%)]' : '[clip-path:polygon(0_100%,_100%_100%,_100%_100%,_0_100%)]'
                         }`}
                     >
@@ -343,54 +343,54 @@ export default function CareersPage() {
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-brand-black/60 to-transparent"></div>
                         
-                        <div className="absolute bottom-12 left-12 mix-blend-difference text-brand-white z-10 pr-8">
-                            <h3 className="text-5xl md:text-7xl font-display font-extrabold uppercase tracking-tighter leading-none mb-4">
+                        <div className="absolute bottom-8 sm:bottom-10 md:bottom-12 left-4 sm:left-8 md:left-12 mix-blend-difference text-brand-white z-10 pr-4 sm:pr-6 md:pr-8">
+                            <h3 className="text-2xl sm:text-3xl md:text-5xl lg:text-7xl font-display font-extrabold uppercase tracking-tighter leading-none mb-2 sm:mb-3 md:mb-4">
                                 Join The <br /> <span className="text-brand-accent">Team</span>
                             </h3>
-                            <p className="text-xs font-bold tracking-[0.15em] uppercase text-brand-white/80">Our recruitment team reviews all submissions.</p>
+                            <p className="text-[8px] sm:text-[9px] md:text-xs font-bold tracking-[0.15em] uppercase text-brand-white/80">Our recruitment team reviews all submissions.</p>
                         </div>
                     </div>
 
                     {/* Right Form */}
-                    <div className="w-full lg:w-1/2 flex flex-col justify-center py-8 fade-up" style={{ transitionDelay: '200ms' }}>
-                        <div className="max-w-xl w-full mx-auto lg:mx-0">
-                            <h3 className="text-4xl md:text-5xl font-display font-bold uppercase tracking-tighter text-brand-black mb-2">Application Form</h3>
-                            <p className="text-xs font-bold tracking-[0.15em] uppercase text-brand-gray mb-12 border-b border-brand-border pb-6">Submit your details and portfolio below.</p>
+                    <div className="w-full lg:w-1/2 flex flex-col justify-center py-6 sm:py-8 mt-6 sm:mt-8 lg:mt-0 fade-up" style={{ transitionDelay: '200ms' }}>
+                        <div className="max-w-xl w-full mx-auto lg:mx-0 mt-6 sm:mt-8 lg:mt-0">
+                            <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-5xl font-display font-bold uppercase tracking-tighter text-brand-black mb-1 sm:mb-2">Application Form</h3>
+                            <p className="text-[8px] sm:text-[9px] md:text-xs font-bold tracking-[0.15em] uppercase text-brand-gray mb-8 sm:mb-10 md:mb-12 border-b border-brand-border pb-4 sm:pb-5 md:pb-6">Submit your details and portfolio below.</p>
                             
-                            <form className="space-y-8" onSubmit={(e) => e.preventDefault()}>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <form className="space-y-6 sm:space-y-8" onSubmit={(e) => e.preventDefault()}>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
                                     <div>
-                                        <input type="text" placeholder="FIRST NAME *" required className="w-full bg-transparent border-b border-brand-black pb-2 text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray rounded-none" />
+                                        <input type="text" placeholder="FIRST NAME *" required className="w-full bg-transparent border-b border-brand-black pb-2 text-[8px] sm:text-[9px] md:text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray rounded-none" />
                                     </div>
                                     <div>
-                                        <input type="text" placeholder="LAST NAME" className="w-full bg-transparent border-b border-brand-black pb-2 text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray rounded-none" />
+                                        <input type="text" placeholder="LAST NAME" className="w-full bg-transparent border-b border-brand-black pb-2 text-[8px] sm:text-[9px] md:text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray rounded-none" />
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
                                     <div className="flex items-end border-b border-brand-black pb-2 transition-colors focus-within:border-brand-accent group">
-                                        <div className="flex items-center gap-2 mr-4 text-xs font-bold tracking-widest text-brand-black">
+                                        <div className="flex items-center gap-2 mr-2 sm:mr-3 md:mr-4 text-[8px] sm:text-[9px] md:text-xs font-bold tracking-widest text-brand-black">
                                             <span>+61</span>
                                         </div>
-                                        <input type="tel" placeholder="PHONE NUMBER" className="w-full bg-transparent text-xs font-bold tracking-[0.15em] uppercase outline-none placeholder-brand-gray text-brand-black rounded-none" />
+                                        <input type="tel" placeholder="PHONE NUMBER" className="w-full bg-transparent text-[8px] sm:text-[9px] md:text-xs font-bold tracking-[0.15em] uppercase outline-none placeholder-brand-gray text-brand-black rounded-none" />
                                     </div>
                                     <div>
-                                        <input type="email" placeholder="EMAIL ADDRESS *" required className="w-full bg-transparent border-b border-brand-black pb-2 text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray rounded-none" />
+                                        <input type="email" placeholder="EMAIL ADDRESS *" required className="w-full bg-transparent border-b border-brand-black pb-2 text-[8px] sm:text-[9px] md:text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray rounded-none" />
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
                                     <div>
-                                        <input type="date" required className="w-full bg-transparent border-b border-brand-black pb-2 text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-gray [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-50 hover:[&::-webkit-calendar-picker-indicator]:opacity-100 transition-opacity rounded-none" />
+                                        <input type="date" required className="w-full bg-transparent border-b border-brand-black pb-2 text-[8px] sm:text-[9px] md:text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-gray [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-50 hover:[&::-webkit-calendar-picker-indicator]:opacity-100 transition-opacity rounded-none" />
                                     </div>
                                     <div>
-                                        <input type="url" placeholder="SOCIAL / PORTFOLIO LINK *" required className="w-full bg-transparent border-b border-brand-black pb-2 text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray rounded-none" />
+                                        <input type="url" placeholder="SOCIAL / PORTFOLIO LINK *" required className="w-full bg-transparent border-b border-brand-black pb-2 text-[8px] sm:text-[9px] md:text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray rounded-none" />
                                     </div>
                                 </div>
 
                                 <div>
                                     <div className="relative">
-                                        <select required defaultValue="" className="w-full bg-transparent border-b border-brand-black pb-2 text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black appearance-none cursor-pointer pr-8 rounded-none">
+                                        <select required defaultValue="" className="w-full bg-transparent border-b border-brand-black pb-2 text-[8px] sm:text-[9px] md:text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black appearance-none cursor-pointer pr-6 sm:pr-7 md:pr-8 rounded-none">
                                             <option value="" disabled>SELECT ROLE *</option>
                                             <option value="promoter">Promoter</option>
                                             <option value="influencer">Influencer</option>
@@ -398,11 +398,11 @@ export default function CareersPage() {
                                             <option value="musician">Live Musician</option>
                                             <option value="vocalist">Vocalist</option>
                                         </select>
-                                        <i className="fa-solid fa-chevron-down absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-brand-black pointer-events-none"></i>
+                                        <i className="fa-solid fa-chevron-down absolute right-2 top-1/2 -translate-y-1/2 text-[8px] sm:text-[9px] md:text-[10px] text-brand-black pointer-events-none"></i>
                                     </div>
                                 </div>
 
-                                <button type="submit" className="group relative overflow-hidden inline-flex items-center justify-center w-full py-5 text-xs font-bold tracking-[0.15em] uppercase mt-8 bg-brand-black text-white transition-colors duration-300">
+                                <button type="submit" className="group relative overflow-hidden inline-flex items-center justify-center w-full py-4 sm:py-5 md:py-6 text-[8px] sm:text-[9px] md:text-xs font-bold tracking-[0.15em] uppercase mt-6 sm:mt-8 bg-brand-black text-white transition-colors duration-300">
                                     <div className="absolute top-full left-0 w-full h-full bg-brand-accent transition-all duration-[400ms] ease-custom z-10 group-hover:top-0"></div>
                                     <span className="relative z-20">Submit Application</span>
                                 </button>

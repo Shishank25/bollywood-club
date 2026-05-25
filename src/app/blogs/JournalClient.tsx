@@ -110,8 +110,8 @@ export default function JournalClient({ initialPosts }: { initialPosts: BlogPost
         <main className="w-full">
             
             {/* HERO SECTION */}
-            <section className="relative w-full px-4 md:px-8 pt-28 pb-0 flex flex-col">
-                <div className="relative w-full h-[40svh] md:h-[50svh] min-h-[350px] rounded-t-[2rem] overflow-hidden bg-brand-black img-reveal shadow-2xl img-wrapper flex items-center justify-center text-center">
+            <section className="relative w-full px-3 sm:px-4 md:px-6 lg:px-8 pt-20 sm:pt-24 md:pt-28 pb-0 flex flex-col">
+                <div className="relative w-full h-[40svh] sm:h-[45svh] md:h-[50svh] min-h-[300px] sm:min-h-[350px] rounded-t-xl md:rounded-t-[2rem] overflow-hidden bg-brand-black img-reveal shadow-2xl img-wrapper flex items-center justify-center text-center">
                     <img 
                         src="https://images.unsplash.com/photo-1549213713-52caee0428d6?q=80&w=1600&auto=format&fit=crop" 
                         className="hero-img-anim absolute inset-0 w-full h-full object-cover filter grayscale-[40%] opacity-60" 
@@ -119,50 +119,50 @@ export default function JournalClient({ initialPosts }: { initialPosts: BlogPost
                     />
                     <div className="absolute inset-0 bg-brand-black/40"></div>
                     
-                    <div className="relative z-20 fade-up px-6 w-full flex flex-col items-center mt-8">
-                        <span className="inline-block text-[10px] md:text-xs font-bold tracking-[0.2em] uppercase text-brand-black bg-brand-white px-5 py-2.5 rounded-full shadow-lg mb-4 md:mb-6">
+                    <div className="relative z-20 fade-up px-3 sm:px-4 w-full flex flex-col items-center mt-6 sm:mt-8">
+                        <span className="inline-block text-[9px] sm:text-[10px] md:text-xs font-bold tracking-[0.2em] uppercase text-brand-black bg-brand-white px-4 sm:px-5 py-2 sm:py-2.5 rounded-full shadow-lg mb-3 sm:mb-4 md:mb-6">
                             News & Editorials
                         </span>
                         
-                        <h1 className="text-6xl md:text-8xl lg:text-[7vw] leading-none font-display font-extrabold uppercase tracking-tighter text-brand-white whitespace-nowrap">
-                            THE <span className="text-transparent [-webkit-text-stroke:1.5px_#FFFFFF] py-[0.15em] inline-block align-bottom">JOURNAL</span>
+                        <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl xl:text-[7vw] leading-none font-display font-extrabold uppercase tracking-tighter text-brand-white whitespace-normal sm:whitespace-nowrap">
+                            THE <span className="text-transparent [-webkit-text-stroke:1px_#FFFFFF] py-[0.15em] inline-block align-bottom">JOURNAL</span>
                         </h1>
                     </div>
                 </div>
             </section>
 
             {/* MARQUEE SECTION */}
-            <div className="w-full bg-brand-accent border-y-4 border-brand-black overflow-hidden flex whitespace-nowrap py-3 md:py-4 z-20 relative">
+            <div className="w-full bg-brand-accent border-y-2 sm:border-y-3 md:border-y-4 border-brand-black overflow-hidden flex whitespace-nowrap py-2 sm:py-3 md:py-4 z-20 relative">
                 <div className="animate-marquee flex items-center w-[200%]">
                     <div className="flex items-center w-1/2 justify-around text-brand-black">
-                        <span className="text-lg md:text-2xl font-display font-bold uppercase tracking-tighter">LATEST NEWS</span>
-                        <span className="text-xl md:text-3xl mx-4">•</span>
-                        <span className="text-lg md:text-2xl font-display font-bold uppercase tracking-tighter">EVENT RECAPS</span>
-                        <span className="text-xl md:text-3xl mx-4">•</span>
-                        <span className="text-lg md:text-2xl font-display font-bold uppercase tracking-tighter">ARTIST INTERVIEWS</span>
-                        <span className="text-xl md:text-3xl mx-4">•</span>
-                        <span className="text-lg md:text-2xl font-display font-bold uppercase tracking-tighter text-transparent [-webkit-text-stroke:1.5px_#0A0A0A] hover:text-brand-black transition-colors">STYLE GUIDES</span>
-                        <span className="text-xl md:text-3xl mx-4">•</span>
+                        <span className="text-xs sm:text-lg md:text-2xl font-display font-bold uppercase tracking-tighter">LATEST NEWS</span>
+                        <span className="text-sm sm:text-xl md:text-3xl mx-2 sm:mx-4">•</span>
+                        <span className="text-xs sm:text-lg md:text-2xl font-display font-bold uppercase tracking-tighter">EVENT RECAPS</span>
+                        <span className="text-sm sm:text-xl md:text-3xl mx-2 sm:mx-4">•</span>
+                        <span className="text-xs sm:text-lg md:text-2xl font-display font-bold uppercase tracking-tighter">ARTIST INTERVIEWS</span>
+                        <span className="text-sm sm:text-xl md:text-3xl mx-2 sm:mx-4">•</span>
+                        <span className="text-xs sm:text-lg md:text-2xl font-display font-bold uppercase tracking-tighter text-transparent [-webkit-text-stroke:1px_#0A0A0A] hover:text-brand-black transition-colors">STYLE GUIDES</span>
+                        <span className="text-sm sm:text-xl md:text-3xl mx-2 sm:mx-4">•</span>
                     </div>
                     <div className="flex items-center w-1/2 justify-around text-brand-black">
-                        <span className="text-lg md:text-2xl font-display font-bold uppercase tracking-tighter">LATEST NEWS</span>
-                        <span className="text-xl md:text-3xl mx-4">•</span>
-                        <span className="text-lg md:text-2xl font-display font-bold uppercase tracking-tighter">EVENT RECAPS</span>
-                        <span className="text-xl md:text-3xl mx-4">•</span>
-                        <span className="text-lg md:text-2xl font-display font-bold uppercase tracking-tighter">ARTIST INTERVIEWS</span>
-                        <span className="text-xl md:text-3xl mx-4">•</span>
-                        <span className="text-lg md:text-2xl font-display font-bold uppercase tracking-tighter text-transparent [-webkit-text-stroke:1.5px_#0A0A0A] hover:text-brand-black transition-colors">STYLE GUIDES</span>
-                        <span className="text-xl md:text-3xl mx-4">•</span>
+                        <span className="text-xs sm:text-lg md:text-2xl font-display font-bold uppercase tracking-tighter">LATEST NEWS</span>
+                        <span className="text-sm sm:text-xl md:text-3xl mx-2 sm:mx-4">•</span>
+                        <span className="text-xs sm:text-lg md:text-2xl font-display font-bold uppercase tracking-tighter">EVENT RECAPS</span>
+                        <span className="text-sm sm:text-xl md:text-3xl mx-2 sm:mx-4">•</span>
+                        <span className="text-xs sm:text-lg md:text-2xl font-display font-bold uppercase tracking-tighter">ARTIST INTERVIEWS</span>
+                        <span className="text-sm sm:text-xl md:text-3xl mx-2 sm:mx-4">•</span>
+                        <span className="text-xs sm:text-lg md:text-2xl font-display font-bold uppercase tracking-tighter text-transparent [-webkit-text-stroke:1px_#0A0A0A] hover:text-brand-black transition-colors">STYLE GUIDES</span>
+                        <span className="text-sm sm:text-xl md:text-3xl mx-2 sm:mx-4">•</span>
                     </div>
                 </div>
             </div>
 
             {/* DYNAMIC EDITOR'S PICK SECTION */}
-            <section className="py-24 px-6 md:px-12 bg-brand-white border-b border-brand-border">
+            <section className="py-12 sm:py-16 md:py-24 px-3 sm:px-4 md:px-6 lg:px-12 bg-brand-white border-b border-brand-border">
                 <div className="max-w-[1600px] mx-auto">
                     
-                    <div className="mb-12 fade-up">
-                        <h2 className="text-4xl md:text-6xl font-display font-extrabold tracking-tighter uppercase text-brand-black">
+                    <div className="mb-6 sm:mb-8 md:mb-12 fade-up">
+                        <h2 className="text-3xl sm:text-4xl md:text-6xl font-display font-extrabold tracking-tighter uppercase text-brand-black">
                             Editor's <span className="text-brand-gray text-transparent [-webkit-text-stroke:1.5px_#0A0A0A] hover:text-brand-black hover:[-webkit-text-stroke:0px] transition-all duration-400">Pick</span>
                         </h2>
                     </div>
@@ -170,7 +170,7 @@ export default function JournalClient({ initialPosts }: { initialPosts: BlogPost
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
                         {featuredPost && (
                             <a href={`/blogs/${featuredPost.slug}`} className="editorial-card lg:col-span-8 flex flex-col group fade-up">
-                                <div className="relative w-full aspect-video md:aspect-[16/9] lg:aspect-auto lg:h-[600px] rounded-2xl bg-brand-offwhite img-wrapper mb-6">
+                                <div className="relative w-full aspect-video md:aspect-[16/9] lg:aspect-auto lg:h-[600px] rounded-xl sm:rounded-2xl bg-brand-offwhite img-wrapper mb-4 sm:mb-6">
                                     <img src={featuredPost.coverImage} alt={featuredPost.title} className="absolute inset-0 w-full h-full object-cover filter grayscale-[100%]" />
                                     <div className="absolute top-6 left-6 z-10">
                                         <span className="bg-brand-black text-brand-white px-4 py-2 text-[10px] font-bold uppercase tracking-[0.2em] rounded-full shadow-lg">Feature Story</span>
@@ -180,10 +180,10 @@ export default function JournalClient({ initialPosts }: { initialPosts: BlogPost
                                     <p className="text-xs font-bold tracking-[0.2em] uppercase text-brand-gray mb-3">
                                         {formatDate(featuredPost.publishedAt || featuredPost.createdAt)} • {featuredPost.tags[0] || 'Editorial'}
                                     </p>
-                                    <h3 className="text-4xl md:text-5xl font-display font-bold uppercase tracking-tighter text-brand-black leading-[0.95] mb-4 group-hover:text-brand-accent transition-colors">
+                                    <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-display font-bold uppercase tracking-tighter text-brand-black leading-[0.95] mb-2 sm:mb-4 group-hover:text-brand-accent transition-colors">
                                         {featuredPost.title}
                                     </h3>
-                                    <p className="text-sm md:text-base font-medium text-brand-gray leading-relaxed mb-6 line-clamp-2 max-w-3xl">
+                                    <p className="text-[10px] sm:text-xs md:text-sm lg:text-base font-medium text-brand-gray leading-relaxed mb-4 sm:mb-6 line-clamp-2 max-w-3xl">
                                         {featuredPost.excerpt}
                                     </p>
                                     <div className="text-xs font-bold uppercase tracking-[0.15em] text-brand-black flex items-center">
@@ -193,7 +193,7 @@ export default function JournalClient({ initialPosts }: { initialPosts: BlogPost
                             </a>
                         )}
 
-                        <div className="lg:col-span-4 flex flex-col gap-8 md:gap-12 lg:gap-0 lg:justify-between fade-up" style={{ transitionDelay: '200ms' }}>
+                        <div className="lg:col-span-4 flex flex-col gap-6 sm:gap-8 md:gap-12 lg:gap-0 lg:justify-between fade-up mt-6 lg:mt-0" style={{ transitionDelay: '200ms' }}>
                             {sidePosts.map((post, idx) => (
                                 <a href={`/blogs/${post.slug}`} key={post._id} className="editorial-card flex flex-col group">
                                     <div className="relative w-full aspect-video rounded-xl bg-brand-offwhite img-wrapper mb-4 md:mb-5">
@@ -208,7 +208,7 @@ export default function JournalClient({ initialPosts }: { initialPosts: BlogPost
                                         <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-brand-gray mb-2">
                                             {formatDate(post.publishedAt || post.createdAt)}
                                         </p>
-                                        <h3 className="text-2xl font-display font-bold uppercase tracking-tighter text-brand-black leading-tight mb-2 group-hover:text-brand-accent transition-colors">
+                                        <h3 className="text-lg sm:text-xl md:text-2xl font-display font-bold uppercase tracking-tighter text-brand-black leading-tight mb-2 group-hover:text-brand-accent transition-colors">
                                             {post.title}
                                         </h3>
                                         <div className="text-[10px] font-bold uppercase tracking-[0.15em] text-brand-gray flex items-center mt-3">
@@ -223,15 +223,15 @@ export default function JournalClient({ initialPosts }: { initialPosts: BlogPost
             </section>
 
             {/* DYNAMIC ARCHIVES SECTION */}
-            <section className="py-24 px-6 md:px-12 bg-brand-offwhite">
+            <section className="py-12 sm:py-16 md:py-24 px-3 sm:px-4 md:px-6 lg:px-12 bg-brand-offwhite">
                 <div className="max-w-[1600px] mx-auto">
                     
-                    <div className="flex flex-col xl:flex-row justify-between items-end mb-16 fade-up">
-                        <div className="mb-8 xl:mb-0">
-                            <h2 className="text-4xl md:text-5xl font-display font-bold tracking-tighter uppercase text-brand-black">The Archives</h2>
+                    <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end mb-8 sm:mb-12 md:mb-16 fade-up">
+                        <div className="mb-6 sm:mb-8 xl:mb-0">
+                            <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold tracking-tighter uppercase text-brand-black">The Archives</h2>
                         </div>
                         
-                        <div className="flex space-x-8 overflow-x-auto w-full xl:w-auto pb-4 hide-scroll text-[11px] font-bold tracking-[0.15em] uppercase text-brand-gray border-b border-brand-border">
+                        <div className="flex space-x-4 sm:space-x-6 md:space-x-8 overflow-x-auto w-full xl:w-auto pb-3 sm:pb-4 hide-scroll text-[9px] sm:text-[10px] md:text-[11px] font-bold tracking-[0.15em] uppercase text-brand-gray border-b border-brand-border">
                             {tabs.map((tab) => (
                                 <button 
                                     key={tab}
@@ -246,7 +246,7 @@ export default function JournalClient({ initialPosts }: { initialPosts: BlogPost
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 md:gap-y-16">
                         {archivePosts.length > 0 ? (
                             archivePosts.map((post, i) => (
                                 <a href={`/blogs/${post.slug}`} key={post._id} className="editorial-card flex flex-col group fade-up" style={{ transitionDelay: `${(i % 3) * 100}ms` }}>
@@ -262,7 +262,7 @@ export default function JournalClient({ initialPosts }: { initialPosts: BlogPost
                                         <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-brand-gray mb-3">
                                             {formatDate(post.publishedAt || post.createdAt)}
                                         </p>
-                                        <h3 className="text-2xl font-display font-bold uppercase tracking-tighter text-brand-black leading-tight mb-3 group-hover:text-brand-accent transition-colors">
+                                        <h3 className="text-lg sm:text-xl md:text-2xl font-display font-bold uppercase tracking-tighter text-brand-black leading-tight mb-2 sm:mb-3 group-hover:text-brand-accent transition-colors">
                                             {post.title}
                                         </h3>
                                         <p className="text-sm font-medium text-brand-gray leading-relaxed mb-5 line-clamp-2">
@@ -294,11 +294,11 @@ export default function JournalClient({ initialPosts }: { initialPosts: BlogPost
 
             {/* DYNAMIC SUBSCRIBE SECTION */}
             <section className="py-0 flex flex-col lg:flex-row bg-brand-white border-t border-brand-border">
-                <div className="w-full lg:w-1/2 flex items-center justify-center p-12 lg:p-24 fade-up order-2 lg:order-1 border-r border-brand-border">
-                    <div className="w-full max-w-md">
-                        <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-brand-accent mb-4 block">The Inner Circle</span>
-                        <h2 className="text-4xl md:text-5xl font-display font-bold tracking-tighter uppercase text-brand-black mb-4">Stay In The Loop</h2>
-                        <p className="text-brand-gray font-medium text-sm mb-12 leading-relaxed">Subscribe to the journal to receive priority access to ticket drops, exclusive editorial content, and secret venue reveals delivered directly to your inbox.</p>
+                <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-8 md:p-12 lg:p-24 fade-up order-2 lg:order-1 border-r border-brand-border">
+                    <div className="w-full max-w-md mx-auto">
+                        <span className="text-[9px] sm:text-[10px] font-bold tracking-[0.2em] uppercase text-brand-accent mb-2 sm:mb-4 block">The Inner Circle</span>
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold tracking-tighter uppercase text-brand-black mb-3 sm:mb-4">Stay In The Loop</h2>
+                        <p className="text-brand-gray font-medium text-[10px] sm:text-xs md:text-sm mb-8 sm:mb-10 md:mb-12 leading-relaxed">Subscribe to the journal to receive priority access to ticket drops, exclusive editorial content, and secret venue reveals delivered directly to your inbox.</p>
                         
                         {/* Render Success State OR The Form */}
                         {formStatus === 'success' ? (
@@ -315,7 +315,7 @@ export default function JournalClient({ initialPosts }: { initialPosts: BlogPost
                                     </div>
                                 )}
 
-                                <div className="grid grid-cols-2 gap-6">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                                     <div>
                                         <input 
                                             type="text" 

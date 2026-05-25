@@ -27,14 +27,14 @@ export default async function DressCodePage() {
 
   return (
     // Increased max-width from 3xl to 6xl to accommodate the side-by-side layout
-    <main className="flex max-w-6xl mx-auto py-16 px-4 sm:px-6 lg:px-8 mt-8">
+    <main className="flex flex-col lg:flex-row max-w-6xl mx-auto py-8 sm:py-12 md:py-16 px-3 sm:px-4 md:px-6 lg:px-8 mt-6 sm:mt-8">
 
       {/* LEFT COLUMN: A4 Ratio Image */}
-      {/* w-full on mobile, fixed to 1/3 or roughly 384px on desktop */}
+      {/* w-full on mobile, fixed width on desktop */}
       {doc.image_url && (
-        <div className="w-full md:w-[350px] lg:w-[500px] flex-shrink-0">
+        <div className="w-full lg:w-[350px] xl:w-[500px] flex-shrink-0 mb-6 lg:mb-0">
         {/* aspect-[21/29.7] creates the perfect A4 ratio */}
-            <div className="relative w-full aspect-[21/29.7] rounded-xl overflow-hidden shadow-xl bg-gray-100">
+            <div className="relative w-full aspect-[21/29.7] rounded-lg md:rounded-xl overflow-hidden shadow-xl bg-gray-100">
                 {/* Using standard <img> for external URLs. If using Next/Image, update accordingly */}
                 <img
                 src={doc.image_url}
@@ -45,41 +45,35 @@ export default async function DressCodePage() {
             </div>
         </div>
       )}
-      <div>
-        <header className="mb-12 border-b pb-6">
-            <h1 className="text-4xl font-extrabold tracking-tight text-gray-900">
+      <div className="w-full flex-1">
+        <header className="mb-6 sm:mb-8 md:mb-12 border-b pb-4 sm:pb-6">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-gray-900">
             {doc.label}
             </h1>
         </header>
 
-        {/* Layout Container: Stacks vertically on mobile, 
-            switches to side-by-side flex on medium (md) screens and up.
-        */}
-        <div className="flex flex-col md:flex-row gap-12 lg:gap-16">
-            {/* RIGHT COLUMN: TipTap Content */}
-            {/* flex-1 allows this column to take up the remaining space */}
-            <article
-            className="
-                flex-1
-                w-full
-                prose
-                prose-slate
-                lg:prose-lg
-                max-w-none
-                text-gray-700
-                prose-p:leading-7
-                prose-p:my-5
-                prose-li:my-1
-                prose-h2:mt-8
-                prose-h2:mb-4
-                prose-h3:mt-6
-                prose-h3:mb-3
-                prose-hr:my-10
-            "
-            dangerouslySetInnerHTML={{ __html: preserveEmptyParagraphs(doc.content) }}
-            />
-            
-        </div>
+        {/* RIGHT COLUMN: TipTap Content */}
+        <article
+        className="
+            w-full
+            prose
+            prose-sm
+            sm:prose-base
+            md:prose-lg
+            prose-slate
+            max-w-none
+            text-gray-700
+            prose-p:leading-6 sm:prose-p:leading-7
+            prose-p:my-4 sm:prose-p:my-5
+            prose-li:my-1
+            prose-h2:mt-6 sm:prose-h2:mt-8
+            prose-h2:mb-3 sm:prose-h2:mb-4
+            prose-h3:mt-4 sm:prose-h3:mt-6
+            prose-h3:mb-2 sm:prose-h3:mb-3
+            prose-hr:my-8 sm:prose-hr:my-10
+        "
+        dangerouslySetInnerHTML={{ __html: preserveEmptyParagraphs(doc.content) }}
+        />
       </div>
     </main>
   );

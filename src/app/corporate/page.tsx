@@ -145,9 +145,9 @@ export default function CorporateEventsPage() {
         <main className="w-full selection:bg-brand-black selection:text-white">
             
             {/* ── HERO SECTION ── */}
-            <section className="relative h-[75svh] min-h-[500px] w-full px-6 md:px-12 pt-28 pb-12 flex flex-col">
+            <section className="relative h-[65svh] sm:h-[70svh] md:h-[75svh] min-h-[400px] sm:min-h-[450px] w-full px-3 sm:px-4 md:px-6 lg:px-12 pt-20 sm:pt-24 md:pt-28 pb-6 sm:pb-8 md:pb-12 flex flex-col">
                 <div 
-                    className={`relative w-full h-full rounded-[2rem] overflow-hidden bg-brand-black shadow-xl transition-[clip-path] duration-[1200ms] ease-custom ${
+                    className={`relative w-full h-full rounded-lg md:rounded-[2rem] overflow-hidden bg-brand-black shadow-xl transition-[clip-path] duration-[1200ms] ease-custom ${
                         isRevealed ? '[clip-path:polygon(0_0,_100%_0,_100%_100%,_0_100%)]' : '[clip-path:polygon(0_100%,_100%_100%,_100%_100%,_0_100%)]'
                     }`}
                 >
@@ -161,12 +161,12 @@ export default function CorporateEventsPage() {
                     
                     <div className="absolute inset-0 bg-gradient-to-t from-brand-black via-brand-black/40 to-transparent"></div>
                     
-                    <div className="absolute inset-0 flex flex-col justify-end pb-16 px-8 md:px-16 lg:px-24 z-20">
+                    <div className="absolute inset-0 flex flex-col justify-end pb-8 sm:pb-12 md:pb-16 px-2 sm:px-8 md:px-16 lg:px-24 z-20">
                         <div className="fade-up">
-                            <span className="inline-block text-[10px] font-bold tracking-[0.2em] uppercase text-brand-white bg-brand-accent px-4 py-2 rounded-full mb-6">
+                            <span className="inline-block text-[8px] sm:text-[9px] md:text-[10px] font-bold tracking-[0.2em] uppercase text-brand-white bg-brand-accent px-3 sm:px-4 py-1.5 sm:py-2 rounded-full mb-4 sm:mb-6">
                                 Unforgettable Experiences
                             </span>
-                            <h1 className="text-5xl md:text-7xl lg:text-[8vw] leading-[0.9] font-display font-extrabold uppercase tracking-tighter text-brand-white">
+                            <h1 className="text-[26px] min-[360px]:text-3xl sm:text-5xl md:text-7xl lg:text-[8vw] leading-[0.9] font-display font-extrabold uppercase tracking-tighter text-brand-white">
                                 Corpo<span className="text-transparent [-webkit-text-stroke:1px_#FFFFFF]">rate</span>
                             </h1>
                         </div>
@@ -175,36 +175,36 @@ export default function CorporateEventsPage() {
             </section>
 
             {/* ── TEXT INTRO SECTION ── */}
-            <section className="py-20 px-6 md:px-12 bg-brand-white text-center">
+            <section className="py-12 sm:py-16 md:py-20 px-3 sm:px-4 md:px-6 lg:px-12 bg-brand-white text-center">
                 <div className="max-w-4xl mx-auto fade-up">
-                    <h2 className="text-3xl md:text-5xl lg:text-6xl font-display font-bold tracking-tighter uppercase text-brand-black mb-6 leading-[0.95]">
+                    <h2 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-display font-bold tracking-tighter uppercase text-brand-black mb-4 sm:mb-6 leading-[0.95]">
                         Redefine Your <br />
                         <span className="text-transparent [-webkit-text-stroke:1px_#0A0A0A] text-brand-gray">Corporate Culture</span>
                     </h2>
                     <div className="w-16 h-[2px] bg-brand-accent mx-auto mb-8"></div>
-                    <p className="text-sm md:text-base font-medium text-brand-gray leading-relaxed max-w-2xl mx-auto">
+                    <p className="text-[10px] sm:text-xs md:text-sm lg:text-base font-medium text-brand-gray leading-relaxed max-w-2xl mx-auto">
                         Elevate your next company milestone, product launch, or end-of-year celebration with Bollywood Club's premier event services. We blend sophisticated execution with unparalleled entertainment.
                     </p>
                 </div>
             </section>
 
             {/* ── CAPABILITIES SECTION ── */}
-            <section className="py-24 px-6 md:px-12 bg-brand-offwhite">
+            <section className="py-12 sm:py-16 md:py-24 px-3 sm:px-4 md:px-6 lg:px-12 bg-brand-offwhite">
                 <div className="max-w-[1600px] mx-auto">
-                    <div className="flex justify-center mb-16 fade-up">
-                        <h2 className="text-4xl md:text-5xl font-display font-bold tracking-tighter uppercase text-brand-black">
+                    <div className="flex justify-center mb-8 sm:mb-12 md:mb-16 fade-up">
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold tracking-tighter uppercase text-brand-black text-center">
                             Our Capabilities
                         </h2>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
                         {capabilities.map((cap) => (
                             <div 
                                 key={cap.id} 
-                                className="bg-brand-white p-6 rounded-2xl shadow-sm border border-brand-border/50 hover:border-brand-black hover:shadow-lg transition-all duration-300 fade-up group flex flex-col"
+                                className="bg-brand-white p-5 sm:p-6 rounded-xl sm:rounded-2xl shadow-sm border border-brand-border/50 hover:border-brand-black hover:shadow-lg transition-all duration-300 fade-up group flex flex-col"
                                 style={{ transitionDelay: cap.delay }}
                             >
-                                <div className="w-full h-40 mb-6 overflow-hidden rounded-xl bg-brand-border/20">
+                                <div className="w-full h-32 sm:h-40 mb-4 sm:mb-6 overflow-hidden rounded-lg sm:rounded-xl bg-brand-border/20">
                                     <MediaSlot 
                                         id={cap.id} 
                                         mediaMap={media} 
@@ -212,15 +212,15 @@ export default function CorporateEventsPage() {
                                     />
                                 </div>
 
-                                <div className="w-14 h-14 rounded-full bg-brand-offwhite flex items-center justify-center text-brand-black text-xl mb-6 group-hover:bg-brand-accent group-hover:text-white transition-colors duration-300">
+                                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-brand-offwhite flex items-center justify-center text-brand-black text-lg sm:text-xl mb-4 sm:mb-6 group-hover:bg-brand-accent group-hover:text-white transition-colors duration-300">
                                     <i className={cap.icon}></i>
                                 </div>
                                 
-                                <h3 className="text-xl font-display font-bold uppercase tracking-tighter text-brand-black mb-3">
+                                <h3 className="text-lg sm:text-xl font-display font-bold uppercase tracking-tighter text-brand-black mb-2 sm:mb-3">
                                     {cap.title}
                                 </h3>
                                 
-                                <p className="text-sm font-medium text-brand-gray leading-relaxed flex-1">
+                                <p className="text-[10px] sm:text-xs md:text-sm font-medium text-brand-gray leading-relaxed flex-1">
                                     {cap.desc}
                                 </p>
                             </div>
@@ -230,12 +230,12 @@ export default function CorporateEventsPage() {
             </section>
 
             {/* ── BOOKING FORM SECTION ── */}
-            <section className="py-12 px-6 md:px-12 bg-brand-white border-t border-brand-border">
-                <div className="max-w-[1600px] mx-auto flex flex-col lg:flex-row gap-12 lg:gap-16 items-stretch">
+            <section className="py-10 sm:py-12 md:py-16 px-3 sm:px-4 md:px-6 lg:px-12 bg-brand-white border-t border-brand-border">
+                <div className="max-w-[1600px] mx-auto flex flex-col lg:flex-row gap-8 sm:gap-12 lg:gap-16 items-stretch">
                     
                     {/* Image Reveal */}
                     <div 
-                        className={`w-full lg:w-1/2 relative rounded-[2rem] overflow-hidden min-h-[600px] transition-[clip-path] duration-[1200ms] ease-custom ${
+                        className={`w-full lg:w-1/2 relative rounded-xl sm:rounded-2xl md:rounded-[2rem] overflow-hidden min-h-[350px] sm:min-h-[450px] md:min-h-[600px] transition-[clip-path] duration-[1200ms] ease-custom ${
                             isRevealed ? '[clip-path:polygon(0_0,_100%_0,_100%_100%,_0_100%)]' : '[clip-path:polygon(0_100%,_100%_100%,_100%_100%,_0_100%)]'
                         }`}
                     >
@@ -246,18 +246,18 @@ export default function CorporateEventsPage() {
                         />
                         <div className="absolute inset-0 bg-brand-black/20"></div>
                         
-                        <div className="absolute bottom-12 left-12 mix-blend-difference text-brand-white z-10">
-                            <h3 className="text-6xl md:text-8xl font-display font-extrabold uppercase tracking-tighter leading-none">
+                        <div className="absolute bottom-6 sm:bottom-8 md:bottom-12 left-6 sm:left-8 md:left-12 mix-blend-difference text-brand-white z-10 pr-4">
+                            <h3 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-display font-extrabold uppercase tracking-tighter leading-none">
                                 Make An <br /> <span className="text-brand-accent">Inquiry</span>
                             </h3>
                         </div>
                     </div>
 
                     {/* Right Form */}
-                    <div className="w-full lg:w-1/2 flex flex-col justify-center py-8 fade-up" style={{ transitionDelay: '200ms' }}>
+                    <div className="w-full lg:w-1/2 flex flex-col justify-center py-6 sm:py-8 mt-6 sm:mt-8 lg:mt-0 fade-up" style={{ transitionDelay: '200ms' }}>
                         <div className="max-w-xl w-full mx-auto lg:mx-0">
-                            <h3 className="text-4xl md:text-5xl font-display font-bold uppercase tracking-tighter text-brand-black mb-2">Plan Your Event</h3>
-                            <p className="text-xs font-bold tracking-[0.15em] uppercase text-brand-gray mb-12">Submit your requirements to our events team.</p>
+                            <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-display font-bold uppercase tracking-tighter text-brand-black mb-2">Plan Your Event</h3>
+                            <p className="text-[8px] sm:text-[9px] md:text-xs font-bold tracking-[0.15em] uppercase text-brand-gray mb-8 sm:mb-12">Submit your requirements to our events team.</p>
                             
                             {/* Render Success State OR The Form */}
                             {formStatus === 'success' ? (
@@ -274,7 +274,7 @@ export default function CorporateEventsPage() {
                                         </div>
                                     )}
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
                                         <div>
                                             <input 
                                                 type="text" 
@@ -282,7 +282,7 @@ export default function CorporateEventsPage() {
                                                 required 
                                                 value={formData.f_name}
                                                 onChange={(e) => setFormData({...formData, f_name: e.target.value})}
-                                                className="w-full bg-transparent border-b border-brand-black pb-2 text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray rounded-none" 
+                                                className="w-full bg-transparent border-b border-brand-black pb-2 text-[9px] sm:text-[10px] md:text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray rounded-none" 
                                             />
                                         </div>
                                         <div>
@@ -292,7 +292,7 @@ export default function CorporateEventsPage() {
                                                 required 
                                                 value={formData.l_name}
                                                 onChange={(e) => setFormData({...formData, l_name: e.target.value})}
-                                                className="w-full bg-transparent border-b border-brand-black pb-2 text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray rounded-none" 
+                                                className="w-full bg-transparent border-b border-brand-black pb-2 text-[9px] sm:text-[10px] md:text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray rounded-none" 
                                             />
                                         </div>
                                     </div>
@@ -305,11 +305,11 @@ export default function CorporateEventsPage() {
                                             required 
                                             value={formData.company_name}
                                             onChange={(e) => setFormData({...formData, company_name: e.target.value})}
-                                            className="w-full bg-transparent border-b border-brand-black pb-2 text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray rounded-none" 
+                                            className="w-full bg-transparent border-b border-brand-black pb-2 text-[9px] sm:text-[10px] md:text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray rounded-none" 
                                         />
                                     </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
                                         <div className="flex items-end border-b border-brand-black pb-2 transition-colors focus-within:border-brand-accent group">
                                             <div className="flex items-center gap-2 mr-4 text-xs font-bold tracking-widest text-brand-black">
                                                 <span>+61</span>
@@ -320,7 +320,7 @@ export default function CorporateEventsPage() {
                                                 required 
                                                 value={formData.phone}
                                                 onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                                                className="w-full bg-transparent text-xs font-bold tracking-[0.15em] uppercase outline-none placeholder-brand-gray text-brand-black rounded-none" 
+                                                className="w-full bg-transparent text-[9px] sm:text-[10px] md:text-xs font-bold tracking-[0.15em] uppercase outline-none placeholder-brand-gray text-brand-black rounded-none" 
                                             />
                                         </div>
                                         <div>
@@ -330,7 +330,7 @@ export default function CorporateEventsPage() {
                                                 required 
                                                 value={formData.email}
                                                 onChange={(e) => setFormData({...formData, email: e.target.value})}
-                                                className="w-full bg-transparent border-b border-brand-black pb-2 text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray rounded-none" 
+                                                className="w-full bg-transparent border-b border-brand-black pb-2 text-[9px] sm:text-[10px] md:text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray rounded-none" 
                                             />
                                         </div>
                                     </div>
@@ -340,7 +340,7 @@ export default function CorporateEventsPage() {
                                         <select
                                             value={citySelection}
                                             onChange={(e) => setCitySelection(e.target.value)}
-                                            className={`w-full bg-transparent text-xs font-bold tracking-[0.15em] uppercase outline-none appearance-none cursor-pointer rounded-none ${citySelection === "" ? 'text-brand-gray' : 'text-brand-black'}`}
+                                            className={`w-full bg-transparent text-[9px] sm:text-[10px] md:text-xs font-bold tracking-[0.15em] uppercase outline-none appearance-none cursor-pointer rounded-none ${citySelection === "" ? 'text-brand-gray' : 'text-brand-black'}`}
                                             required
                                         >
                                             <option value="" disabled className="text-brand-gray">SELECT CITY *</option>
@@ -353,7 +353,7 @@ export default function CorporateEventsPage() {
                                             <option value="Other" className="text-brand-black">Other</option>
                                         </select>
                                         <div className="absolute right-0 top-[20%] pointer-events-none pb-2">
-                                            <i className="fa-solid fa-chevron-down text-brand-gray text-xs"></i>
+                                            <i className="fa-solid fa-chevron-down text-brand-gray text-[9px] sm:text-[10px] md:text-xs"></i>
                                         </div>
                                     </div>
 
@@ -365,7 +365,7 @@ export default function CorporateEventsPage() {
                                                 placeholder="ENTER YOUR CITY *"
                                                 value={customCity}
                                                 onChange={(e) => setCustomCity(e.target.value)}
-                                                className="w-full bg-transparent border-b border-brand-black pb-2 text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray rounded-none"
+                                                className="w-full bg-transparent border-b border-brand-black pb-2 text-[9px] sm:text-[10px] md:text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray rounded-none"
                                                 required
                                             />
                                         </div>
@@ -378,7 +378,7 @@ export default function CorporateEventsPage() {
                                             placeholder="EVENT DETAILS (DATES, OCCASION, SPECIFIC REQUIREMENTS)" 
                                             value={formData.description}
                                             onChange={(e) => setFormData({...formData, description: e.target.value})}
-                                            className="w-full bg-transparent border-b border-brand-black pb-2 pt-2 text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray resize-none rounded-none"
+                                            className="w-full bg-transparent border-b border-brand-black pb-2 pt-2 text-[9px] sm:text-[10px] md:text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray resize-none rounded-none"
                                         ></textarea>
                                     </div>
 
@@ -386,7 +386,7 @@ export default function CorporateEventsPage() {
                                     <button 
                                         type="submit" 
                                         disabled={formStatus === 'loading'}
-                                        className="group relative overflow-hidden inline-flex items-center justify-center w-full py-5 text-xs font-bold tracking-[0.15em] uppercase mt-8 bg-brand-black text-white transition-colors duration-300 disabled:opacity-50"
+                                        className="group relative overflow-hidden inline-flex items-center justify-center w-full py-4 sm:py-5 md:py-6 text-[8px] sm:text-[9px] md:text-xs font-bold tracking-[0.15em] uppercase mt-6 sm:mt-8 bg-brand-black text-white transition-colors duration-300 disabled:opacity-50"
                                     >
                                         <div className="absolute top-full left-0 w-full h-full bg-brand-accent transition-all duration-[400ms] ease-custom z-10 group-hover:top-0"></div>
                                         <span className="relative z-20">{formStatus === 'loading' ? 'Submitting...' : 'Submit Inquiry'}</span>

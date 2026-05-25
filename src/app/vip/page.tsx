@@ -130,12 +130,12 @@ export default function VipPage() {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-brand-black via-brand-black/40 to-transparent"></div>
                     
-                    <div className="absolute inset-0 flex flex-col justify-end pb-16 px-8 md:px-16 lg:px-24 z-20">
+                    <div className="absolute inset-0 flex flex-col justify-end pb-16 px-4 md:px-16 lg:px-24 z-20">
                         <div className="fade-up">
                             <span className="inline-block text-[10px] font-bold tracking-[0.2em] uppercase text-brand-white bg-brand-accent px-4 py-2 rounded-full mb-6">
                                 Bottle Service
                             </span>
-                            <h1 className="text-5xl md:text-7xl lg:text-[8vw] leading-[0.9] font-display font-extrabold uppercase tracking-tighter text-brand-white">
+                            <h1 className="text-[26px] min-[360px]:text-3xl text-5xl md:text-7xl lg:text-[8vw] leading-[0.9] font-display font-extrabold uppercase tracking-tighter text-brand-white">
                                 VIP <span className="text-transparent [-webkit-text-stroke:1px_#FFFFFF]">Tables</span>
                             </h1>
                         </div>
@@ -162,19 +162,19 @@ export default function VipPage() {
                 <div className="max-w-[1600px] mx-auto flex flex-col lg:flex-row gap-12 lg:gap-16 items-stretch">
                     
                     <div 
-                        className={`w-full lg:w-1/2 relative rounded-[2rem] overflow-hidden min-h-[600px] transition-[clip-path] duration-[1200ms] ease-custom ${
+                        className={`w-full lg:w-1/2 relative rounded-[2rem] overflow-hidden min-h-[400px] md:min-h-[600px] transition-[clip-path] duration-[1200ms] ease-custom ${
                             isRevealed ? '[clip-path:polygon(0_0,_100%_0,_100%_100%,_0_100%)]' : '[clip-path:polygon(0_100%,_100%_100%,_100%_100%,_0_100%)]'
                         }`}
                     >
                         <MediaSlot 
                             id="form-media" 
                             mediaMap={media} 
-                            className="absolute inset-0 w-full h-full object-cover filter grayscale-[10%]" 
+                            className="absolute inset-0 w-full h-[100px] md:h-full object-cover filter grayscale-[10%]" 
                         />
                         <div className="absolute inset-0 bg-brand-black/20"></div>
                         
                         <div className="absolute bottom-12 left-12 mix-blend-difference text-brand-white z-10">
-                            <h3 className="text-6xl md:text-8xl font-display font-extrabold uppercase tracking-tighter leading-none">
+                            <h3 className="text-3xl md:text-8xl font-display font-extrabold uppercase tracking-tighter leading-none">
                                 The <br /> Inner <br /> <span className="text-brand-accent">Circle</span>
                             </h3>
                         </div>
@@ -372,20 +372,24 @@ export default function VipPage() {
             </section>
 
             {/* ── BIRTHDAY CTA SECTION ── */}
-            <section className="py-32 px-6 md:px-12 bg-brand-black text-brand-white relative overflow-hidden flex items-center justify-center text-center">
+            <section className="py-16 sm:py-24 md:py-32 px-4 sm:px-6 md:px-12 bg-brand-black text-brand-white relative overflow-hidden flex items-center justify-center text-center">
                 <div className="absolute inset-0 w-full h-full pointer-events-none opacity-20">
-                    <div className="absolute top-0 left-1/4 w-96 h-96 bg-brand-accent rounded-full mix-blend-screen filter blur-[100px]"></div>
+                    {/* Scaled down the blur effect size on mobile so it doesn't wash out the text entirely */}
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 md:left-1/4 md:translate-x-0 w-64 h-64 md:w-96 md:h-96 bg-brand-accent rounded-full mix-blend-screen filter blur-[80px] md:blur-[100px]"></div>
                 </div>
                 
-                <div className="relative z-10 max-w-3xl mx-auto fade-up">
-                    <h2 className="text-5xl md:text-7xl lg:text-8xl font-display font-extrabold uppercase tracking-tighter leading-[0.9] mb-8">
+                <div className="relative z-10 max-w-3xl mx-auto fade-up w-full">
+                    <h2 className="text-2xl sm:text-5xl md:text-7xl lg:text-8xl font-display font-extrabold uppercase tracking-tighter leading-[1] md:leading-[0.9] mb-4 md:mb-8">
                         Celebrating A <br /> 
                         <span className="text-transparent [-webkit-text-stroke:1px_#FFFFFF]">Birthday?</span>
                     </h2>
-                    <p className="text-sm md:text-base font-medium text-brand-gray mb-12 max-w-xl mx-auto leading-relaxed">
+                    <p className="text-xs sm:text-sm md:text-base font-medium text-brand-gray mb-8 md:mb-12 max-w-xl mx-auto leading-relaxed">
                         Get your birthday vibes on with a friend for free. Secure exclusive birthday deals and complimentary ticket offers to make your night legendary.
                     </p>
-                    <a href="/birthday" className="relative inline-flex items-center justify-center bg-transparent text-white border border-white px-12 py-5 rounded-full text-xs font-bold tracking-[0.15em] uppercase transition-all duration-300 hover:bg-white hover:text-brand-black">
+                    <a 
+                        href="/birthday" 
+                        className="relative inline-flex items-center justify-center bg-transparent text-white border border-white px-6 py-4 md:px-12 md:py-5 rounded-full text-[10px] sm:text-xs font-bold tracking-[0.15em] uppercase transition-all duration-300 hover:bg-white hover:text-brand-black w-full sm:w-auto"
+                    >
                         View Birthday Offers
                     </a>
                 </div>
