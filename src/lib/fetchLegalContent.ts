@@ -2,7 +2,7 @@
 
 export async function getLegalContent(slug: string) {
   // Use your site's base URL. Ensure NEXT_PUBLIC_APP_URL is in your .env
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL;
   
   const res = await fetch(`${baseUrl}/api/admin/footer/legal?slug=${slug}`, {
     // Legal docs rarely change, so cache them heavily to save DB reads!
