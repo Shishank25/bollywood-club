@@ -1,5 +1,5 @@
 // src/app/terms-and-conditions/page.tsx
-import { getLegalContent } from '@/lib/fetchLegalContent';
+import { getLegalContentBySlug } from '@/lib/fetchLegalContent';
 import { notFound } from 'next/navigation';
 
 /**
@@ -17,7 +17,7 @@ export const revalidate = 86400; // Revalidate every 24 hours
 
 export default async function TermsAndConditionsPage() {
   // Hardcode the slug for the Terms and Conditions page
-  const doc = await getLegalContent('terms');
+  const doc = await getLegalContentBySlug('terms');
 
   if (!doc) {
     // Triggers the standard Next.js app/not-found.tsx page

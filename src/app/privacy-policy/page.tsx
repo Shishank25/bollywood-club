@@ -1,5 +1,5 @@
 // src/app/privacy-policy/page.tsx
-import { getLegalContent } from '@/lib/fetchLegalContent';
+import { getLegalContentBySlug } from '@/lib/fetchLegalContent';
 import { notFound } from 'next/navigation';
 
 /**
@@ -17,7 +17,7 @@ export const revalidate = 86400; // Revalidate every 24 hours
 
 export default async function PrivacyPolicyPage() {
   // Since this is the explicit Privacy Policy page, we hardcode the slug.
-  const doc = await getLegalContent('privacy-policy');
+  const doc = await getLegalContentBySlug('privacy-policy');
 
   if (!doc) {
     // Triggers the standard Next.js app/not-found.tsx page
