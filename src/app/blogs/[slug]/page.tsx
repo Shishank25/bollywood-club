@@ -6,6 +6,7 @@ import Image from '@tiptap/extension-image';
 import Link from '@tiptap/extension-link';
 import Underline from '@tiptap/extension-underline';
 import TextAlign from '@tiptap/extension-text-align';
+import BackButton from './BackButton';
 
 // Revalidate the page cache every 60 seconds
 export const revalidate = 60; 
@@ -117,12 +118,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
             {/* BACK TO JOURNAL CTA */}
             <section className="py-20 border-t border-brand-border bg-brand-offwhite text-center">
-                <button 
-                onClick={() => window.history.back()} 
-                className="inline-block border border-brand-black px-12 py-5 rounded-full text-xs font-bold tracking-[0.15em] uppercase text-brand-black hover:bg-brand-black hover:text-brand-white transition-colors"
-                >
-                ← Back to The Journal
-                </button>
+                <BackButton />
             </section>
 
         </main>
