@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { MediaAsset } from "@/lib/media"; 
 import MediaSlot from "@/lib/media"; 
+import ScrollDiscoVideo from "@/components/Home/DiscoScrollSection";
 
 export default function HomePage() {
   const [media, setMedia] = useState<Record<string, MediaAsset>>({});
@@ -222,9 +223,9 @@ export default function HomePage() {
           <MediaSlot 
             id="hero-video" 
             mediaMap={media} 
-            className="w-full h-full object-cover opacity-90 mix-blend-multiply grayscale-[10%]" 
+            className="w-full h-full object-cover opacity-100 mix-blend-multiply" 
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-white/90 via-white/30 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-white/70 via-transparent to-transparent" />
         </div>
 
         <div className="relative z-10 w-full max-w-[1600px] mx-auto flex flex-col md:flex-row justify-between items-end gap-4 sm:gap-6 md:gap-10 fade-up">
@@ -340,14 +341,14 @@ export default function HomePage() {
                     className="group flex flex-col fade-up scale-hover justify-between flex-grow w-[85vw] sm:w-auto shrink-0 sm:shrink snap-center" 
                     style={{ transitionDelay: `${index * 100}ms` }}
                   >
-                    <div className="w-full aspect-[3/4] overflow-hidden bg-brand-offwhite mb-2 sm:mb-3 md:mb-4 rounded-lg">
+                    <div className="w-full aspect-[4/4] overflow-hidden bg-brand-offwhite mb-2 sm:mb-3 md:mb-4 rounded-lg">
                       <img 
                         src={
                           image?.startsWith("http")
                             ? image
                             : `https://147.79.70.30.nip.io:8444/${image}`
                         }
-                        className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-500" 
+                        className="w-full h-full object-cover filter grayscale-0 group-hover:grayscale-0 transition-all duration-500" 
                         alt={`${title} flyer`} 
                       />
                     </div>
@@ -372,6 +373,8 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* <ScrollDiscoVideo /> */}
 
       {/* ── Cinematic Highlights ── */}
       <section className="py-12 sm:py-16 md:py-24 bg-brand-black text-white px-3 sm:px-4 md:px-6 lg:px-12 overflow-hidden">
