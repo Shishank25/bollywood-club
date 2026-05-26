@@ -20,6 +20,10 @@
   --animate-marquee: marquee 25s linear infinite;
 }
 
+html, body {
+  transition: background-color 0.1s linear;
+}
+
 body {
   background: var(--color-brand-white);
   color: var(--color-brand-black);

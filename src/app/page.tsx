@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import Link from "next/link";
 import { MediaAsset } from "@/lib/media"; 
 import MediaSlot from "@/lib/media"; 
@@ -13,7 +13,94 @@ export default function HomePage() {
   const [events, setEvents] = useState<any[]>([]);
   const [isEventsLoading, setIsEventsLoading] = useState(true);
 
-  // Modal State
+  const discoRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = discoRef.current;
+    if (!el) return;  
+
+    const FROM = { r: 255, g: 255, b: 255 };
+    const TO   = { r: 16,  g: 8,   b: 6 };
+
+    const TRANSITION_DISTANCE = 600;
+
+    // Visual progress currently being rendered
+    let currentProgress = 0;
+
+    // Latest desired progress from scroll
+    let targetProgress = 0;
+
+    let rafId: number;
+
+    document.documentElement.style.willChange = 'background-color';
+    document.body.style.willChange = 'background-color';
+
+    const updateTargetFromScroll = () => {
+      const discoTop = el.offsetTop;
+
+      const transitionStartY = discoTop - TRANSITION_DISTANCE;
+      const transitionEndY   = discoTop;
+
+      const raw =
+        (window.scrollY - transitionStartY) /
+        (transitionEndY - transitionStartY);
+
+      const t = Math.min(Math.max(raw, 0), 1);
+
+      // smoothstep
+      targetProgress = t * t * (3 - 2 * t);
+    };
+
+    const animate = () => {
+      // LERP SMOOTHING
+      currentProgress +=
+        (targetProgress - currentProgress) * 0.08;
+
+      // Snap when extremely close
+      if (Math.abs(targetProgress - currentProgress) < 0.001) {
+        currentProgress = targetProgress;
+      }
+
+      const r = Math.round(
+        FROM.r + (TO.r - FROM.r) * currentProgress
+      );
+
+      const g = Math.round(
+        FROM.g + (TO.g - FROM.g) * currentProgress
+      );
+
+      const b = Math.round(
+        FROM.b + (TO.b - FROM.b) * currentProgress
+      );
+
+      const bg = `rgb(${r},${g},${b})`;
+
+      document.documentElement.style.backgroundColor = bg;
+      document.body.style.backgroundColor = bg;
+
+      rafId = requestAnimationFrame(animate);
+    };
+
+    window.addEventListener('scroll', updateTargetFromScroll, {
+      passive: true,
+    });
+
+    updateTargetFromScroll();
+    animate();
+
+    return () => {
+      window.removeEventListener('scroll', updateTargetFromScroll);
+
+      cancelAnimationFrame(rafId);
+
+      document.documentElement.style.willChange = '';
+      document.body.style.willChange = '';
+
+      document.documentElement.style.backgroundColor = '';
+      document.body.style.backgroundColor = '';
+    };
+  }, []);
+
   const [ticketModalEventId, setTicketModalEventId] = useState<string | null>(null);
 
   // Form State
@@ -254,64 +341,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── Upcoming Events ── */}
-      {/* <section id="events" className="pt-12 sm:pt-16 md:pt-24 pb-16 sm:pb-20 md:pb-32 bg-brand-white px-3 sm:px-4 md:px-6 lg:px-12">
-        <div className="max-w-[1600px] mx-auto">
-          <div className="flex justify-between items-end mb-6 sm:mb-10 md:mb-16 fade-up">
-            <h2 className="text-2xl sm:text-3xl md:text-5xl lg:text-7xl font-display font-bold tracking-tighter uppercase">
-              Upcoming Events
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-4 md:gap-6 lg:gap-x-6 lg:gap-y-12 border-t border-brand-border pt-6 sm:pt-8 md:pt-10">
-            {isEventsLoading ? (
-              <div className="col-span-full text-center text-brand-gray font-bold tracking-[0.15em] uppercase text-xs sm:text-sm">
-                Loading events...
-              </div>
-            ) : (
-              events.map((event, index) => {
-                const title = event.basicInfo?.name || event.title || "TBA";
-                const venue = getVenueFromTitle(title);
-                const image = event.media?.coverImage || event.img || "https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=800&auto=format&fit=crop";
-                const eventId = event._id;
-
-                return (
-                  <div 
-                    key={eventId || index} 
-                    className="group flex flex-col fade-up scale-hover justify-between flex-grow" 
-                    style={{ transitionDelay: `${index * 100}ms` }}
-                  >
-                    <div className="w-full aspect-[3/4] overflow-hidden bg-brand-offwhite mb-2 sm:mb-3 md:mb-4 rounded-lg">
-                      <img 
-                        src={
-                          image?.startsWith("http")
-                            ? image
-                            : `https://147.79.70.30.nip.io:8444/${image}`
-                        }
-                        className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-500" 
-                        alt={`${title} flyer`} 
-                      />
-                    </div>
-                    <div className="flex flex-col flex-1 justify-between">
-                      <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl font-display font-bold uppercase tracking-tighter mb-0.5 sm:mb-1 text-wrap">{title}</h3>
-                      <p className="text-[8px] sm:text-xs md:text-sm font-medium text-brand-black mb-2 sm:mb-3 md:mb-4 sm:mb-6 flex-1">{venue}</p>
-                      <button
-                        onClick={() => setTicketModalEventId(eventId)}
-                        className="btn-outline w-full py-2 sm:py-3 md:py-4 rounded-lg sm:rounded-full text-[12px] sm:text-[9px] md:text-xs lg:text-sm font-bold tracking-[0.15em] uppercase text-center"
-                      >
-                        Reserve Tickets
-                      </button>
-                    </div>
-                  </div>
-                );
-              })
-            )}
-          </div>
-        </div>
-      </section> */}
-
-      <section id="events" className="pt-12 sm:pt-16 md:pt-24 pb-16 sm:pb-20 md:pb-32 bg-brand-white px-3 sm:px-4 md:px-6 lg:px-12">
-        <div className="max-w-[1600px] mx-auto">
+      <section id="events" className="pt-12 sm:pt-16 md:pt-24 pb-16 sm:pb-20 md:pb-32 px-3 sm:px-4 md:px-6 lg:px-12">
+        <div className="max-w-[1600px] mx-auto h-[550px]">
           <div className="flex justify-between items-end mb-6 sm:mb-10 md:mb-16 fade-up">
             <h2 className="text-2xl sm:text-3xl md:text-5xl lg:text-7xl font-display font-bold tracking-tighter uppercase">
               Upcoming Events
@@ -323,7 +354,7 @@ export default function HomePage() {
             - Added `overflow-x-auto`, `snap-x`, and `snap-mandatory` for mobile scrolling.
             - Added custom utilities to hide the ugly native scrollbar.
           */}
-          <div className="flex sm:grid flex-nowrap sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-4 md:gap-6 lg:gap-x-6 lg:gap-y-12 border-t border-brand-border pt-6 sm:pt-8 md:pt-10 overflow-x-auto sm:overflow-visible snap-x snap-mandatory pb-6 px-6 sm:pb-0 scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+          <div className="flex sm:grid flex-nowrap sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-4 md:gap-6 lg:gap-x-6 lg:gap-y-12 border-t border-brand-border pt-2 sm:pt-8 md:pt-10 overflow-x-auto overflow-y-hidden sm:overflow-visible snap-x snap-mandatory pb-6 px-6 sm:pb-0 scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
             {isEventsLoading ? (
               <div className="col-span-full w-full text-center text-brand-gray font-bold tracking-[0.15em] uppercase text-xs sm:text-sm">
                 Loading events...
@@ -374,7 +405,11 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* <ScrollDiscoVideo /> */}
+      <div className="h-[200px]" />
+
+      <div ref={discoRef}>
+        <ScrollDiscoVideo />
+      </div>
 
       {/* ── Cinematic Highlights ── */}
       <section className="py-12 sm:py-16 md:py-24 bg-brand-black text-white px-3 sm:px-4 md:px-6 lg:px-12 overflow-hidden">
