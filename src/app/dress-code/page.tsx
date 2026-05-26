@@ -1,5 +1,5 @@
 // src/app/dress-code/page.tsx
-import { getLegalContent } from '@/lib/fetchLegalContent';
+import { getLegalContentBySlug } from '@/lib/fetchLegalContent';
 import { notFound } from 'next/navigation';
 
 /**
@@ -17,9 +17,7 @@ export const revalidate = 86400; // Revalidate every 24 hours
 
 export default async function DressCodePage() {
   // Fetch the dress code data
-  const doc = await getLegalContent('dress-code');
-
-  console.log('Fetched Dress Code Document:', doc); // Debug log to verify data fetching
+  const doc = await getLegalContentBySlug('dress-code');
 
   if (!doc) {
     notFound(); 

@@ -1,18 +1,14 @@
-// src/lib/fetchLegalContent.ts
+import { neon } from '@neondatabase/serverless';
 
-export async function getLegalContent(slug: string) {
-  // Use your site's base URL. Ensure NEXT_PUBLIC_APP_URL is in your .env
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL;
-  
-  const res = await fetch(`${baseUrl}/api/admin/footer/legal?slug=${slug}`, {
-    // Legal docs rarely change, so cache them heavily to save DB reads!
-    next: { revalidate: 86400 }, // Revalidate every 24 hours
-  });
+const sql = neon(process.env.DATABASE_URL!);
 
-  if (!res.ok) {
-    if (res.status === 404) return null;
-    throw new Error(`Failed to fetch ${slug} content`);
-  }
+export async function getLegalContentBySlug(slug: string) {
+  const rows = await sql`
+    SELECT id, slug, label, href, content, is_active, image_url
+    FROM "FooterLegal"
+    WHERE slug = ${slug}
+    LIMIT 1
+  `;
 
-  return res.json();
+  return rows[0] || null;
 }
