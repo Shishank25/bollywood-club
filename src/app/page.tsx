@@ -229,7 +229,10 @@ export default function HomePage() {
 
         <div className="relative z-10 w-full max-w-[1600px] mx-auto flex flex-col md:flex-row justify-between items-end gap-4 sm:gap-6 md:gap-10 fade-up">
           <div className="pl-4 max-w-3xl w-full">
-            <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-7xl xl:text-[6vw] font-display font-extrabold tracking-tighter leading-[0.9] text-brand-black uppercase mb-2 sm:mb-3 md:mb-4 lg:mb-6">
+            <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-7xl xl:text-[6vw] 
+            font-display font-extrabold tracking-tighter 
+            leading-[1.15] sm:leading-[1.05] lg:leading-[0.9] 
+            text-brand-black uppercase mb-2 sm:mb-3 md:mb-4 lg:mb-6">
               Elevate Your<br />
               <span className="text-outline">Nightlife</span><br />
               Experience.
@@ -240,10 +243,10 @@ export default function HomePage() {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 md:gap-4 w-full md:w-auto mt-3 md:mt-0">
-            <Link href="/vip" className="btn-outline px-4 sm:px-6 md:px-10 py-2 sm:py-3 md:py-4 rounded-full text-[8px] sm:text-[9px] md:text-xs lg:text-sm font-bold tracking-[0.15em] uppercase w-full sm:w-auto text-center">
+            <Link href="/vip" className="btn-outline px-4 sm:px-6 md:px-10 py-2 sm:py-3 md:py-4 rounded-lg sm:rounded-full text-[12px] sm:text-[9px] md:text-xs lg:text-sm font-bold tracking-[0.15em] uppercase w-full sm:w-auto text-center">
               <span>VIP Access</span>
             </Link>
-            <Link href="#events" className="btn-monumental px-4 sm:px-6 md:px-10 py-2 sm:py-3 md:py-4 rounded-full text-[8px] sm:text-[9px] md:text-xs lg:text-sm font-bold tracking-[0.15em] uppercase w-full sm:w-auto text-center">
+            <Link href="#events" className="btn-monumental px-4 sm:px-6 md:px-10 py-2 sm:py-3 md:py-4 rounded-lg sm:rounded-full text-[12px] sm:text-[9px] md:text-xs lg:text-sm font-bold tracking-[0.15em] uppercase w-full sm:w-auto text-center">
               <span>Reserve Tickets</span>
             </Link>
           </div>
@@ -251,7 +254,7 @@ export default function HomePage() {
       </section>
 
       {/* ── Upcoming Events ── */}
-      <section id="events" className="pt-12 sm:pt-16 md:pt-24 pb-16 sm:pb-20 md:pb-32 bg-brand-white px-3 sm:px-4 md:px-6 lg:px-12">
+      {/* <section id="events" className="pt-12 sm:pt-16 md:pt-24 pb-16 sm:pb-20 md:pb-32 bg-brand-white px-3 sm:px-4 md:px-6 lg:px-12">
         <div className="max-w-[1600px] mx-auto">
           <div className="flex justify-between items-end mb-6 sm:mb-10 md:mb-16 fade-up">
             <h2 className="text-2xl sm:text-3xl md:text-5xl lg:text-7xl font-display font-bold tracking-tighter uppercase">
@@ -259,7 +262,7 @@ export default function HomePage() {
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 lg:gap-x-6 lg:gap-y-12 border-t border-brand-border pt-6 sm:pt-8 md:pt-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-4 md:gap-6 lg:gap-x-6 lg:gap-y-12 border-t border-brand-border pt-6 sm:pt-8 md:pt-10">
             {isEventsLoading ? (
               <div className="col-span-full text-center text-brand-gray font-bold tracking-[0.15em] uppercase text-xs sm:text-sm">
                 Loading events...
@@ -293,7 +296,71 @@ export default function HomePage() {
                       <p className="text-[8px] sm:text-xs md:text-sm font-medium text-brand-black mb-2 sm:mb-3 md:mb-4 sm:mb-6 flex-1">{venue}</p>
                       <button
                         onClick={() => setTicketModalEventId(eventId)}
-                        className="btn-outline w-full py-2 sm:py-3 md:py-4 rounded-full text-[8px] sm:text-[9px] md:text-xs lg:text-sm font-bold tracking-[0.15em] uppercase text-center"
+                        className="btn-outline w-full py-2 sm:py-3 md:py-4 rounded-lg sm:rounded-full text-[12px] sm:text-[9px] md:text-xs lg:text-sm font-bold tracking-[0.15em] uppercase text-center"
+                      >
+                        Reserve Tickets
+                      </button>
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </div>
+      </section> */}
+
+      <section id="events" className="pt-12 sm:pt-16 md:pt-24 pb-16 sm:pb-20 md:pb-32 bg-brand-white px-3 sm:px-4 md:px-6 lg:px-12">
+        <div className="max-w-[1600px] mx-auto">
+          <div className="flex justify-between items-end mb-6 sm:mb-10 md:mb-16 fade-up">
+            <h2 className="text-2xl sm:text-3xl md:text-5xl lg:text-7xl font-display font-bold tracking-tighter uppercase">
+              Upcoming Events
+            </h2>
+          </div>
+
+          {/* CONTAINER UPDATES: 
+            - Changed to `flex` on mobile, `grid` on `sm` and above.
+            - Added `overflow-x-auto`, `snap-x`, and `snap-mandatory` for mobile scrolling.
+            - Added custom utilities to hide the ugly native scrollbar.
+          */}
+          <div className="flex sm:grid flex-nowrap sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-4 md:gap-6 lg:gap-x-6 lg:gap-y-12 border-t border-brand-border pt-6 sm:pt-8 md:pt-10 overflow-x-auto sm:overflow-visible snap-x snap-mandatory pb-6 px-6 sm:pb-0 scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+            {isEventsLoading ? (
+              <div className="col-span-full w-full text-center text-brand-gray font-bold tracking-[0.15em] uppercase text-xs sm:text-sm">
+                Loading events...
+              </div>
+            ) : (
+              events.map((event, index) => {
+                const title = event.basicInfo?.name || event.title || "TBA";
+                const venue = getVenueFromTitle(title);
+                const image = event.media?.coverImage || event.img || "https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=800&auto=format&fit=crop";
+                const eventId = event._id;
+
+                return (
+                  <div 
+                    key={eventId || index}
+                    className="group flex flex-col fade-up scale-hover justify-between flex-grow w-[85vw] sm:w-auto shrink-0 sm:shrink snap-center" 
+                    style={{ transitionDelay: `${index * 100}ms` }}
+                  >
+                    <div className="w-full aspect-[3/4] overflow-hidden bg-brand-offwhite mb-2 sm:mb-3 md:mb-4 rounded-lg">
+                      <img 
+                        src={
+                          image?.startsWith("http")
+                            ? image
+                            : `https://147.79.70.30.nip.io:8444/${image}`
+                        }
+                        className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-500" 
+                        alt={`${title} flyer`} 
+                      />
+                    </div>
+                    <div className="flex flex-col flex-1 justify-between">
+                      <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl font-display font-bold uppercase tracking-tighter mb-0.5 sm:mb-1 text-wrap">
+                        {title}
+                      </h3>
+                      <p className="text-[8px] sm:text-xs md:text-sm font-medium text-brand-black mb-2 sm:mb-3 md:mb-4 sm:mb-6 flex-1">
+                        {venue}
+                      </p>
+                      <button
+                        onClick={() => setTicketModalEventId(eventId)}
+                        className="btn-outline w-full py-2 sm:py-3 md:py-4 rounded-lg sm:rounded-full text-[12px] sm:text-[9px] md:text-xs lg:text-sm font-bold tracking-[0.15em] uppercase text-center"
                       >
                         Reserve Tickets
                       </button>
