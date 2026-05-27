@@ -412,7 +412,7 @@ export default function HomePage() {
       </div> */}
 
       {/* ── Cinematic Highlights ── */}
-      <section className="py-12 sm:py-16 md:py-24 bg-brand-black text-white px-3 sm:px-4 md:px-6 lg:px-12 overflow-hidden">
+      <section className="mt-12 py-12 sm:py-16 md:py-24 bg-brand-black text-white px-3 sm:px-4 md:px-6 lg:px-12 overflow-hidden">
         <div className="max-w-[1600px] mx-auto fade-up">
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-display font-bold tracking-tighter uppercase mb-6 sm:mb-8 md:mb-12">
             Cinematic Highlights
