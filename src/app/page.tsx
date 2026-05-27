@@ -354,7 +354,7 @@ export default function HomePage() {
             - Added `overflow-x-auto`, `snap-x`, and `snap-mandatory` for mobile scrolling.
             - Added custom utilities to hide the ugly native scrollbar.
           */}
-          <div className="flex sm:grid flex-nowrap sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-4 md:gap-6 lg:gap-x-6 lg:gap-y-12 border-t border-brand-border pt-2 sm:pt-8 md:pt-10 overflow-x-auto overflow-y-hidden sm:overflow-visible snap-x snap-mandatory pb-6 px-6 sm:pb-0 scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+          <div className="flex flex-nowrap sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-4 md:gap-6 lg:gap-x-6 lg:gap-y-12 border-t border-brand-border pt-2 sm:pt-8 md:pt-10 overflow-x-auto overflow-y-hidden snap-x snap-mandatory pb-6 px-6 sm:pb-0 scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden max-h-[550px]">
             {isEventsLoading ? (
               <div className="col-span-full w-full text-center text-brand-gray font-bold tracking-[0.15em] uppercase text-xs sm:text-sm">
                 Loading events...
@@ -372,7 +372,8 @@ export default function HomePage() {
                     className="group flex flex-col fade-up scale-hover justify-between flex-grow w-[85vw] sm:w-auto shrink-0 sm:shrink snap-center" 
                     style={{ transitionDelay: `${index * 100}ms` }}
                   >
-                    <div className="w-full aspect-[4/4] overflow-hidden bg-brand-offwhite mb-2 sm:mb-3 md:mb-4 rounded-lg">
+                    {/* UPDATED: Replaced aspect-[4/4] with h-64 md:h-[300px] */}
+                    <div className="w-full h-64 md:h-[300px] overflow-hidden bg-brand-offwhite mb-2 sm:mb-3 md:mb-4 rounded-lg shrink-0">
                       <img 
                         src={
                           image?.startsWith("http")
@@ -412,7 +413,7 @@ export default function HomePage() {
       </div> */}
 
       {/* ── Cinematic Highlights ── */}
-      <section className="mt-12 py-12 sm:py-16 md:py-24 bg-brand-black text-white px-3 sm:px-4 md:px-6 lg:px-12 overflow-hidden">
+      <section className="md:mt-12 py-12 sm:py-16 md:py-24 bg-brand-black text-white px-3 sm:px-4 md:px-6 lg:px-12 overflow-hidden">
         <div className="max-w-[1600px] mx-auto fade-up">
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-display font-bold tracking-tighter uppercase mb-6 sm:mb-8 md:mb-12">
             Cinematic Highlights
