@@ -45,6 +45,10 @@ body {
   -webkit-text-stroke: 0px #0A0A0A;
   transition: color 0.4s ease;
 }
+.text-outline-white {
+  color: transparent;
+  -webkit-text-stroke: 1px white;
+}
 
 /* Image Reveal & Hover FX */
 .img-reveal {

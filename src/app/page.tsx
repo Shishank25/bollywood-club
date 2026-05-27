@@ -5,6 +5,7 @@ import Link from "next/link";
 import { MediaAsset } from "@/lib/media"; 
 import MediaSlot from "@/lib/media"; 
 import ScrollDiscoVideo from "@/components/Home/DiscoScrollSection";
+import LeadForm from "@/components/LeadForm";
 
 export default function HomePage() {
   const [media, setMedia] = useState<Record<string, MediaAsset>>({});
@@ -102,6 +103,7 @@ export default function HomePage() {
   // }, []);
 
   const [ticketModalEventId, setTicketModalEventId] = useState<string | null>(null);
+  const [vipModal, setVipModal] = useState(false);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -201,40 +203,6 @@ export default function HomePage() {
     fetchEvents();
   }, []);
 
-  // 3. Handle Form Submission
-  const handleSubscribe = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setFormStatus('loading');
-
-    const finalCity = citySelection === 'Other' ? customCity : citySelection;
-
-    try {
-      const res = await fetch('/api/leads', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          form_type: 'home_newsletter',
-          f_name: formData.f_name,
-          l_name: formData.l_name,
-          email: formData.email,
-          phone: formData.phone,
-          city: finalCity
-        })
-      });
-
-      if (res.ok) {
-        setFormStatus('success');
-        setFormData({ f_name: '', l_name: '', email: '', phone: '' });
-        setCitySelection("");
-        setCustomCity("");
-      } else {
-        setFormStatus('error');
-      }
-    } catch (error) {
-      setFormStatus('error');
-    }
-  };
-
   const getVenueFromTitle = (title: string) => {
     if (!title) return "";
     const normalizedTitle = title.toLowerCase();
@@ -304,15 +272,36 @@ export default function HomePage() {
         </div>
       )}
 
+      {vipModal && (
+      /* Full-screen overlay wrapper */
+      <div 
+        className="fixed inset-0 z-[999] flex items-center justify-center bg-black/40 p-4"
+        onClick={() => setVipModal(false)}  // Close when clicking outside the modal
+      >
+        {/* /* The Modal Box itself */ }
+        <div className="flex flex-col gap-6 sm:gap-3 w-full max-w-md max-h-[90vh] bg-white p-6 md:p-8 rounded-lg sm:rounded-xl shadow-2xl overflow-y-auto">
+          <h3 className="text-center text-xl font-bold uppercase tracking-widest mb-4">Request VIP Access</h3>
+          
+          <LeadForm
+            fields={['f_name', 'l_name', 'email', 'phone', 'city', 'dob', 'total_guests']}
+            formType="vip_table_request"
+            buttonText="Become a VIP"
+          />
+
+          <p className="text-gray-400 text-sm font-inter font-[600] tracking-widest text-center cursor-pointer hover:text-gray-500 w-24 self-center">Later</p>
+        </div>
+      </div>
+    )}
+
       {/* ── Hero ── */}
       <section className="relative h-[100svh] w-full flex flex-col justify-end px-3 sm:px-4 md:px-6 lg:px-12 pb-6 sm:pb-8 md:pb-12 pt-20 sm:pt-24 md:pt-32">
-        <div className="absolute inset-0 top-[88px] bottom-6 left-3 sm:left-4 md:left-6 right-3 sm:right-4 md:right-6 rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden bg-brand-offwhite img-reveal -z-10">
+        <div className="absolute inset-0 top-[88px] bottom-6 left-3 sm:left-4 md:left-6 right-3 sm:right-4 md:right-6 rounded-t-[1rem] sm:rounded-[2rem] overflow-hidden bg-brand-offwhite img-reveal -z-10">
           <MediaSlot 
             id="hero-video" 
             mediaMap={media} 
             className="w-full h-full object-cover opacity-100 mix-blend-multiply" 
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-white/70 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-white/90 via-black/20 to-black/30" />
         </div>
 
         <div className="relative z-10 w-full max-w-[1600px] mx-auto flex flex-col md:flex-row justify-between items-end gap-4 sm:gap-6 md:gap-10 fade-up">
@@ -320,20 +309,23 @@ export default function HomePage() {
             <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-7xl xl:text-[6vw] 
             font-display font-extrabold tracking-tighter 
             leading-[1.15] sm:leading-[1.05] lg:leading-[0.9] 
-            text-brand-black uppercase mb-2 sm:mb-3 md:mb-4 lg:mb-6">
+            text-brand-white uppercase mb-2 sm:mb-3 md:mb-4 lg:mb-6">
               Elevate Your<br />
               <span className="text-outline">Nightlife</span><br />
-              Experience.
+              <span className="text-gray-900">Experience.</span>
             </h1>
             <p className="text-[9px] sm:text-xs md:text-sm lg:text-base font-semibold tracking-[0.2em] uppercase text-brand-black/80">
               Curating Premium Bollywood Experiences Worldwide.
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 md:gap-4 w-full md:w-auto mt-3 md:mt-0">
-            <Link href="/vip" className="btn-outline px-4 sm:px-6 md:px-10 py-2 sm:py-3 md:py-4 rounded-lg sm:rounded-full text-[12px] sm:text-[9px] md:text-xs lg:text-sm font-bold tracking-[0.15em] uppercase w-full sm:w-auto text-center">
-              <span>VIP Access</span>
-            </Link>
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 md:gap-4 w-full md:w-auto mt-3 md:mt-0 px-2 pb-2">
+            <button 
+              onClick={() => setVipModal(true)}
+              className="bg-white border-1 sm:border-1 sm:bg-transparent sm:border-0  px-4 sm:px-6 md:px-10 py-2 sm:py-3 md:py-4 rounded-lg sm:rounded-full text-[12px] sm:text-[9px] md:text-xs lg:text-sm font-bold tracking-[0.15em] uppercase w-full sm:w-auto text-center"
+            >
+              <span className="">VIP Access</span>
+            </button>
             <Link href="#events" className="btn-monumental px-4 sm:px-6 md:px-10 py-2 sm:py-3 md:py-4 rounded-lg sm:rounded-full text-[12px] sm:text-[9px] md:text-xs lg:text-sm font-bold tracking-[0.15em] uppercase w-full sm:w-auto text-center">
               <span>Reserve Tickets</span>
             </Link>
@@ -341,8 +333,9 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Events */}
       <section id="events" className="pt-12 sm:pt-16 md:pt-24 pb-16 sm:pb-20 md:pb-32 px-3 sm:px-4 md:px-6 lg:px-12">
-        <div className="max-w-[1600px] mx-auto h-[550px]">
+        <div className="max-w-[1600px] mx-auto max-h-[550px]">
           <div className="flex justify-between items-end mb-6 sm:mb-10 md:mb-16 fade-up">
             <h2 className="text-2xl sm:text-3xl md:text-5xl lg:text-7xl font-display font-bold tracking-tighter uppercase">
               Upcoming Events
@@ -372,8 +365,12 @@ export default function HomePage() {
                     className="group flex flex-col fade-up scale-hover justify-between flex-grow w-[85vw] sm:w-auto shrink-0 sm:shrink snap-center" 
                     style={{ transitionDelay: `${index * 100}ms` }}
                   >
-                    {/* UPDATED: Replaced aspect-[4/4] with h-64 md:h-[300px] */}
-                    <div className="w-full h-64 md:h-[300px] overflow-hidden bg-brand-offwhite mb-2 sm:mb-3 md:mb-4 rounded-lg shrink-0">
+                    {/* UPDATED CONTAINER: 
+                      - `aspect-square` forces a 1:1 ratio.
+                      - `max-w-[350px]` caps the growth (adjust this value to your liking).
+                      - `mx-auto` keeps it centered if the parent column grows wider than the max-width.
+                    */}
+                    <div className="w-full aspect-square max-w-[350px] mx-auto overflow-hidden bg-brand-offwhite mb-2 sm:mb-3 md:mb-4 rounded-lg shrink-0">
                       <img 
                         src={
                           image?.startsWith("http")
@@ -384,7 +381,8 @@ export default function HomePage() {
                         alt={`${title} flyer`} 
                       />
                     </div>
-                    <div className="flex flex-col flex-1 justify-between">
+                    
+                    <div className="flex flex-col flex-1 justify-between mt-2">
                       <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl font-display font-bold uppercase tracking-tighter mb-0.5 sm:mb-1 text-wrap">
                         {title}
                       </h3>
@@ -393,7 +391,7 @@ export default function HomePage() {
                       </p>
                       <button
                         onClick={() => setTicketModalEventId(eventId)}
-                        className="btn-outline w-full py-2 sm:py-3 md:py-4 rounded-lg sm:rounded-full text-[12px] sm:text-[9px] md:text-xs lg:text-sm font-bold tracking-[0.15em] uppercase text-center"
+                        className="btn-outline w-full max-w-[350px] mx-auto py-2 sm:py-3 md:py-4 rounded-lg sm:rounded-full text-[12px] sm:text-[9px] md:text-xs lg:text-sm font-bold tracking-[0.15em] uppercase text-center"
                       >
                         Reserve Tickets
                       </button>
@@ -494,100 +492,11 @@ export default function HomePage() {
                 <p className="text-[8px] sm:text-xs md:text-sm tracking-[0.1em] uppercase text-brand-gray">We'll be in touch soon.</p>
               </div>
             ) : (
-              <form onSubmit={handleSubscribe} className="flex flex-col gap-4 sm:gap-6 md:gap-8">
-                
-                {formStatus === 'error' && (
-                  <div className="text-red-500 text-[8px] sm:text-[9px] md:text-xs font-bold uppercase tracking-widest">
-                    An error occurred. Please try again.
-                  </div>
-                )}
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                  <div className="border-b border-brand-black pb-2">
-                    <input
-                      type="text"
-                      placeholder="FIRST NAME *"
-                      value={formData.f_name}
-                      onChange={(e) => setFormData({...formData, f_name: e.target.value})}
-                      className="w-full bg-transparent text-[8px] sm:text-[9px] md:text-xs font-bold tracking-[0.15em] uppercase placeholder-brand-gray focus:outline-none"
-                      required
-                    />
-                  </div>
-                  <div className="border-b border-brand-black pb-2">
-                    <input
-                      type="text"
-                      placeholder="LAST NAME"
-                      value={formData.l_name}
-                      onChange={(e) => setFormData({...formData, l_name: e.target.value})}
-                      className="w-full bg-transparent text-[8px] sm:text-[9px] md:text-xs font-bold tracking-[0.15em] uppercase placeholder-brand-gray focus:outline-none"
-                    />
-                  </div>
-                </div>
-
-                <div className="border-b border-brand-black pb-2">
-                  <input
-                    type="email"
-                    placeholder="EMAIL ADDRESS"
-                    value={formData.email}
-                    onChange={(e) => setFormData({...formData, email: e.target.value})}
-                    className="w-full bg-transparent text-[8px] sm:text-[9px] md:text-xs font-bold tracking-[0.15em] uppercase placeholder-brand-gray focus:outline-none"
-                  />
-                </div>
-
-                <div className="border-b border-brand-black pb-2 flex items-center gap-3 sm:gap-4">
-                  <span className="text-[8px] sm:text-[9px] md:text-xs font-bold tracking-[0.15em] uppercase text-brand-black">+61</span>
-                  <input
-                    type="tel"
-                    placeholder="PHONE NO. *"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                    className="w-full bg-transparent text-[8px] sm:text-[9px] md:text-xs font-bold tracking-[0.15em] uppercase placeholder-brand-gray focus:outline-none"
-                    required
-                  />
-                </div>
-
-                <div className="border-b border-brand-black pb-2 relative">
-                  <select
-                    value={citySelection}
-                    onChange={(e) => setCitySelection(e.target.value)}
-                    className={`w-full bg-transparent text-[8px] sm:text-[9px] md:text-xs font-bold tracking-[0.15em] uppercase focus:outline-none appearance-none cursor-pointer ${citySelection === "" ? 'text-brand-gray' : 'text-brand-black'}`}
-                    required
-                  >
-                    <option value="" disabled className="text-brand-gray">SELECT CITY *</option>
-                    <option value="Melbourne" className="text-brand-black">Melbourne</option>
-                    <option value="Sydney" className="text-brand-black">Sydney</option>
-                    <option value="Perth" className="text-brand-black">Perth</option>
-                    <option value="Adelaide" className="text-brand-black">Adelaide</option>
-                    <option value="Brisbane" className="text-brand-black">Brisbane</option>
-                    <option value="Singapore" className="text-brand-black">Singapore</option>
-                    <option value="Other" className="text-brand-black">Other</option>
-                  </select>
-                  <div className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none">
-                    <i className="fa-solid fa-chevron-down text-brand-gray text-[8px] sm:text-[9px] md:text-xs"></i>
-                  </div>
-                </div>
-
-                {citySelection === 'Other' && (
-                  <div className="border-b border-brand-black pb-2 animate-in slide-in-from-top-2 duration-300">
-                    <input
-                      type="text"
-                      placeholder="ENTER YOUR CITY *"
-                      value={customCity}
-                      onChange={(e) => setCustomCity(e.target.value)}
-                      className="w-full bg-transparent text-[8px] sm:text-[9px] md:text-xs font-bold tracking-[0.15em] uppercase placeholder-brand-gray focus:outline-none"
-                      required
-                    />
-                  </div>
-                )}
-
-                <button
-                  type="submit"
-                  disabled={formStatus === 'loading'}
-                  className="btn-monumental w-full py-3 sm:py-4 md:py-5 text-[8px] sm:text-[9px] md:text-xs font-bold tracking-[0.15em] uppercase mt-2 sm:mt-4 disabled:opacity-50"
-                >
-                  <span>{formStatus === 'loading' ? 'Submitting...' : 'Subscribe'}</span>
-                </button>
-              </form>
+              <LeadForm
+                formType="home_newsletter" 
+                fields={['f_name', 'l_name', 'email', 'phone', 'city']} 
+                buttonText="Subscribe" 
+              />
             )}
           </div>
         </div>

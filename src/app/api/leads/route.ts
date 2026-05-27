@@ -8,7 +8,7 @@ export async function POST(request: Request) {
     // 1. Extract the new 'company_name' field
     const { 
       form_type, f_name, l_name, email, phone, city, 
-      total_guests, description, company_name 
+      total_guests, description, company_name, source_url: body_source_url 
     } = body;
 
     // 2. Validate required fields
@@ -18,7 +18,7 @@ export async function POST(request: Request) {
 
     // 3. Extract IP and Source URL 
     const ip_address = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'Unknown IP';
-    const source_url = request.headers.get('referer') || 'Direct';
+    const source_url = body_source_url || request.headers.get('referer') || 'Direct';
 
     const region = null;
     const country = null;
