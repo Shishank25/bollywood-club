@@ -310,7 +310,8 @@ export default function HomePage() {
             font-display font-extrabold tracking-tighter 
             leading-[1.15] sm:leading-[1.05] lg:leading-[0.9] 
             text-brand-white uppercase mb-2 sm:mb-3 md:mb-4 lg:mb-6">
-              Elevate Your<br />
+              <span className='flex-grow'>Elevate</span><br />
+              <span>Your</span><br />
               <span className="text-outline">Nightlife</span><br />
               <span className="text-gray-900">Experience.</span>
             </h1>
