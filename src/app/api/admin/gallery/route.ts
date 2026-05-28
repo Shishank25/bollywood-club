@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
     const direction = sort === 'display_order' ? 'ASC' : 'DESC';
 
     const sql = `SELECT * FROM gallery_posts ORDER BY ${orderBy} ${direction}`;
-    const result = await query(sql);
+    const result = await query(sql, []);
 
     return NextResponse.json(result.rows);
   } catch (error) {
