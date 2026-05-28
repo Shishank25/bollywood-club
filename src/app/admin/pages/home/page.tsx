@@ -23,7 +23,14 @@ const HOME_SLOTS = [
 const MAX_IMAGE_SIZE = 30 * 1024 * 1024;  // 30 MB
 const MAX_VIDEO_SIZE = 24 * 1024 * 1024;  // 24 MB
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/avif'];
-const ALLOWED_VIDEO_TYPES = ['video/mp4', 'video/webm', 'video/ogg', 'video/quicktime'];
+const ALLOWED_VIDEO_TYPES = [
+  'video/mp4', 
+  'video/webm', 
+  'video/ogg', 
+  'video/quicktime',
+  'audio/x-m4a', // Add this for .m4a files
+  'audio/mp4'    // Add this as a fallback for mp4 audio
+];
 
 function validateFile(file: File): string | null {
   const isImage = ALLOWED_IMAGE_TYPES.includes(file.type);

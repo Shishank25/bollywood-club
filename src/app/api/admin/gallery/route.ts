@@ -1,80 +1,137 @@
-import { query } from '@/lib/database/db';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { query } from '@/lib/database/db'; 
 
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const sort = searchParams.get('sort') || 'display_order';
-  
-  // Map allowed sort keys to prevent SQL injection
-  const sortMap: Record<string, string> = {
-    display_order: 'display_order ASC',
-    created: 'created_at DESC',
-    event_date: 'event_date DESC',
-    modified: 'updated_at DESC'
-  };
+const CRM_UPLOAD_URL = process.env.CRM_API_URL
+  ? `${process.env.CRM_API_URL}/api/media`
+  : 'https://147.79.70.30.nip.io:8990/api/media';
 
-  const orderBy = sortMap[sort] || 'display_order ASC';
+// Helper function to handle sending files to your CRM
+async function uploadToCRM(file: File, folder: string): Promise<string> {
+  const crmForm = new FormData();
+  crmForm.append('file', file);
+  crmForm.append('folder', folder);
 
-  try {
-    const { rows } = await query(`SELECT * FROM gallery_posts ORDER BY ${orderBy}`, []);
-    return NextResponse.json(rows);
-  } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch' }, { status: 500 });
+  const crmRes = await fetch(CRM_UPLOAD_URL, {
+    method: 'POST',
+    body: crmForm,
+    headers: {
+      ...(process.env.CRM_API_SECRET && {
+        Authorization: `Bearer ${process.env.CRM_API_SECRET}`,
+      }),
+    },
+  });
+
+  if (!crmRes.ok) {
+    const err = await crmRes.json().catch(() => ({}));
+    throw new Error(err.error ?? 'CRM upload failed');
   }
+
+  const crmData = await crmRes.json();
+  const fileUrl = crmData.file?.url ?? crmData.url ?? null;
+
+  if (!fileUrl) throw new Error('CRM did not return a file URL');
+  return fileUrl;
 }
 
-export async function POST(request: Request) {
+// ─── GET: Fetch all gallery posts ──────────────────────────────────────────────
+export async function GET(request: NextRequest) {
   try {
-    const body = await request.json();
-    const sql = `
-      INSERT INTO gallery_posts 
-      (title, slug, location, type, media_url, thumbnail_url, caption, category, is_featured, display_order, event_date)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *`;
+    const searchParams = request.nextUrl.searchParams;
+    const sort = searchParams.get('sort') || 'display_order';
     
-    const values = [
-      body.title, body.slug, body.location, body.type, body.media_url, 
-      body.thumbnail_url, body.caption, body.category,
-      body.is_featured || false, body.display_order || 0, body.event_date || null
-    ];
+    const allowedSorts = ['display_order', 'created_at', 'event_date', 'updated_at'];
+    const orderBy = allowedSorts.includes(sort) ? sort : 'display_order';
+    const direction = sort === 'display_order' ? 'ASC' : 'DESC';
 
-    const { rows } = await query(sql, values);
-    console.log('Created gallery post:', rows[0]);
-    return NextResponse.json(rows[0]);
+    const sql = `SELECT * FROM gallery_posts ORDER BY ${orderBy} ${direction}`;
+    const result = await query(sql);
+
+    return NextResponse.json(result.rows);
   } catch (error) {
-    console.log("Error creating gallery post:", error);
-    return NextResponse.json({ error: 'Failed to create' }, { status: 500 });
+    console.error('[GET /api/admin/gallery]', error);
+    return NextResponse.json({ error: 'Failed to fetch gallery posts' }, { status: 500 });
   }
 }
 
-export async function PUT(request: Request) {
+// ─── POST: Create or Update a gallery post (Handles Files & Strings) ───────────
+export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const sql = `
-      UPDATE gallery_posts SET 
-      title=$1, slug=$2, location=$3, type=$4, media_url=$5, thumbnail_url=$6, 
-      caption=$7, category=$8, is_featured=$9, display_order=$10, 
-      event_date=$11, updated_at=CURRENT_TIMESTAMP WHERE id=$12 RETURNING *`;
-    
-    const values = [
-      body.title, body.slug, body.location, body.type, body.media_url, 
-      body.thumbnail_url, body.caption, body.category, 
-      body.is_featured, body.display_order, body.event_date, body.id
-    ];
+    const formData = await request.formData();
 
-    const { rows } = await query(sql, values);
-    return NextResponse.json(rows[0]);
+    const id = formData.get('id') as string | null; // If ID exists, it's an update
+    const title = formData.get('title') as string;
+    const type = formData.get('type') as string;
+    const location = formData.get('location') as string | null;
+    const caption = formData.get('caption') as string | null;
+    const category = formData.get('category') as string | null;
+    const is_featured = formData.get('is_featured') === 'true';
+    const display_order = parseInt(formData.get('display_order') as string) || 0;
+    const slug = formData.get('slug') as string | null;
+    const event_date = formData.get('event_date') ? formData.get('event_date') as string : null;
+
+    if (!title || !type) {
+      return NextResponse.json({ error: 'Title and Type are required' }, { status: 400 });
+    }
+
+    // Handle Files
+    const file = formData.get('file') as File | null;
+    const thumbnailFile = formData.get('thumbnailFile') as File | null;
+    const folder = 'gallery';
+
+    let mediaUrl = formData.get('media_url') as string | null;
+    let thumbnailUrl = formData.get('thumbnail_url') as string | null; 
+
+    try {
+      if (file) mediaUrl = await uploadToCRM(file, folder);
+      if (thumbnailFile) thumbnailUrl = await uploadToCRM(thumbnailFile, folder);
+    } catch (uploadError: any) {
+      return NextResponse.json({ error: uploadError.message }, { status: 502 });
+    }
+
+    if (!mediaUrl) {
+      return NextResponse.json({ error: 'A media file or media_url is required' }, { status: 400 });
+    }
+
+    let sql = '';
+    let values: any[] = [];
+
+    if (id) {
+      // UPDATE existing post
+      sql = `
+        UPDATE gallery_posts SET
+          title = $1, location = $2, type = $3, media_url = $4, thumbnail_url = $5,
+          caption = $6, category = $7, is_featured = $8, display_order = $9,
+          slug = $10, event_date = $11, updated_at = CURRENT_TIMESTAMP
+        WHERE id = $12 RETURNING *;
+      `;
+      values = [title, location, type, mediaUrl, thumbnailUrl, caption, category, is_featured, display_order, slug, event_date, id];
+    } else {
+      // INSERT new post
+      sql = `
+        INSERT INTO gallery_posts (
+          title, location, type, media_url, thumbnail_url, caption, category, is_featured, display_order, slug, event_date
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *;
+      `;
+      values = [title, location, type, mediaUrl, thumbnailUrl, caption, category, is_featured, display_order, slug, event_date];
+    }
+
+    const result = await query(sql, values);
+    return NextResponse.json(result.rows[0]);
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to update' }, { status: 500 });
+    console.error('[POST /api/admin/gallery]', error);
+    return NextResponse.json({ error: error instanceof Error ? error.message : 'Request failed' }, { status: 500 });
   }
 }
 
-export async function DELETE(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const id = searchParams.get('id');
+// ─── DELETE: Remove a gallery post ─────────────────────────────────────────────
+export async function DELETE(request: NextRequest) {
   try {
-    await query('DELETE FROM gallery_posts WHERE id = $1', [id]);
+    const id = request.nextUrl.searchParams.get('id');
+    if (!id) return NextResponse.json({ error: 'ID is required' }, { status: 400 });
+
+    await query(`DELETE FROM gallery_posts WHERE id = $1`, [id]);
     return NextResponse.json({ success: true });
   } catch (error) {
-    return NextResponse.json({ error: 'Delete failed' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to delete post' }, { status: 500 });
   }
 }

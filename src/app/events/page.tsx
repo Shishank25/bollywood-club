@@ -68,8 +68,8 @@ function resolveImage(event: Event, fallbackIndex: number): string {
     '1549213713-52caee0428d6',
     '1492684223066-81342ee5ff30',
   ];
-  const img = event.media?.coverImage;
-  if (img) return `https://tixmojo.com/wapi${img}`;
+  const img = event.media?.coverImage?.startsWith("http") ? event.media.coverImage : `https://147.79.70.30.nip.io:8444/${event.media?.coverImage}`;
+  if (img) return img;
   const id = unsplashFallbacks[fallbackIndex % unsplashFallbacks.length];
   return `https://images.unsplash.com/photo-${id}?q=80&w=800&auto=format&fit=crop`;
 }

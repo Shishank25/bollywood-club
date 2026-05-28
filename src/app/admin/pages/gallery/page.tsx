@@ -53,6 +53,12 @@ export default function GalleryAdmin() {
   const [currentSort, setCurrentSort] = useState('display_order');
   const [editingPost, setEditingPost] = useState<any>(null);
 
+  const [postFile, setPostFile] = useState<File | null>(null);
+  const [postThumbFile, setPostThumbFile] = useState<File | null>(null);
+  const [isSavingPost, setIsSavingPost] = useState(false);
+  const postFileInputRef = useRef<HTMLInputElement>(null);
+  const postThumbInputRef = useRef<HTMLInputElement>(null);
+
   // Page Media State
   const [mediaAssets, setMediaAssets] = useState<Record<string, MediaAsset>>({});
   const [mediaLoading, setMediaLoading] = useState(true);
@@ -347,14 +353,46 @@ export default function GalleryAdmin() {
             <form 
               onSubmit={async (e) => {
                 e.preventDefault();
-                const method = editingPost.id ? 'PUT' : 'POST';
-                await fetch('/api/admin/gallery', {
-                  method,
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify(editingPost)
-                });
-                fetchPosts(currentSort);
-                setEditingPost(null);
+                setIsSavingPost(true);
+                try {
+                  const fd = new FormData();
+                  
+                  // Append text fields
+                  if (editingPost.id) fd.append('id', editingPost.id.toString());
+                  fd.append('title', editingPost.title || '');
+                  fd.append('type', editingPost.type || 'image');
+                  fd.append('is_featured', String(!!editingPost.is_featured));
+                  fd.append('display_order', (editingPost.display_order || 0).toString());
+                  
+                  if (editingPost.location) fd.append('location', editingPost.location);
+                  if (editingPost.caption) fd.append('caption', editingPost.caption);
+                  if (editingPost.category) fd.append('category', editingPost.category);
+                  if (editingPost.slug) fd.append('slug', editingPost.slug);
+                  if (editingPost.event_date) fd.append('event_date', editingPost.event_date);
+
+                  // Append files OR fallback to URL strings
+                  if (postFile) fd.append('file', postFile);
+                  else if (editingPost.media_url) fd.append('media_url', editingPost.media_url);
+
+                  if (postThumbFile) fd.append('thumbnailFile', postThumbFile);
+                  else if (editingPost.thumbnail_url) fd.append('thumbnail_url', editingPost.thumbnail_url);
+
+                  const res = await fetch('/api/admin/gallery', {
+                    method: 'POST', // POST handles both create and update with FormData
+                    body: fd
+                  });
+                  
+                  if (!res.ok) throw new Error("Failed to save");
+                  
+                  fetchPosts(currentSort);
+                  setEditingPost(null);
+                  setPostFile(null);
+                  setPostThumbFile(null);
+                } catch (err) {
+                  alert("Error saving post");
+                } finally {
+                  setIsSavingPost(false);
+                }
               }} 
               className="p-8 space-y-8"
             >
@@ -439,34 +477,109 @@ export default function GalleryAdmin() {
 
               {/* Section: Media */}
               <div className="space-y-4">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-600 border-b border-gray-800/60 pb-2">Media</p>
-
-                <div className="space-y-2">
-                  <label className="text-xs font-semibold uppercase tracking-wider text-gray-400">
-                    Media URL <span className="text-pink-500 ml-0.5">*</span>
-                  </label>
-                  <input 
-                    className="w-full bg-black border border-gray-800 rounded-sm p-3 text-sm text-white placeholder-gray-600" 
-                    placeholder="https://example.com/media.jpg" 
-                    value={editingPost.media_url || ''} 
-                    onChange={e => setEditingPost({...editingPost, media_url: e.target.value})} 
-                    required 
-                  />
+                <div className="flex items-center justify-between border-b border-gray-800/60 pb-2">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-gray-600">Media</p>
+                  <p className="text-[10px] text-gray-500">Drop files or paste URLs below</p>
                 </div>
 
-                <div className="space-y-2">
-                  <label className="text-xs font-semibold uppercase tracking-wider text-gray-400">Thumbnail URL</label>
-                  <input 
-                    className="w-full bg-black border border-gray-800 rounded-sm p-3 text-sm text-white placeholder-gray-600" 
-                    placeholder="https://example.com/thumb.jpg (falls back to Media URL)" 
-                    value={editingPost.thumbnail_url || ''} 
-                    onChange={e => setEditingPost({...editingPost, thumbnail_url: e.target.value})} 
-                  />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Main Media Upload */}
+                  <div className="space-y-2">
+                    <label className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+                      Main Media <span className="text-pink-500 ml-0.5">*</span>
+                    </label>
+                    <input 
+                      type="file" 
+                      className="hidden" 
+                      ref={postFileInputRef}
+                      accept={[...ALLOWED_IMAGE_TYPES, ...ALLOWED_VIDEO_TYPES].join(',')}
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                           setPostFile(file);
+                           // Auto-set type based on file
+                           const isVideo = ALLOWED_VIDEO_TYPES.includes(file.type);
+                           setEditingPost({...editingPost, type: isVideo ? 'video' : 'image'});
+                        }
+                      }}
+                    />
+                    
+                    {postFile ? (
+                      <div className="flex items-center gap-3 px-3 py-3 bg-black border border-gray-800 rounded-sm">
+                        <span className="text-xl">{ALLOWED_VIDEO_TYPES.includes(postFile.type) ? '🎬' : '🖼️'}</span>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs text-white truncate font-medium">{postFile.name}</p>
+                          <p className="text-[10px] text-gray-500 font-mono">{formatBytes(postFile.size)}</p>
+                        </div>
+                        <button type="button" onClick={() => setPostFile(null)} className="text-gray-500 hover:text-red-400">✕</button>
+                      </div>
+                    ) : (
+                      <div className="flex gap-2">
+                        <button 
+                          type="button"
+                          onClick={() => postFileInputRef.current?.click()}
+                          className="flex-shrink-0 bg-gray-900 hover:bg-gray-800 border border-gray-800 text-xs px-4 rounded-sm transition-colors"
+                        >
+                          Upload
+                        </button>
+                        <input 
+                          className="w-full bg-black border border-gray-800 rounded-sm p-3 text-sm text-white placeholder-gray-600" 
+                          placeholder="Or paste https://..." 
+                          value={editingPost.media_url || ''} 
+                          onChange={e => setEditingPost({...editingPost, media_url: e.target.value})} 
+                          required={!postFile} 
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Thumbnail Upload */}
+                  <div className={`space-y-2 transition-opacity ${editingPost.type === 'video' ? 'opacity-100' : 'opacity-50'}`}>
+                    <label className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+                      Thumbnail Cover
+                    </label>
+                    <input 
+                      type="file" 
+                      className="hidden" 
+                      ref={postThumbInputRef}
+                      accept={ALLOWED_IMAGE_TYPES.join(',')}
+                      onChange={(e) => {
+                        if (e.target.files?.[0]) setPostThumbFile(e.target.files[0]);
+                      }}
+                    />
+                    
+                    {postThumbFile ? (
+                      <div className="flex items-center gap-3 px-3 py-3 bg-black border border-gray-800 rounded-sm">
+                        <span className="text-xl">📸</span>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs text-white truncate font-medium">{postThumbFile.name}</p>
+                          <p className="text-[10px] text-gray-500 font-mono">{formatBytes(postThumbFile.size)}</p>
+                        </div>
+                        <button type="button" onClick={() => setPostThumbFile(null)} className="text-gray-500 hover:text-red-400">✕</button>
+                      </div>
+                    ) : (
+                      <div className="flex gap-2">
+                        <button 
+                          type="button"
+                          onClick={() => postThumbInputRef.current?.click()}
+                          className="flex-shrink-0 bg-gray-900 hover:bg-gray-800 border border-gray-800 text-xs px-4 rounded-sm transition-colors"
+                        >
+                          Upload
+                        </button>
+                        <input 
+                          className="w-full bg-black border border-gray-800 rounded-sm p-3 text-sm text-white placeholder-gray-600" 
+                          placeholder="Or paste https://..." 
+                          value={editingPost.thumbnail_url || ''} 
+                          onChange={e => setEditingPost({...editingPost, thumbnail_url: e.target.value})} 
+                        />
+                      </div>
+                    )}
+                  </div>
                 </div>
 
-                {/* Live preview if URL is present */}
-                {(editingPost.thumbnail_url || editingPost.media_url) && (
-                  <div className="rounded-sm overflow-hidden aspect-video bg-gray-900 border border-gray-800">
+                {/* Live preview for URLs (Optional if they use URLs instead of files) */}
+                {(!postFile && !postThumbFile && (editingPost.thumbnail_url || editingPost.media_url)) && (
+                  <div className="rounded-sm overflow-hidden aspect-video bg-gray-900 border border-gray-800 max-w-sm mt-2">
                     <img
                       src={editingPost.thumbnail_url || editingPost.media_url}
                       alt="Preview"
@@ -530,10 +643,18 @@ export default function GalleryAdmin() {
                   Cancel
                 </button>
                 <button 
-                  type="submit" 
-                  className="button-primary bg-pink-600 hover:bg-pink-700 px-8 py-2 text-xs font-semibold uppercase tracking-wider rounded-sm"
+                  type="submit"
+                  disabled={isSavingPost}
+                  className="button-primary bg-pink-600 hover:bg-pink-700 disabled:bg-pink-800 disabled:opacity-70 px-8 py-2 text-xs font-semibold uppercase tracking-wider rounded-sm flex items-center gap-2"
                 >
-                  {editingPost.id ? 'Save Changes' : 'Create Post'}
+                  {isSavingPost ? (
+                    <>
+                      <div className="w-3 h-3 border border-white/30 border-t-white rounded-full animate-spin" />
+                      Uploading...
+                    </>
+                  ) : (
+                    editingPost.id ? 'Save Changes' : 'Create Post'
+                  )}
                 </button>
               </div>
             </form>

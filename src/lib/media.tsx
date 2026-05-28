@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 
 // 1. Upgraded Type: We need optional fields for the low-res/thumbnail versions.
@@ -18,15 +18,19 @@ export type MediaAsset = {
 export default function MediaSlot({ 
   id, 
   mediaMap, 
-  className = "" 
+  className = "",
+  autoPlayVideo = false // NEW: Optional prop to force autoplaying video
 }: { 
   id: string; 
   mediaMap: Record<string, MediaAsset>; 
   className?: string;
+  autoPlayVideo?: boolean; // NEW: Prop type definition
 }) {
+  console.log("Media : ", mediaMap);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [mounted, setMounted] = useState(false); // Needed for Next.js SSR with Portals
   const asset = mediaMap[id];
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   // Set mounted state
   useEffect(() => {
@@ -49,6 +53,17 @@ export default function MediaSlot({
       document.body.style.overflow = "unset";
     };
   }, [isModalOpen]);
+
+  // Force autoplay when the component mounts or the asset loads
+  useEffect(() => {
+    if (autoPlayVideo && videoRef.current && asset?.media_type === 'video') {
+      // The catch block is important! If the browser blocks it (e.g., Low Power Mode on iOS), 
+      // it throws a promise rejection. This catches it so it doesn't crash your app.
+      videoRef.current.play().catch((error) => {
+        console.warn("Autoplay was prevented by the browser:", error);
+      });
+    }
+  }, [autoPlayVideo, asset]);
 
   // Fallback while loading or if empty
   if (!asset) {
@@ -102,28 +117,42 @@ export default function MediaSlot({
 
   return (
     <>
-      {/* ── Base Media Slot (Clickable) ── */}
+      {/* ── Base Media Slot ── */}
       <div 
-        className={`cursor-pointer group ${className}`}
-        onClick={() => setIsModalOpen(true)}
+        className={`${autoPlayVideo ? '' : 'cursor-pointer group'} ${className}`}
+        onClick={() => !autoPlayVideo && setIsModalOpen(true)}
       >
         {asset.media_type === 'video' ? (
-          <>
-            {/* Show video thumbnail */}
-            <img
-              src={asset.thumbnail_url || asset.media_url} 
-              alt={asset.alt_text || "Video Thumbnail"}
+          autoPlayVideo ? (
+            /* Show actual autoplaying video */
+            <video
+              ref={videoRef}
+              src={asset.media_url}
+              poster={asset.thumbnail_url || undefined}
               className="w-full h-full object-cover"
-              width={asset.width || undefined}
-              height={asset.height || undefined}
+              autoPlay
+              muted
+              loop
+              playsInline // Critical for iOS autoplay
             />
-            {/* Play Button Indicator */}
-            <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/40 transition-colors duration-300">
-              <div className="w-16 h-16 rounded-full border border-white/50 backdrop-blur-sm flex items-center justify-center text-white bg-white/10 group-hover:bg-white group-hover:text-brand-black transition-all duration-300">
-                <i className="fa-solid fa-play ml-1 text-xl" />
+          ) : (
+            /* Show video thumbnail + play button */
+            <>
+              <img
+                src={asset.thumbnail_url || asset.media_url} 
+                alt={asset.alt_text || "Video Thumbnail"}
+                className="w-full h-full object-cover"
+                width={asset.width || undefined}
+                height={asset.height || undefined}
+              />
+              {/* Play Button Indicator */}
+              <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/40 transition-colors duration-300">
+                <div className="w-16 h-16 rounded-full border border-white/50 backdrop-blur-sm flex items-center justify-center text-white bg-white/10 group-hover:bg-white group-hover:text-brand-black transition-all duration-300">
+                  <i className="fa-solid fa-play ml-1 text-xl" />
+                </div>
               </div>
-            </div>
-          </>
+            </>
+          )
         ) : (
           /* Show low-res image */
           <img

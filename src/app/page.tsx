@@ -16,92 +16,6 @@ export default function HomePage() {
 
   const discoRef = useRef<HTMLDivElement>(null);
 
-  // useEffect(() => {
-  //   const el = discoRef.current;
-  //   if (!el) return;  
-
-  //   const FROM = { r: 255, g: 255, b: 255 };
-  //   const TO   = { r: 16,  g: 8,   b: 6 };
-
-  //   const TRANSITION_DISTANCE = 600;
-
-  //   // Visual progress currently being rendered
-  //   let currentProgress = 0;
-
-  //   // Latest desired progress from scroll
-  //   let targetProgress = 0;
-
-  //   let rafId: number;
-
-  //   document.documentElement.style.willChange = 'background-color';
-  //   document.body.style.willChange = 'background-color';
-
-  //   const updateTargetFromScroll = () => {
-  //     const discoTop = el.offsetTop;
-
-  //     const transitionStartY = discoTop - TRANSITION_DISTANCE;
-  //     const transitionEndY   = discoTop;
-
-  //     const raw =
-  //       (window.scrollY - transitionStartY) /
-  //       (transitionEndY - transitionStartY);
-
-  //     const t = Math.min(Math.max(raw, 0), 1);
-
-  //     // smoothstep
-  //     targetProgress = t * t * (3 - 2 * t);
-  //   };
-
-  //   const animate = () => {
-  //     // LERP SMOOTHING
-  //     currentProgress +=
-  //       (targetProgress - currentProgress) * 0.08;
-
-  //     // Snap when extremely close
-  //     if (Math.abs(targetProgress - currentProgress) < 0.001) {
-  //       currentProgress = targetProgress;
-  //     }
-
-  //     const r = Math.round(
-  //       FROM.r + (TO.r - FROM.r) * currentProgress
-  //     );
-
-  //     const g = Math.round(
-  //       FROM.g + (TO.g - FROM.g) * currentProgress
-  //     );
-
-  //     const b = Math.round(
-  //       FROM.b + (TO.b - FROM.b) * currentProgress
-  //     );
-
-  //     const bg = `rgb(${r},${g},${b})`;
-
-  //     document.documentElement.style.backgroundColor = bg;
-  //     document.body.style.backgroundColor = bg;
-
-  //     rafId = requestAnimationFrame(animate);
-  //   };
-
-  //   window.addEventListener('scroll', updateTargetFromScroll, {
-  //     passive: true,
-  //   });
-
-  //   updateTargetFromScroll();
-  //   animate();
-
-  //   return () => {
-  //     window.removeEventListener('scroll', updateTargetFromScroll);
-
-  //     cancelAnimationFrame(rafId);
-
-  //     document.documentElement.style.willChange = '';
-  //     document.body.style.willChange = '';
-
-  //     document.documentElement.style.backgroundColor = '';
-  //     document.body.style.backgroundColor = '';
-  //   };
-  // }, []);
-
   const [ticketModalEventId, setTicketModalEventId] = useState<string | null>(null);
   const [vipModal, setVipModal] = useState(false);
 
@@ -299,7 +213,8 @@ export default function HomePage() {
           <MediaSlot 
             id="hero-video" 
             mediaMap={media} 
-            className="w-full h-full object-cover opacity-100 mix-blend-multiply" 
+            className="w-full h-full object-cover opacity-100 mix-blend-multiply"
+            autoPlayVideo={true} 
           />
           <div className="absolute inset-0 bg-gradient-to-t from-white/90 via-black/20 to-black/30" />
         </div>
@@ -404,13 +319,7 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
-      {/* <div className="h-[200px]" /> */}
-
-      {/* <div ref={discoRef}>
-        <ScrollDiscoVideo />
-      </div> */}
-
+      
       {/* ── Cinematic Highlights ── */}
       <section className="md:mt-12 py-12 sm:py-16 md:py-24 bg-brand-black text-white px-3 sm:px-4 md:px-6 lg:px-12 overflow-hidden">
         <div className="max-w-[1600px] mx-auto fade-up">
