@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
@@ -249,6 +249,10 @@ function BlogEditorModal({
   const [saving, setSaving] = useState(false);
   const [activeSection, setActiveSection] = useState<'content' | 'meta' | 'seo'>('content');
 
+  const [coverFile, setCoverFile] = useState<File | null>(null);
+  const [draggingCover, setDraggingCover] = useState(false);
+  const coverInputRef = useRef<HTMLInputElement>(null);
+
   const set = (key: keyof BlogPost, value: any) =>
     setForm(f => ({ ...f, [key]: value }));
 
@@ -276,27 +280,88 @@ function BlogEditorModal({
     },
   });
 
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   if (!editor) return;
+  //   setSaving(true);
+
+  //   const payload: Partial<BlogPost> = {
+  //     ...form,
+  //     content: editor.getJSON(),
+  //     updatedAt: new Date().toISOString(),
+  //     publishedAt: form.published && !form.publishedAt ? new Date().toISOString() : form.publishedAt,
+  //   };
+
+  //   const method = form._id ? 'PUT' : 'POST';
+  //   await fetch('/api/admin/blog-posts', {
+  //     method,
+  //     headers: { 'Content-Type': 'application/json' },
+  //     body: JSON.stringify(payload),
+  //   });
+
+  //   setSaving(false);
+  //   onSaved();
+  // };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editor) return;
     setSaving(true);
 
-    const payload: Partial<BlogPost> = {
-      ...form,
-      content: editor.getJSON(),
-      updatedAt: new Date().toISOString(),
-      publishedAt: form.published && !form.publishedAt ? new Date().toISOString() : form.publishedAt,
-    };
+    try {
+      const fd = new FormData();
 
-    const method = form._id ? 'PUT' : 'POST';
-    await fetch('/api/admin/blog-posts', {
-      method,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
+      // 1. Append the ID if we are updating an existing post
+      // Note: ensure this matches what your backend expects ('id' vs '_id')
+      if (form._id) fd.append('id', form._id);
 
-    setSaving(false);
-    onSaved();
+      // 2. Append standard text fields
+      fd.append('title', form.title || '');
+      fd.append('slug', form.slug || '');
+      fd.append('excerpt', form.excerpt || '');
+      fd.append('author', form.author || '');
+      fd.append('seo_title', form.seoTitle || '');
+      fd.append('seo_description', form.seoDescription || '');
+
+      // 3. Serialize complex data structures into strings
+      fd.append('content', JSON.stringify(editor.getJSON()));
+      fd.append('tags', JSON.stringify(form.tags || []));
+
+      // 4. Handle booleans and dates
+      fd.append('published', String(!!form.published));
+      
+      const publishedAt = form.published && !form.publishedAt 
+        ? new Date().toISOString() 
+        : (form.publishedAt || '');
+        
+      if (publishedAt) fd.append('published_at', publishedAt);
+
+      // 5. Handle the Cover Image (File vs existing URL)
+      if (coverFile) {
+        fd.append('file', coverFile);
+      } else if (form.coverImage) {
+        fd.append('cover_image', form.coverImage);
+      }
+
+      // 6. Send the request
+      // We use POST for both create and update since our API route checks for the ID
+      // IMPORTANT: Do not set the Content-Type header manually here!
+      const response = await fetch('/api/admin/blog', {
+        method: 'POST', 
+        body: fd,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save the blog post');
+      }
+
+      onSaved();
+    } catch (error) {
+      console.error("Error saving post:", error);
+      alert("There was an error saving your post. Check the console for details.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const wordCount = editor?.storage.characterCount?.words() ?? 0;
@@ -443,14 +508,69 @@ function BlogEditorModal({
 
               <div className="space-y-6">
                 {/* Cover image */}
-                <Field label="Cover Image" hint="(URL)">
+                <Field label="Cover Image" hint="(File or URL)">
                   <input
-                    className={inputCls}
-                    placeholder="https://example.com/cover.jpg"
-                    value={form.coverImage || ''}
-                    onChange={e => set('coverImage', e.target.value)}
+                    ref={coverInputRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,image/avif,image/gif"
+                    className="hidden"
+                    onChange={(e) => {
+                      if (e.target.files?.[0]) setCoverFile(e.target.files[0]);
+                    }}
                   />
-                  {form.coverImage && (
+
+                  {coverFile ? (
+                    <div className="flex items-center gap-3 px-3 py-3 bg-black border border-gray-800 rounded-sm">
+                      <span className="text-xl">🖼️</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs text-white truncate font-medium">{coverFile.name}</p>
+                        <p className="text-[10px] text-gray-500 font-mono">
+                          {(coverFile.size / 1024 / 1024).toFixed(2)} MB
+                        </p>
+                      </div>
+                      <button 
+                        type="button" 
+                        onClick={() => setCoverFile(null)} 
+                        className="text-gray-500 hover:text-red-400 transition"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col gap-2">
+                      <div
+                        className={`border border-dashed rounded-sm py-4 px-4 text-center cursor-pointer transition-all ${
+                          draggingCover ? 'border-pink-500 bg-pink-950/20' : 'border-gray-700 hover:border-pink-500 hover:bg-gray-900/50'
+                        }`}
+                        onDragOver={(e) => { e.preventDefault(); setDraggingCover(true); }}
+                        onDragLeave={() => setDraggingCover(false)}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          setDraggingCover(false);
+                          if (e.dataTransfer.files?.[0]) setCoverFile(e.dataTransfer.files[0]);
+                        }}
+                        onClick={() => coverInputRef.current?.click()}
+                      >
+                        <div className="text-xl mb-1">{draggingCover ? '📂' : '📸'}</div>
+                        <p className="text-gray-300 text-xs font-medium mb-1">
+                          {draggingCover ? 'Drop cover image' : 'Click or drop image here'}
+                        </p>
+                      </div>
+                      
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-gray-600 font-medium uppercase">OR</span>
+                        <input
+                          className={inputCls}
+                          placeholder="Paste image URL here..."
+                          value={form.coverImage || ''}
+                          onChange={e => set('coverImage', e.target.value)}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Live Preview of URL */}
+                  {!coverFile && form.coverImage && (
                     <div className="mt-2 rounded-sm overflow-hidden aspect-video border border-gray-800">
                       <img
                         src={form.coverImage}
