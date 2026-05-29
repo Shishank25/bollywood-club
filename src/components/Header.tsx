@@ -27,7 +27,7 @@ export default function Header() {
       <header
         id="navbar"
         ref={navbarRef}
-        className={`fixed top-0 left-0 w-full z-50 py-3 sm:py-4 md:py-6 px-4 sm:px-6 md:px-12 flex justify-between items-center bg-white/80 backdrop-blur-md${
+        className={`fixed top-0 left-0 w-full z-9999 py-3 sm:py-4 md:py-6 px-4 sm:px-6 md:px-12 flex justify-between items-center bg-white/80 backdrop-blur-md${
           isScrolled ? " scrolled" : ""
         }`}
       >
@@ -103,6 +103,7 @@ export default function Header() {
 
           <nav className="flex flex-col space-y-4 md:space-y-6 border-t md:border-t-0 md:border-l border-brand-border pt-8 md:pt-0 md:pl-12">
             {[
+              { label: "Offers", href: "/offers", delay: "0.3s" },
               { label: "Birthday", href: "/birthday", delay: "0.3s" },
               { label: "VIP Reservations", href: "/vip", delay: "0.35s" },
               { label: "Corporate Galas", href: "/corporate", delay: "0.4s" },

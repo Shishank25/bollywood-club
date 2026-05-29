@@ -6,6 +6,22 @@ import { MediaAsset } from "@/lib/media";
 import MediaSlot from "@/lib/media"; 
 import ScrollDiscoVideo from "@/components/Home/DiscoScrollSection";
 import LeadForm from "@/components/LeadForm";
+import { motion, AnimatePresence } from 'framer-motion';
+import VIPForm from "@/components/Home/VipForm";
+
+const modalConfig = {
+  // Movement & Positioning
+  startX: "100vw",     
+  startY: -150,         
+  swingAngle: -12,     // CHANGED: Negative angle tilts the top forward
+  
+  // Spring Physics
+  stiffness: 75,       
+  damping: 14,         
+  
+  // Exit Timing
+  exitDuration: 0.5    
+};
 
 export default function HomePage() {
   const [media, setMedia] = useState<Record<string, MediaAsset>>({});
@@ -186,26 +202,8 @@ export default function HomePage() {
         </div>
       )}
 
-      {vipModal && (
-      /* Full-screen overlay wrapper */
-      <div 
-        className="fixed inset-0 z-[999] flex items-center justify-center bg-black/40 p-4"
-        onClick={() => setVipModal(false)}  // Close when clicking outside the modal
-      >
-        {/* /* The Modal Box itself */ }
-        <div className="flex flex-col gap-6 sm:gap-3 w-full max-w-md max-h-[90vh] bg-white p-6 md:p-8 rounded-lg sm:rounded-xl shadow-2xl overflow-y-auto">
-          <h3 className="text-center text-xl font-bold uppercase tracking-widest mb-4">Request VIP Access</h3>
-          
-          <LeadForm
-            fields={['f_name', 'l_name', 'email', 'phone', 'city', 'dob', 'total_guests']}
-            formType="vip_table_request"
-            buttonText="Become a VIP"
-          />
-
-          <p className="text-gray-400 text-sm font-inter font-[600] tracking-widest text-center cursor-pointer hover:text-gray-500 w-24 self-center">Later</p>
-        </div>
-      </div>
-    )}
+      {/* VIPForm handles its own presence and animations natively */}
+      <VIPForm vipModal={vipModal} setVipModal={setVipModal} />
 
       {/* ── Hero ── */}
       <section className="relative h-[100svh] w-full flex flex-col justify-end px-3 sm:px-4 md:px-6 lg:px-12 pb-6 sm:pb-8 md:pb-12 pt-20 sm:pt-24 md:pt-32">

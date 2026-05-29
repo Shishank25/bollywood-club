@@ -11,6 +11,7 @@ interface MediaAsset {
   width: number | null;
   height: number | null;
   thumbnail_url?: string; // NEW: Added for video posters
+  redirect_link?: string;
 }
 
 const GALLERY_SLOTS = [
@@ -335,12 +336,12 @@ export default function GalleryAdmin() {
         )}
       </div>
 
-      {/* Edit Modal (Untouched) */}
+      {/* Edit Modal (Updated) */}
       {editingPost && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 modal-backdrop">
           <div className="bg-gray-950 border border-gray-800 rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto modal-content" style={{ boxShadow: '0 20px 60px rgba(0, 0, 0, 0.8)' }}>
             {/* Modal Header */}
-            <div className="sticky top-0 bg-gray-950 border-b border-gray-800 px-8 py-6">
+            <div className="sticky top-0 bg-gray-950 border-b border-gray-800 px-8 py-6 z-10">
               <h2 className="text-2xl font-bold tracking-tight">
                 {editingPost.id ? 'Edit Post' : 'Create New Post'}
               </h2>
@@ -369,6 +370,9 @@ export default function GalleryAdmin() {
                   if (editingPost.category) fd.append('category', editingPost.category);
                   if (editingPost.slug) fd.append('slug', editingPost.slug);
                   if (editingPost.event_date) fd.append('event_date', editingPost.event_date);
+                  
+                  // NEW: Append redirect link
+                  if (editingPost.redirect_link) fd.append('redirect_link', editingPost.redirect_link);
 
                   // Append files OR fallback to URL strings
                   if (postFile) fd.append('file', postFile);
@@ -405,7 +409,7 @@ export default function GalleryAdmin() {
                     Title <span className="text-pink-500 ml-0.5">*</span>
                   </label>
                   <input 
-                    className="w-full bg-black border border-gray-800 rounded-sm p-3 text-sm text-white placeholder-gray-600" 
+                    className="w-full bg-black border border-gray-800 rounded-sm p-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-pink-500 transition-colors" 
                     placeholder="Enter post title" 
                     value={editingPost.title || ''} 
                     onChange={e => setEditingPost({...editingPost, title: e.target.value})} 
@@ -419,7 +423,7 @@ export default function GalleryAdmin() {
                       Type <span className="text-pink-500 ml-0.5">*</span>
                     </label>
                     <select
-                      className="w-full bg-black border border-gray-800 rounded-sm p-3 text-sm text-white"
+                      className="w-full bg-black border border-gray-800 rounded-sm p-3 text-sm text-white focus:outline-none focus:border-pink-500 transition-colors"
                       value={editingPost.type || ''}
                       onChange={e => setEditingPost({...editingPost, type: e.target.value})}
                       required
@@ -434,7 +438,7 @@ export default function GalleryAdmin() {
                   <div className="space-y-2">
                     <label className="text-xs font-semibold uppercase tracking-wider text-gray-400">Slug <span className="text-gray-600 text-[10px] ml-1 normal-case tracking-normal font-normal">(unique)</span></label>
                     <input 
-                      className="w-full bg-black border border-gray-800 rounded-sm p-3 text-sm text-white placeholder-gray-600" 
+                      className="w-full bg-black border border-gray-800 rounded-sm p-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-pink-500 transition-colors" 
                       placeholder="post-slug" 
                       value={editingPost.slug || ''} 
                       onChange={e => setEditingPost({...editingPost, slug: e.target.value})} 
@@ -446,7 +450,7 @@ export default function GalleryAdmin() {
                   <div className="space-y-2">
                     <label className="text-xs font-semibold uppercase tracking-wider text-gray-400">Category</label>
                     <input 
-                      className="w-full bg-black border border-gray-800 rounded-sm p-3 text-sm text-white placeholder-gray-600" 
+                      className="w-full bg-black border border-gray-800 rounded-sm p-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-pink-500 transition-colors" 
                       placeholder="e.g. Wedding, Portrait" 
                       value={editingPost.category || ''} 
                       onChange={e => setEditingPost({...editingPost, category: e.target.value})} 
@@ -455,7 +459,7 @@ export default function GalleryAdmin() {
                   <div className="space-y-2">
                     <label className="text-xs font-semibold uppercase tracking-wider text-gray-400">Location</label>
                     <input 
-                      className="w-full bg-black border border-gray-800 rounded-sm p-3 text-sm text-white placeholder-gray-600" 
+                      className="w-full bg-black border border-gray-800 rounded-sm p-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-pink-500 transition-colors" 
                       placeholder="e.g. New Delhi, India" 
                       value={editingPost.location || ''} 
                       onChange={e => setEditingPost({...editingPost, location: e.target.value})} 
@@ -463,10 +467,22 @@ export default function GalleryAdmin() {
                   </div>
                 </div>
 
+                {/* NEW: Redirect Link Input */}
+                <div className="space-y-2">
+                  <label className="text-xs font-semibold uppercase tracking-wider text-gray-400">Redirect Link (Optional)</label>
+                  <input 
+                    type="url"
+                    className="w-full bg-black border border-gray-800 rounded-sm p-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-pink-500 transition-colors" 
+                    placeholder="https://example.com/tickets" 
+                    value={editingPost.redirect_link || ''} 
+                    onChange={e => setEditingPost({...editingPost, redirect_link: e.target.value})} 
+                  />
+                </div>
+
                 <div className="space-y-2">
                   <label className="text-xs font-semibold uppercase tracking-wider text-gray-400">Caption</label>
                   <textarea
-                    className="w-full bg-black border border-gray-800 rounded-sm p-3 text-sm text-white placeholder-gray-600 resize-none"
+                    className="w-full bg-black border border-gray-800 rounded-sm p-3 text-sm text-white placeholder-gray-600 resize-none focus:outline-none focus:border-pink-500 transition-colors"
                     placeholder="Optional caption or description"
                     rows={3}
                     value={editingPost.caption || ''}
@@ -523,7 +539,7 @@ export default function GalleryAdmin() {
                           Upload
                         </button>
                         <input 
-                          className="w-full bg-black border border-gray-800 rounded-sm p-3 text-sm text-white placeholder-gray-600" 
+                          className="w-full bg-black border border-gray-800 rounded-sm p-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-pink-500 transition-colors" 
                           placeholder="Or paste https://..." 
                           value={editingPost.media_url || ''} 
                           onChange={e => setEditingPost({...editingPost, media_url: e.target.value})} 
@@ -567,7 +583,7 @@ export default function GalleryAdmin() {
                           Upload
                         </button>
                         <input 
-                          className="w-full bg-black border border-gray-800 rounded-sm p-3 text-sm text-white placeholder-gray-600" 
+                          className="w-full bg-black border border-gray-800 rounded-sm p-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-pink-500 transition-colors" 
                           placeholder="Or paste https://..." 
                           value={editingPost.thumbnail_url || ''} 
                           onChange={e => setEditingPost({...editingPost, thumbnail_url: e.target.value})} 
@@ -598,7 +614,7 @@ export default function GalleryAdmin() {
                   <div className="space-y-2">
                     <label className="text-xs font-semibold uppercase tracking-wider text-gray-400">Display Order <span className="text-gray-600 text-[10px] ml-1 normal-case tracking-normal font-normal">(default 0)</span></label>
                     <input 
-                      className="w-full bg-black border border-gray-800 rounded-sm p-3 text-sm text-white placeholder-gray-600" 
+                      className="w-full bg-black border border-gray-800 rounded-sm p-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-pink-500 transition-colors" 
                       type="number" 
                       placeholder="0" 
                       value={editingPost.display_order ?? 0} 
@@ -608,7 +624,7 @@ export default function GalleryAdmin() {
                   <div className="space-y-2">
                     <label className="text-xs font-semibold uppercase tracking-wider text-gray-400">Event Date</label>
                     <input 
-                      className="w-full bg-black border border-gray-800 rounded-sm p-3 text-sm text-white placeholder-gray-600" 
+                      className="w-full bg-black border border-gray-800 rounded-sm p-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-pink-500 transition-colors" 
                       type="date" 
                       value={editingPost.event_date?.split('T')[0] || ''} 
                       onChange={e => setEditingPost({...editingPost, event_date: e.target.value})} 
@@ -679,7 +695,7 @@ function MediaEditorCard({
   onRefresh: () => void;
 }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const thumbInputRef = useRef<HTMLInputElement>(null); // NEW: Ref for thumbnail upload
+  const thumbInputRef = useRef<HTMLInputElement>(null); 
 
   const [uploadMode, setUploadMode] = useState<UploadMode>('file');
   const [saving, setSaving]         = useState(false);
@@ -693,31 +709,35 @@ function MediaEditorCard({
   const [stagedPreview, setStagedPreview] = useState<string | null>(null);
   const [fileError, setFileError]         = useState('');
 
-  // NEW: Staged Thumbnail state
+  // Staged Thumbnail state
   const [stagedThumbFile, setStagedThumbFile]       = useState<File | null>(null);
   const [stagedThumbPreview, setStagedThumbPreview] = useState<string | null>(null);
   const [thumbError, setThumbError]                 = useState('');
 
   const [uploadProgress, setUploadProgress] = useState<'idle' | 'uploading' | 'done'>('idle');
 
+  // NEW: Added redirectLink to state
   const [formData, setFormData] = useState({
-    mediaUrl:  initialData?.media_url   || '',
+    mediaUrl:  initialData?.media_url  || '',
     mediaType: (initialData?.media_type || 'image') as 'image' | 'video',
     altText:   initialData?.alt_text    || '',
     width:     initialData?.width?.toString()  || '',
     height:    initialData?.height?.toString() || '',
     thumbnailUrl: initialData?.thumbnail_url || '',
+    redirectLink: initialData?.redirect_link || '', 
   });
 
+  // NEW: Added redirectLink to effect
   useEffect(() => {
     if (initialData) {
       setFormData({
-        mediaUrl:  initialData.media_url,
-        mediaType: initialData.media_type,
+        mediaUrl:  initialData.media_url || '',
+        mediaType: (initialData.media_type || 'image') as 'image' | 'video',
         altText:   initialData.alt_text    || '',
         width:     initialData.width?.toString()  || '',
         height:    initialData.height?.toString() || '',
         thumbnailUrl: initialData.thumbnail_url || '',
+        redirectLink: initialData.redirect_link || '',
       });
     }
   }, [initialData]);
@@ -738,7 +758,6 @@ function MediaEditorCard({
     setStagedPreview(objectUrl);
   };
 
-  // NEW: Thumbnail Staging
   const stageThumbFile = (file: File) => {
     setThumbError('');
     if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
@@ -801,11 +820,13 @@ function MediaEditorCard({
       setSaving(true);
       const fd = new FormData();
 
-      // Route mapping specifically to the gallery page
       fd.append('pageRoute', '/gallery');
       fd.append('htmlId', slotConfig.id);
       fd.append('mediaType', formData.mediaType);
       fd.append('altText', formData.altText);
+      // NEW: Append redirect link to form data
+      fd.append('redirectLink', formData.redirectLink); 
+      
       if (formData.width) fd.append('width', formData.width);
       if (formData.height) fd.append('height', formData.height);
 
@@ -824,7 +845,6 @@ function MediaEditorCard({
           fd.append('file', stagedFile);
           fd.append('folder', slotConfig.folder);
         }
-        // Send the thumbnail file to your backend if it's a video
         if (formData.mediaType === 'video' && stagedThumbFile) {
           fd.append('thumbnailFile', stagedThumbFile); 
         }
@@ -869,7 +889,6 @@ function MediaEditorCard({
     ? (ALLOWED_VIDEO_TYPES.includes(stagedFile.type) ? 'video' : 'image') 
     : formData.mediaType;
 
-  // Determine grid columns based on media type
   const isVideoMode = formData.mediaType === 'video';
 
   return (
@@ -1019,6 +1038,7 @@ function MediaEditorCard({
           </div>
         )}
 
+        {/* Form Fields Grid */}
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Media Type</label>
@@ -1041,6 +1061,18 @@ function MediaEditorCard({
               onChange={(e) => setFormData({...formData, altText: e.target.value})}
             />
           </div>
+        </div>
+        
+        {/* NEW: Redirect Link Field added below the grid */}
+        <div>
+          <label className="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Redirect Link (Optional)</label>
+          <input 
+            type="url" 
+            className="w-full bg-black border border-gray-800 rounded-sm p-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-pink-500 transition-all"
+            placeholder="https://example.com/event-tickets"
+            value={formData.redirectLink}
+            onChange={(e) => setFormData({...formData, redirectLink: e.target.value})}
+          />
         </div>
 
         {(previewUrl || thumbPreviewUrl) && (

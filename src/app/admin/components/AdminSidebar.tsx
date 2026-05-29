@@ -11,7 +11,8 @@ const MENU_ITEMS = [
   { label: 'Home Page', href: '/admin/pages/home', icon: '🏠' },
   { label: 'Images', href: '/admin/images', icon: '🖼️' },
   { label: 'Settings', href: '/admin/settings', icon: '⚙️' },
-  { label: 'Manage Jobs', href: '/admin/jobs', icon: '💼' }
+  { label: 'Manage Jobs', href: '/admin/jobs', icon: '💼' },
+  { label: 'Manage Offers', href: '/admin/offers', icon: '🎁' },
 ];
 
 export function AdminSidebar() {

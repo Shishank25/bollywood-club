@@ -53,7 +53,6 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// ─── POST: Create or Update a gallery post (Handles Files & Strings) ───────────
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
@@ -68,6 +67,9 @@ export async function POST(request: NextRequest) {
     const display_order = parseInt(formData.get('display_order') as string) || 0;
     const slug = formData.get('slug') as string | null;
     const event_date = formData.get('event_date') ? formData.get('event_date') as string : null;
+    
+    // NEW: Extract redirect_link
+    const redirect_link = formData.get('redirect_link') as string | null; 
 
     if (!title || !type) {
       return NextResponse.json({ error: 'Title and Type are required' }, { status: 400 });
@@ -96,23 +98,23 @@ export async function POST(request: NextRequest) {
     let values: any[] = [];
 
     if (id) {
-      // UPDATE existing post
+      // UPDATE existing post (added redirect_link as $12, pushed id to $13)
       sql = `
         UPDATE gallery_posts SET
           title = $1, location = $2, type = $3, media_url = $4, thumbnail_url = $5,
           caption = $6, category = $7, is_featured = $8, display_order = $9,
-          slug = $10, event_date = $11, updated_at = CURRENT_TIMESTAMP
-        WHERE id = $12 RETURNING *;
+          slug = $10, event_date = $11, redirect_link = $12, updated_at = CURRENT_TIMESTAMP
+        WHERE id = $13 RETURNING *;
       `;
-      values = [title, location, type, mediaUrl, thumbnailUrl, caption, category, is_featured, display_order, slug, event_date, id];
+      values = [title, location, type, mediaUrl, thumbnailUrl, caption, category, is_featured, display_order, slug, event_date, redirect_link, id];
     } else {
-      // INSERT new post
+      // INSERT new post (added redirect_link as $12)
       sql = `
         INSERT INTO gallery_posts (
-          title, location, type, media_url, thumbnail_url, caption, category, is_featured, display_order, slug, event_date
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *;
+          title, location, type, media_url, thumbnail_url, caption, category, is_featured, display_order, slug, event_date, redirect_link
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *;
       `;
-      values = [title, location, type, mediaUrl, thumbnailUrl, caption, category, is_featured, display_order, slug, event_date];
+      values = [title, location, type, mediaUrl, thumbnailUrl, caption, category, is_featured, display_order, slug, event_date, redirect_link];
     }
 
     const result = await query(sql, values);

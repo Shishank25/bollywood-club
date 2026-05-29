@@ -18,15 +18,30 @@ const layoutClasses = [
 const GalleryItemCard = ({ post, index }: { post: GalleryPost, index: number }) => {
     const layoutClass = layoutClasses[index % layoutClasses.length];
     const isVideo = post.type?.toLowerCase() === 'video';
+    console.log('Rendering GalleryItemCard for post:', post); // Debug log
 
     return (
-        <div className={`gallery-item relative overflow-hidden bg-brand-offwhite group scale-hover img-wrapper rounded-xl ${layoutClass}`}>
+        <div 
+            // Added dynamic cursor-pointer if a link exists
+            className={`gallery-item relative overflow-hidden bg-brand-offwhite group scale-hover img-wrapper rounded-xl ${layoutClass} ${post.redirect_link ? 'cursor-pointer' : ''}`}
+            onClick={() => {
+                // FIXED: Changed redirect_url to redirect_link
+                if (post.redirect_link) {
+                    window.open(post.redirect_link, '_blank');
+                }
+            }}
+        >
             <img 
                 src={post.thumbnail_url || post.media_url} 
                 alt={post.title} 
                 className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-brand-black/90 via-transparent to-transparent gallery-overlay"></div>
+            {/* You don't actually need the onClick on the overlay since the parent div already has it, 
+                but if you keep it, make sure to fix the property name here too. */}
+            <div 
+                className="absolute inset-0 bg-gradient-to-t from-brand-black/90 via-transparent to-transparent gallery-overlay"
+            >
+            </div>
             
             <div className="absolute top-6 left-6 z-20">
                 <span className={`${isVideo ? 'bg-brand-accent text-brand-white' : 'bg-brand-white text-brand-black'} text-[9px] font-bold px-3 py-1.5 uppercase tracking-widest rounded-full`}>
@@ -42,7 +57,7 @@ const GalleryItemCard = ({ post, index }: { post: GalleryPost, index: number }) 
                 </div>
             )}
 
-            <div className="absolute bottom-6 left-6 right-6 z-20 transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+            <div className="absolute bottom-6 left-6 right-6 z-20 transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none">
                 <h3 className="text-xl md:text-3xl font-display font-bold text-white uppercase tracking-tighter mb-1 truncate">
                     {post.title}
                 </h3>
