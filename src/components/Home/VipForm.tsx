@@ -1,9 +1,9 @@
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import LeadForm from '../LeadForm';
 
 // 1. Define the separate animation configurations
-const modalVariants = {
+const modalVariants: Variants = {
   // --- MOBILE CONFIG (Swoop & Rotate) ---
   mobileInitial: { 
     opacity: 0, 
