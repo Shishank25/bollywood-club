@@ -276,9 +276,9 @@ export default function EventsPage() {
       {/* ------------------------------------------------------------------ */}
       {/* HERO SLIDER SECTION                                                 */}
       {/* ------------------------------------------------------------------ */}
-      <section className="relative h-[85svh] min-h-[600px] w-full px-6 md:px-12 pt-28 pb-12 flex flex-col">
+      <section className="relative h-[85svh] min-h-[500px] md:min-h-[600px] w-full px-3 sm:px-6 md:px-12 pt-24 md:pt-28 pb-6 md:pb-12 flex flex-col">
         <div
-          className={`relative w-full h-full rounded-[2rem] overflow-hidden bg-brand-black shadow-2xl transition-[clip-path] duration-[1200ms] ease-custom ${
+          className={`relative w-full h-full rounded-[1.25rem] md:rounded-[2rem] overflow-hidden bg-brand-black shadow-2xl transition-[clip-path] duration-[1200ms] ease-custom ${
             isRevealed
               ? '[clip-path:polygon(0_0,_100%_0,_100%_100%,_0_100%)]'
               : '[clip-path:polygon(0_100%,_100%_100%,_100%_100%,_0_100%)]'
@@ -298,32 +298,35 @@ export default function EventsPage() {
                   currentSlide === index ? 'scale-100' : 'scale-[1.15]'
                 }`}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-brand-black/95 via-brand-black/40 to-transparent" />
+              {/* Slightly stronger bottom gradient on mobile to ensure text readability */}
+              <div className="absolute inset-0 bg-gradient-to-t from-brand-black/95 via-brand-black/50 md:via-brand-black/40 to-transparent" />
 
               <div
-                className={`absolute inset-0 flex flex-col justify-end pb-24 px-8 md:px-16 lg:px-24 z-20 transition-all duration-1000 ease-custom delay-200 ${
+                className={`absolute inset-0 flex flex-col justify-end pb-20 md:pb-24 px-5 sm:px-8 md:px-16 lg:px-24 z-20 transition-all duration-1000 ease-custom delay-200 ${
                   currentSlide === index ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-[30px]'
                 }`}
               >
-                <div className="overflow-hidden mb-6">
-                  <span className="inline-block text-[10px] font-bold tracking-[0.2em] uppercase text-brand-black bg-brand-white px-4 py-2 rounded-full">
+                <div className="overflow-hidden mb-4 md:mb-6">
+                  <span className="inline-block text-[9px] md:text-[10px] font-bold tracking-[0.2em] uppercase text-brand-black bg-brand-white px-3 md:px-4 py-1.5 md:py-2 rounded-full">
                     {slide.date}
                   </span>
                 </div>
-                <h2 className="text-5xl md:text-7xl lg:text-[7vw] leading-[0.9] font-display font-extrabold uppercase tracking-tighter text-brand-white mb-8">
+                
+                {/* Scaled down text for mobile to prevent awkward line breaks */}
+                <h2 className="w-full break-words text-3xl sm:text-5xl md:text-7xl lg:text-[7vw] leading-[1] md:leading-[0.9] font-display font-extrabold uppercase tracking-tighter text-brand-white mb-6 md:mb-8">
                   {slide.title1} <br />
-                  <span className="text-brand-accent text-transparent [-webkit-text-stroke:1px_#FFFFFF]">
+                  <span className="text-brand-accent text-transparent [-webkit-text-stroke:1px_#FFFFFF] break-words inline-block max-w-full">
                     {slide.title2}
                   </span>
                 </h2>
 
                 <a
                   href="#event-grid"
-                  className="group relative overflow-hidden inline-flex items-center justify-center px-10 py-4 rounded-full text-xs font-bold tracking-[0.15em] uppercase w-fit bg-brand-white text-brand-black transition-colors duration-300"
+                  className="group relative overflow-hidden inline-flex items-center justify-center px-6 py-3 md:px-10 md:py-4 rounded-full text-[10px] md:text-xs font-bold tracking-[0.15em] uppercase w-fit bg-brand-white text-brand-black transition-colors duration-300"
                 >
                   <span className="relative z-10">Explore Events</span>
                   <span className="absolute inset-0 bg-brand-black translate-x-[-101%] group-hover:translate-x-0 transition-transform duration-300 ease-custom" />
-                  <span className="absolute inset-0 flex items-center justify-center text-brand-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 text-xs font-bold tracking-[0.15em] uppercase">
+                  <span className="absolute inset-0 flex items-center justify-center text-brand-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 text-[10px] md:text-xs font-bold tracking-[0.15em] uppercase">
                     Explore Events
                   </span>
                 </a>
@@ -332,25 +335,27 @@ export default function EventsPage() {
           ))}
 
           {/* Slider Controls */}
-          <div className="absolute bottom-8 left-8 md:left-16 lg:left-24 right-8 md:right-16 lg:right-24 flex justify-between items-end z-30 pointer-events-none">
-            <div className="flex space-x-2 pointer-events-auto pb-2">
+          <div className="absolute bottom-5 md:bottom-8 left-5 sm:left-8 md:left-16 lg:left-24 right-5 sm:right-8 md:right-16 lg:right-24 flex justify-between items-end z-30 pointer-events-none">
+            <div className="flex space-x-2 pointer-events-auto pb-1.5 md:pb-2">
               {heroSlides.map((_, i) => (
                 <button
                   key={i}
                   onClick={() => goToSlide(i)}
                   className={`h-1.5 rounded-full cursor-pointer transition-all duration-500 ease-custom ${
-                    currentSlide === i ? 'bg-white w-8' : 'bg-white/30 w-3'
+                    currentSlide === i ? 'bg-white w-6 md:w-8' : 'bg-white/30 w-2 md:w-3'
                   }`}
                   aria-label={`Go to slide ${i + 1}`}
                 />
               ))}
             </div>
+            
+            {/* Slightly smaller buttons on mobile to save space */}
             <div className="flex gap-2 pointer-events-auto">
-              <button onClick={prevSlide} className="w-12 h-12 rounded-full flex items-center justify-center bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white hover:text-brand-black transition-all">
-                <i className="fa-solid fa-arrow-left" />
+              <button onClick={prevSlide} className="w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white hover:text-brand-black transition-all">
+                <i className="fa-solid fa-arrow-left text-sm md:text-base" />
               </button>
-              <button onClick={nextSlide} className="w-12 h-12 rounded-full flex items-center justify-center bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white hover:text-brand-black transition-all">
-                <i className="fa-solid fa-arrow-right" />
+              <button onClick={nextSlide} className="w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white hover:text-brand-black transition-all">
+                <i className="fa-solid fa-arrow-right text-sm md:text-base" />
               </button>
             </div>
           </div>

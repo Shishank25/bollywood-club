@@ -21,7 +21,7 @@ const HOME_SLOTS = [
 ];
 
 const MAX_IMAGE_SIZE = 30 * 1024 * 1024;  // 30 MB
-const MAX_VIDEO_SIZE = 24 * 1024 * 1024;  // 24 MB
+const MAX_VIDEO_SIZE = 30 * 1024 * 1024;  // 30 MB
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/avif'];
 const ALLOWED_VIDEO_TYPES = [
   'video/mp4', 
@@ -40,7 +40,7 @@ function validateFile(file: File): string | null {
     return `Unsupported file type: ${file.type}. Use JPG, PNG, WebP, GIF, AVIF, MP4, WebM, or MOV.`;
   }
   if (isVideo && file.size > MAX_VIDEO_SIZE) {
-    return `Video exceeds the 24 MB limit (${(file.size / 1024 / 1024).toFixed(1)} MB).`;
+    return `Video exceeds the 30 MB limit (${(file.size / 1024 / 1024).toFixed(1)} MB).`;
   }
   if (isImage && file.size > MAX_IMAGE_SIZE) {
     return `Image exceeds the 30 MB limit (${(file.size / 1024 / 1024).toFixed(1)} MB).`;
