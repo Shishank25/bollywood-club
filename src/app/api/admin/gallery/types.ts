@@ -6,7 +6,7 @@ export interface GalleryPost {
   type?: string;
   media_url: string;
   thumbnail_url?: string;
-  redirect_url?: string;
+  redirect_link?: string;
   caption?: string;
   category?: string;
   tags?: string;
