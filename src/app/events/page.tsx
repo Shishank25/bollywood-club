@@ -160,27 +160,6 @@ function TicketModal({ eventId, onClose }: { eventId: string; onClose: () => voi
 
 const CITY_TABS = ['All Cities', 'Melbourne', 'Sydney', 'Singapore', 'Brisbane', 'Auckland'];
 
-const heroSlides = [
-  {
-    date: "May 25, 2024 • Melbourne",
-    title1: "P-POP",
-    title2: "Weekender",
-    img: "https://images.unsplash.com/photo-1541532713292-06987254f9f7?q=80&w=1600&auto=format&fit=crop"
-  },
-  {
-    date: "May 30, 2024 • Sydney",
-    title1: "Gulabo",
-    title2: "Welcome",
-    img: "https://images.unsplash.com/photo-1514525253361-bee8a19740c1?q=80&w=1600&auto=format&fit=crop"
-  },
-  {
-    date: "June 05, 2024 • Singapore",
-    title1: "Desi",
-    title2: "House",
-    img: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?q=80&w=1600&auto=format&fit=crop"
-  }
-];
-
 export default function EventsPage() {
   // ---------------------------------------------------------------------------
   // UI state
@@ -189,6 +168,8 @@ export default function EventsPage() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isRevealed, setIsRevealed] = useState(false);
   const [page, setPage] = useState(1);
+  const [heroSlides, setHeroSlides] = useState<any[]>([]);
+  const [isLoadingEvents, setIsLoadingEvents] = useState(true);
 
   // Modal state — null = closed, string = event ID to show
   const [ticketModalEventId, setTicketModalEventId] = useState<string | null>(null);
@@ -236,15 +217,43 @@ export default function EventsPage() {
   }, [events]);
 
   useEffect(() => {
+    // Don't start the interval until the slides have actually been fetched
+    if (heroSlides.length === 0) return;
+
     const slideInterval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
     }, 6000);
+    
+    // Add heroSlides.length as a dependency so it updates when data arrives
     return () => clearInterval(slideInterval);
-  }, []);
+  }, [heroSlides.length]);
 
   useEffect(() => {
     setPage(1);
   }, [activeTab]);
+
+  useEffect(() => {
+    const fetchUpcomingEvents = async () => {
+      try {
+        // Hit our new local proxy route
+        const res = await fetch('/api/v1/events/hero');
+        
+        if (res.ok) {
+          const data = await res.json();
+          console.log("Fetched hero events data:", data);
+          setHeroSlides(data);
+        } else {
+          console.error("Failed to load hero slides");
+        }
+      } catch (error) {
+        console.error("Failed to fetch dynamic events:", error);
+      } finally {
+        setIsLoadingEvents(false);
+      }
+    };
+
+    fetchUpcomingEvents();
+  }, []);
 
   const goToSlide = (index: number) => setCurrentSlide(index);
   const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length);
@@ -305,31 +314,36 @@ export default function EventsPage() {
                 className={`absolute inset-0 flex flex-col justify-end pb-20 md:pb-24 px-5 sm:px-8 md:px-16 lg:px-24 z-20 transition-all duration-1000 ease-custom delay-200 ${
                   currentSlide === index ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-[30px]'
                 }`}
-              >
-                <div className="overflow-hidden mb-4 md:mb-6">
-                  <span className="inline-block text-[9px] md:text-[10px] font-bold tracking-[0.2em] uppercase text-brand-black bg-brand-white px-3 md:px-4 py-1.5 md:py-2 rounded-full">
-                    {slide.date}
-                  </span>
-                </div>
-                
-                {/* Scaled down text for mobile to prevent awkward line breaks */}
+              > 
+                {/* 1. Conditionally render the line break and title2 ONLY if title2 exists */}
                 <h2 className="w-full break-words text-3xl sm:text-5xl md:text-7xl lg:text-[7vw] leading-[1] md:leading-[0.9] font-display font-extrabold uppercase tracking-tighter text-brand-white mb-6 md:mb-8">
-                  {slide.title1} <br />
-                  <span className="text-brand-accent text-transparent [-webkit-text-stroke:1px_#FFFFFF] break-words inline-block max-w-full">
-                    {slide.title2}
-                  </span>
+                  {slide.title1}
+                  {slide.title2 && (
+                    <>
+                      <br />
+                      <span className="text-brand-accent text-transparent [-webkit-text-stroke:1px_#FFFFFF] break-words inline-block max-w-full">
+                        {slide.title2}
+                      </span>
+                    </>
+                  )}
                 </h2>
-
-                <a
-                  href="#event-grid"
-                  className="group relative overflow-hidden inline-flex items-center justify-center px-6 py-3 md:px-10 md:py-4 rounded-full text-[10px] md:text-xs font-bold tracking-[0.15em] uppercase w-fit bg-brand-white text-brand-black transition-colors duration-300"
-                >
-                  <span className="relative z-10">Explore Events</span>
-                  <span className="absolute inset-0 bg-brand-black translate-x-[-101%] group-hover:translate-x-0 transition-transform duration-300 ease-custom" />
-                  <span className="absolute inset-0 flex items-center justify-center text-brand-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 text-[10px] md:text-xs font-bold tracking-[0.15em] uppercase">
-                    Explore Events
-                  </span>
-                </a>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                  <button
+                    className="group relative overflow-hidden inline-flex items-center justify-center px-6 py-3 md:px-10 md:py-4 rounded-full text-[10px] md:text-xs font-bold tracking-[0.15em] uppercase w-fit bg-brand-white text-brand-black transition-colors duration-300"
+                    onClick={() => setTicketModalEventId(slide.id)}
+                  >
+                    <span className="relative z-10">Get Tickets</span>
+                    <span className="absolute inset-0 bg-brand-black translate-x-[-101%] group-hover:translate-x-0 transition-transform duration-300 ease-custom" />
+                    <span className="absolute inset-0 flex items-center justify-center text-brand-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 text-[10px] md:text-xs font-bold tracking-[0.15em] uppercase">
+                      Get Tickets
+                    </span>
+                  </button>
+                  <div className="overflow-hidden">
+                    <span className="inline-block text-[9px] md:text-[10px] font-bold tracking-[0.2em] uppercase text-brand-black bg-brand-white px-3 md:px-4 py-1.5 md:py-2 rounded-full">
+                      {slide.date}
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
           ))}
@@ -369,7 +383,7 @@ export default function EventsPage() {
         <div className="max-w-[1600px] mx-auto">
 
           {/* Filters */}
-          <div className="flex flex-col xl:flex-row justify-between items-end mb-16 fade-up">
+          <div className="flex flex-col xl:flex-row justify-between items-start md:items-end mb-16 fade-up">
             <div className="mb-8 xl:mb-0">
               <p className="text-sm font-bold tracking-[0.2em] uppercase text-brand-gray mb-2">Discover</p>
               <h2 className="text-5xl md:text-7xl font-display font-bold tracking-tighter uppercase text-brand-black">

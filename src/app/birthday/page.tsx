@@ -132,7 +132,7 @@ export default function BirthdayPage() {
   return (
     <>
       {/* HERO SECTION */}
-      <section className="relative w-full h-[85svh] min-h-[500px] sm:min-h-[600px] flex flex-col justify-center items-center text-center px-3 sm:px-4 md:px-8 pt-16 sm:pt-20 md:pt-20 overflow-hidden">
+      <section className="relative w-full h-[85svh] min-h-[500px] sm:min-h-[600px] flex flex-col justify-center items-center text-center px-3 sm:px-4 md:px-8 pt-16 sm:pt-20 md:pt-24 overflow-hidden">
           {/* Dynamic Hero Media Rendering */}
           {media['hero-video']?.media_type === 'video' ? (
             <video 
@@ -153,21 +153,30 @@ export default function BirthdayPage() {
 
           <div className="absolute inset-0 bg-gradient-to-b from-brand-black/80 via-brand-black/60 to-brand-black"></div>
           
-          <div className="relative z-10 fade-up max-w-4xl mx-auto px-3 sm:px-4">
-              <span className="inline-block text-[9px] sm:text-[10px] md:text-xs font-bold tracking-[0.2em] uppercase text-brand-black bg-brand-white px-3 sm:px-5 py-2 sm:py-2.5 rounded-full shadow-lg mb-3 sm:mb-6">
-                  Celebrate With Us
-              </span>
-              <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-7xl xl:text-[7vw] leading-[1] font-display font-extrabold uppercase tracking-tighter text-brand-white mb-2 sm:mb-4 md:mb-6">
-                  Your <br className="md:hidden" />
-                  <span className="text-transparent [-webkit-text-stroke:1px_#FFFFFF] py-[0.15em] inline-block">Birthday</span>
-                  <br className="hidden md:block" /> Masterpiece
-              </h1>
-              <p className="text-[9px] sm:text-xs md:text-base font-medium text-brand-white/80 max-w-xl mx-auto leading-relaxed mb-6 sm:mb-10">
-                  Transform your special day into a cinematic Bollywood experience. Premium VIP treatment, exclusive booths, and unforgettable memories.
-              </p>
-              <Link href="#inquire" className="btn-monumental px-6 sm:px-8 md:px-12 py-3 sm:py-4 md:py-5 rounded-full text-[9px] sm:text-[10px] md:text-xs lg:text-sm font-bold tracking-[0.15em] uppercase inline-block">
-                  <span>Plan Your Night</span>
-              </Link>
+          <div className="relative z-10 fade-up max-w-4xl mx-auto px-3 sm:px-4 w-full flex flex-col items-center text-center">
+            
+            <span className="inline-block text-[9px] sm:text-[10px] md:text-xs font-bold tracking-[0.2em] uppercase text-brand-black bg-brand-white px-3 sm:px-5 py-2 sm:py-2.5 rounded-full shadow-lg mb-4 sm:mb-6">
+                Celebrate With Us
+            </span>
+            
+            <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-[7vw] leading-[1.1] md:leading-[1] font-display font-extrabold uppercase tracking-tighter text-brand-white mb-4 sm:mb-6 text-center w-max shrink-0">
+                {/* Mobile: "Your" is its own line. Desktop: "Your" is inline with a right margin */}
+                <span className="block md:inline md:mr-3 lg:mr-4">Your</span> <br />
+                
+                {/* The stroked text */}
+                <span className="text-transparent [-webkit-text-stroke:1px_#FFFFFF] inline-block pb-1 md:pb-0">Birthday</span>
+                
+                {/* Masterpiece is always forced to a perfectly centered new line */}
+                <span className="text-2xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-[7vw] block md:mt-2">Masterpiece</span>
+            </h1>
+            
+            <p className="text-[10px] sm:text-xs md:text-base font-medium text-brand-white/80 max-w-xl mx-auto leading-relaxed mb-6 sm:mb-10 text-center">
+                Transform your special day into a cinematic Bollywood experience. Premium VIP treatment, exclusive booths, and unforgettable memories.
+            </p>
+            
+            <Link href="#inquire" className="btn-monumental px-6 sm:px-8 md:px-12 py-3 sm:py-4 md:py-5 rounded-full text-[9px] sm:text-[10px] md:text-xs lg:text-sm font-bold tracking-[0.15em] uppercase inline-block">
+                <span>Plan Your Night</span>
+            </Link>
           </div>
       </section>
 

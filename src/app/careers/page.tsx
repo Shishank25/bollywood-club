@@ -167,7 +167,7 @@ export default function CareersPage() {
                         </span>
                         
                         <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-7xl xl:text-[8vw] leading-none font-display font-extrabold uppercase tracking-tighter text-brand-white">
-                            CA<span className="text-transparent [-webkit-text-stroke:1px_#FFFFFF] py-[0.15em] inline-block align-bottom">REERS</span>
+                            <span className="py-[0.15em] inline-block align-bottom">CA</span><span className="text-transparent [-webkit-text-stroke:1px_#FFFFFF] py-[0.15em] inline-block align-bottom">REERS</span>
                         </h1>
                     </div>
                 </div>
@@ -241,7 +241,7 @@ export default function CareersPage() {
                 <div className="max-w-[1600px] mx-auto">
                     
                     <div className="flex flex-col md:flex-row justify-between items-end mb-8 sm:mb-10 md:mb-12 gap-4 fade-up">
-                        <div className="max-w-2xl">
+                        <div className="self-start md:self-end max-w-2xl">
                             <h3 className="text-[8px] sm:text-[9px] md:text-sm font-bold tracking-[0.2em] uppercase text-brand-gray mb-2 sm:mb-3 md:mb-4">Corporate & Operations</h3>
                             <h2 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-display font-bold tracking-tighter uppercase text-brand-black leading-[0.9]">
                                 Current <span className="text-transparent [-webkit-text-stroke:1px_#0A0A0A]">Openings</span>

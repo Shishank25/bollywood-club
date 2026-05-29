@@ -247,7 +247,7 @@ export default function CorporateEventsPage() {
                         <div className="absolute inset-0 bg-brand-black/20"></div>
                         
                         <div className="absolute bottom-6 sm:bottom-8 md:bottom-12 left-6 sm:left-8 md:left-12 mix-blend-difference text-brand-white z-10 pr-4">
-                            <h3 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-display font-extrabold uppercase tracking-tighter leading-none">
+                            <h3 className="text-4xl sm:text-4xl md:text-5xl lg:text-7xl font-display font-extrabold uppercase tracking-tighter leading-none">
                                 Make An <br /> <span className="text-brand-accent">Inquiry</span>
                             </h3>
                         </div>

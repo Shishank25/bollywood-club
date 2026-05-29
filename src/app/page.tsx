@@ -6,22 +6,8 @@ import { MediaAsset } from "@/lib/media";
 import MediaSlot from "@/lib/media"; 
 import ScrollDiscoVideo from "@/components/Home/DiscoScrollSection";
 import LeadForm from "@/components/LeadForm";
-import { motion, AnimatePresence } from 'framer-motion';
 import VIPForm from "@/components/Home/VipForm";
-
-const modalConfig = {
-  // Movement & Positioning
-  startX: "100vw",     
-  startY: -150,         
-  swingAngle: -12,     // CHANGED: Negative angle tilts the top forward
-  
-  // Spring Physics
-  stiffness: 75,       
-  damping: 14,         
-  
-  // Exit Timing
-  exitDuration: 0.5    
-};
+import SmartMarqueeTitle from "@/components/SmartMarqueeTitle";
 
 export default function HomePage() {
   const [media, setMedia] = useState<Record<string, MediaAsset>>({});
@@ -233,10 +219,10 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 md:gap-4 w-full md:w-auto mt-3 md:mt-0 px-2 pb-2">
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 md:gap-4 w-full md:w-auto mt-3 md:mt-0 px-2 pb-2 md:pb-0">
             <button 
               onClick={() => setVipModal(true)}
-              className="bg-white border-1 sm:border-1 sm:bg-transparent sm:border-0  px-4 sm:px-6 md:px-10 py-2 sm:py-3 md:py-4 rounded-lg sm:rounded-full text-[12px] sm:text-[9px] md:text-xs lg:text-sm font-bold tracking-[0.15em] uppercase w-full sm:w-auto text-center"
+              className="bg-white border-1 sm:border-1 sm:bg-transparent sm:border-0  px-4 sm:px-6 md:px-10 py-2 sm:py-3 md:py-4 rounded-lg sm:rounded-full text-[12px] sm:text-[9px] md:text-xs lg:text-sm font-bold tracking-[0.15em] uppercase w-full sm:w-auto text-center cursor-pointer"
             >
               <span className="">VIP Access</span>
             </button>
@@ -276,7 +262,7 @@ export default function HomePage() {
                 return (
                   <div 
                     key={eventId || index}
-                    className="group flex flex-col fade-up scale-hover justify-between flex-grow w-[85vw] sm:w-auto shrink-0 sm:shrink snap-center" 
+                    className="group flex flex-col fade-up scale-hover justify-between flex-grow w-[85vw] max-w-[350px] sm:w-auto shrink-0 sm:shrink snap-center" 
                     style={{ transitionDelay: `${index * 100}ms` }}
                   >
                     {/* UPDATED CONTAINER: 
@@ -297,14 +283,15 @@ export default function HomePage() {
                     </div>
                     
                     <div className="flex flex-col flex-1 justify-between mt-2">
-                      <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl font-display font-bold uppercase tracking-tighter mb-0.5 sm:mb-1 text-wrap">
-                        {title}
-                      </h3>
+                      
+                      {/* The intelligent looping title */}
+                      <SmartMarqueeTitle title={event.basicInfo?.name ?? 'Event'} />
+                      
                       <p className="text-[8px] sm:text-xs md:text-sm font-medium text-brand-black mb-2 sm:mb-3 md:mb-4 sm:mb-6 flex-1">
-                        {venue}
+                        {event.basicInfo?.venue}
                       </p>
                       <button
-                        onClick={() => setTicketModalEventId(eventId)}
+                        onClick={() => setTicketModalEventId(event._id)}
                         className="btn-outline w-full max-w-[350px] mx-auto py-2 sm:py-3 md:py-4 rounded-lg sm:rounded-full text-[12px] sm:text-[9px] md:text-xs lg:text-sm font-bold tracking-[0.15em] uppercase text-center"
                       >
                         Reserve Tickets

@@ -47,7 +47,7 @@ export default function RootLayout({
         className={`${inter.variable} ${syne.variable} font-sans selection:bg-brand-black selection:text-white bg-white text-brand-black antialiased`}
       >
         {!isAdmin &&<Header />}
-        <main>{children}</main>
+        <main className="">{children}</main>
         <Footer />
       </body>
     </html>

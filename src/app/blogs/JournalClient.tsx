@@ -125,7 +125,7 @@ export default function JournalClient({ initialPosts }: { initialPosts: BlogPost
                         </span>
                         
                         <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl xl:text-[7vw] leading-none font-display font-extrabold uppercase tracking-tighter text-brand-white whitespace-normal sm:whitespace-nowrap">
-                            THE <span className="text-transparent [-webkit-text-stroke:1px_#FFFFFF] py-[0.15em] inline-block align-bottom">JOURNAL</span>
+                            <span className="py-[0.15em] inline-block align-bottom">THE</span> <span className="text-transparent [-webkit-text-stroke:1px_#FFFFFF] py-[0.15em] inline-block align-bottom">JOURNAL</span>
                         </h1>
                     </div>
                 </div>
@@ -133,8 +133,12 @@ export default function JournalClient({ initialPosts }: { initialPosts: BlogPost
 
             {/* MARQUEE SECTION */}
             <div className="w-full bg-brand-accent border-y-2 sm:border-y-3 md:border-y-4 border-brand-black overflow-hidden flex whitespace-nowrap py-2 sm:py-3 md:py-4 z-20 relative">
-                <div className="animate-marquee flex items-center w-[200%]">
-                    <div className="flex items-center w-1/2 justify-around text-brand-black">
+                <div className="animate-marquee flex items-center w-max">
+                    {[0, 1, 2].map((i) => (
+                    <div
+                        key={i}
+                        className="flex items-center shrink-0 text-brand-black px-2 sm:px-4"
+                    >
                         <span className="text-xs sm:text-lg md:text-2xl font-display font-bold uppercase tracking-tighter">LATEST NEWS</span>
                         <span className="text-sm sm:text-xl md:text-3xl mx-2 sm:mx-4">•</span>
                         <span className="text-xs sm:text-lg md:text-2xl font-display font-bold uppercase tracking-tighter">EVENT RECAPS</span>
@@ -144,18 +148,9 @@ export default function JournalClient({ initialPosts }: { initialPosts: BlogPost
                         <span className="text-xs sm:text-lg md:text-2xl font-display font-bold uppercase tracking-tighter text-transparent [-webkit-text-stroke:1px_#0A0A0A] hover:text-brand-black transition-colors">STYLE GUIDES</span>
                         <span className="text-sm sm:text-xl md:text-3xl mx-2 sm:mx-4">•</span>
                     </div>
-                    <div className="flex items-center w-1/2 justify-around text-brand-black">
-                        <span className="text-xs sm:text-lg md:text-2xl font-display font-bold uppercase tracking-tighter">LATEST NEWS</span>
-                        <span className="text-sm sm:text-xl md:text-3xl mx-2 sm:mx-4">•</span>
-                        <span className="text-xs sm:text-lg md:text-2xl font-display font-bold uppercase tracking-tighter">EVENT RECAPS</span>
-                        <span className="text-sm sm:text-xl md:text-3xl mx-2 sm:mx-4">•</span>
-                        <span className="text-xs sm:text-lg md:text-2xl font-display font-bold uppercase tracking-tighter">ARTIST INTERVIEWS</span>
-                        <span className="text-sm sm:text-xl md:text-3xl mx-2 sm:mx-4">•</span>
-                        <span className="text-xs sm:text-lg md:text-2xl font-display font-bold uppercase tracking-tighter text-transparent [-webkit-text-stroke:1px_#0A0A0A] hover:text-brand-black transition-colors">STYLE GUIDES</span>
-                        <span className="text-sm sm:text-xl md:text-3xl mx-2 sm:mx-4">•</span>
-                    </div>
+                    ))}
                 </div>
-            </div>
+                </div>
 
             {/* DYNAMIC EDITOR'S PICK SECTION */}
             <section className="py-12 sm:py-16 md:py-24 px-3 sm:px-4 md:px-6 lg:px-12 bg-brand-white border-b border-brand-border">

@@ -76,14 +76,14 @@ export default function ContactPage() {
             linkText: "+61 483952024",
             isLink: false
         },
-        {
-            icon: "fa-solid fa-globe",
-            title: "Asia Operations",
-            desc: "For events and inquiries in Singapore.",
-            link: "tel:+6531381490",
-            linkText: "+65 31381490",
-            isLink: false
-        }
+        // {
+        //     icon: "fa-solid fa-globe",
+        //     title: "Asia Operations",
+        //     desc: "For events and inquiries in Singapore.",
+        //     link: "tel:+6531381490",
+        //     linkText: "+65 31381490",
+        //     isLink: false
+        // }
     ];
 
     const faqs = [
@@ -162,7 +162,7 @@ export default function ContactPage() {
                                 </span>
                             </div>
                             
-                            <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-7xl xl:text-[7.5vw] leading-[1.1] font-display font-extrabold uppercase tracking-tighter text-brand-white">
+                            <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-7xl leading-[1.1] font-display font-extrabold uppercase tracking-tighter text-brand-white">
                                 Get In <br className="md:hidden" /> 
                                 <span className="text-transparent [-webkit-text-stroke:1px_#FFFFFF] py-[0.15em] inline-block">Touch</span>
                             </h1>
@@ -344,10 +344,12 @@ export default function ContactPage() {
                 <div className="max-w-[1600px] mx-auto">
                     
                     <div className="flex flex-col md:flex-row justify-between items-end mb-10 sm:mb-12 md:mb-16 fade-up">
-                        <div className="max-w-2xl">
-                            <h3 className="text-[8px] sm:text-[9px] md:text-sm font-bold tracking-[0.2em] uppercase text-brand-gray mb-2 sm:mb-3 md:mb-4">FAQ</h3>
-                            <h2 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-display font-bold tracking-tighter uppercase text-brand-black leading-[0.9]">
-                                Quick <br /> 
+                        <div className="flex md:block max-w-2xl">
+                            <h2 className="flex flex-col items-end text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-display font-bold tracking-tighter uppercase text-brand-black leading-[0.9]">
+                                <span className="flex">
+                                    <h3 className="text-[8px] sm:text-[9px] md:text-sm font-bold tracking-[0.2em] uppercase text-brand-gray mb-2 sm:mb-3 md:mb-4">FAQ</h3>
+                                    <span>Quick</span>
+                                </span> 
                                 <span className="text-transparent [-webkit-text-stroke:1px_#0A0A0A]">Answers</span>
                             </h2>
                         </div>

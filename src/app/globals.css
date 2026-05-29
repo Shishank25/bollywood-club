@@ -17,7 +17,7 @@
   --ease-custom: cubic-bezier(0.83, 0, 0.17, 1);
 
   /* Animation */
-  --animate-marquee: marquee 25s linear infinite;
+  --animate-marquee: marquee 8s linear infinite;
 }
 
 html, body {
@@ -227,7 +227,7 @@ body {
   }
 
   100% {
-    transform: translateX(-50%);
+    transform: translateX(-33.333%);
   }
 }
 

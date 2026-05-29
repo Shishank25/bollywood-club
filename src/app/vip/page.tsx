@@ -379,8 +379,9 @@ export default function VipPage() {
                 </div>
                 
                 <div className="relative z-10 max-w-3xl mx-auto fade-up w-full">
-                    <h2 className="text-2xl sm:text-5xl md:text-7xl lg:text-8xl font-display font-extrabold uppercase tracking-tighter leading-[1] md:leading-[0.9] mb-4 md:mb-8">
-                        Celebrating A <br /> 
+                    <h2 className="flex flex-col items-center text-2xl sm:text-5xl md:text-7xl lg:text-8xl font-display font-extrabold uppercase tracking-tighter leading-[1] md:leading-[0.9] mb-4 md:mb-8">
+                        <span>Celebrating</span>
+                        <span>A</span> 
                         <span className="text-transparent [-webkit-text-stroke:1px_#FFFFFF]">Birthday?</span>
                     </h2>
                     <p className="text-xs sm:text-sm md:text-base font-medium text-brand-gray mb-8 md:mb-12 max-w-xl mx-auto leading-relaxed">
