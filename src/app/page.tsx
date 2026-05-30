@@ -1,13 +1,15 @@
 "use client";
 
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { MediaAsset } from "@/lib/media"; 
 import MediaSlot from "@/lib/media"; 
-import ScrollDiscoVideo from "@/components/Home/DiscoScrollSection";
 import LeadForm from "@/components/LeadForm";
 import VIPForm from "@/components/Home/VipForm";
-import SmartMarqueeTitle from "@/components/SmartMarqueeTitle";
+
+// Import your new reusable components
+import { EventCard } from "@/components/Events/EventCard";
+import VipModal from "@/components/Events/VIPModal"; // Make sure to export VipModal from its file
 
 export default function HomePage() {
   const [media, setMedia] = useState<Record<string, MediaAsset>>({});
@@ -19,37 +21,33 @@ export default function HomePage() {
   const discoRef = useRef<HTMLDivElement>(null);
 
   const [ticketModalEventId, setTicketModalEventId] = useState<string | null>(null);
-  const [vipModal, setVipModal] = useState(false);
+  const [vipModal, setVipModal] = useState(false); // Used for the generic VIP form
+  const [vipModalEvent, setVipModalEvent] = useState<any | null>(null); // NEW: Used for the specific event VIP booking
 
   // Form State
-  const [formData, setFormData] = useState({
-    f_name: '',
-    l_name: '',
-    email: '',
-    phone: '',
-  });
-  const [citySelection, setCitySelection] = useState("");
-  const [customCity, setCustomCity] = useState("");
   const [formStatus, setFormStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
 
   // Close modal on Escape key
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setTicketModalEventId(null);
+      if (e.key === "Escape") {
+        setTicketModalEventId(null);
+        setVipModalEvent(null);
+      }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  // Lock body scroll when modal is open
+  // Lock body scroll when any modal is open
   useEffect(() => {
-    if (ticketModalEventId) {
+    if (ticketModalEventId || vipModalEvent) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "";
     }
     return () => { document.body.style.overflow = ""; };
-  }, [ticketModalEventId]);
+  }, [ticketModalEventId, vipModalEvent]);
 
   // 1. Fetch Media from your GET Route
   useEffect(() => {
@@ -98,7 +96,7 @@ export default function HomePage() {
       clearTimeout(timer);
       observer.disconnect();
     };
-  }, [isLoading]);
+  }, [isLoading, events]); // Added events to dependency array so cards animate when loaded
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -119,12 +117,17 @@ export default function HomePage() {
     fetchEvents();
   }, []);
 
-  const getVenueFromTitle = (title: string) => {
-    if (!title) return "";
-    const normalizedTitle = title.toLowerCase();
-    if (normalizedTitle.includes("melbourne")) return "Crown L3";
-    if (normalizedTitle.includes("sydney")) return "Barrio Cellar";
-    return "";
+  // Helpers for EventCard
+  const isEventActive = (event: any) => {
+    if (event.basicInfo?.status !== "published") return false;
+    if (event.basicInfo?.date && new Date(event.basicInfo.date) < new Date()) return false;
+    return true;
+  };
+
+  const resolveImage = (event: any) => {
+    const image = event.media?.coverImage || event.img;
+    if (!image) return "https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=800&auto=format&fit=crop";
+    return image.startsWith("http") ? image : `https://147.79.70.30.nip.io:8444/${image}`;
   };
 
   return (
@@ -188,7 +191,15 @@ export default function HomePage() {
         </div>
       )}
 
-      {/* VIPForm handles its own presence and animations natively */}
+      {/* ── Specific Event VIP Modal ── */}
+      {vipModalEvent && (
+        <VipModal
+          event={vipModalEvent}
+          onClose={() => setVipModalEvent(null)}
+        />
+      )}
+
+      {/* Generic VIPForm handles its own presence and animations natively */}
       <VIPForm vipModal={vipModal} setVipModal={setVipModal} />
 
       {/* ── Hero ── */}
@@ -235,68 +246,36 @@ export default function HomePage() {
 
       {/* Events */}
       <section id="events" className="pt-12 sm:pt-16 md:pt-24 pb-16 sm:pb-20 md:pb-32 px-3 sm:px-4 md:px-6 lg:px-12">
-        <div className="max-w-[1600px] mx-auto max-h-[550px]">
+        <div className="max-w-[1600px] mx-auto">
           <div className="flex justify-between items-end mb-6 sm:mb-10 md:mb-16 fade-up">
             <h2 className="text-2xl sm:text-3xl md:text-5xl lg:text-7xl font-display font-bold tracking-tighter uppercase">
               Upcoming Events
             </h2>
           </div>
 
-          {/* CONTAINER UPDATES: 
-            - Changed to `flex` on mobile, `grid` on `sm` and above.
-            - Added `overflow-x-auto`, `snap-x`, and `snap-mandatory` for mobile scrolling.
-            - Added custom utilities to hide the ugly native scrollbar.
-          */}
-          <div className="flex flex-nowrap sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-4 md:gap-6 lg:gap-x-6 lg:gap-y-12 border-t border-brand-border pt-2 sm:pt-8 md:pt-10 overflow-x-auto overflow-y-hidden snap-x snap-mandatory pb-6 px-6 sm:pb-0 scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden max-h-[550px]">
+          <div className="flex flex-nowrap sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-4 md:gap-6 lg:gap-x-6 lg:gap-y-12 border-t border-brand-border pt-2 sm:pt-8 md:pt-10 overflow-x-auto overflow-y-hidden snap-x snap-mandatory pb-6 px-6 sm:pb-0 scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
             {isEventsLoading ? (
               <div className="col-span-full w-full text-center text-brand-gray font-bold tracking-[0.15em] uppercase text-xs sm:text-sm">
                 Loading events...
               </div>
             ) : (
               events.map((event, index) => {
-                const title = event.basicInfo?.name || event.title || "TBA";
-                const venue = getVenueFromTitle(title);
-                const image = event.media?.coverImage || event.img || "https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=800&auto=format&fit=crop";
-                const eventId = event._id;
+                const active = isEventActive(event);
+                const imgSrc = resolveImage(event);
 
                 return (
                   <div 
-                    key={eventId || index}
-                    className="group flex flex-col fade-up scale-hover justify-between flex-grow w-[85vw] max-w-[350px] sm:w-auto shrink-0 sm:shrink snap-center" 
-                    style={{ transitionDelay: `${index * 100}ms` }}
+                    key={event._id || index}
+                    className="w-[85vw] max-w-[350px] sm:max-w-none sm:w-auto shrink-0 sm:shrink snap-center flex flex-col"
                   >
-                    {/* UPDATED CONTAINER: 
-                      - `aspect-square` forces a 1:1 ratio.
-                      - `max-w-[350px]` caps the growth (adjust this value to your liking).
-                      - `mx-auto` keeps it centered if the parent column grows wider than the max-width.
-                    */}
-                    <div className="w-full aspect-square max-w-[350px] mx-auto overflow-hidden bg-brand-offwhite mb-2 sm:mb-3 md:mb-4 rounded-lg shrink-0">
-                      <img 
-                        src={
-                          image?.startsWith("http")
-                            ? image
-                            : `https://147.79.70.30.nip.io:8444/${image}`
-                        }
-                        className="w-full h-full object-cover filter grayscale-0 group-hover:grayscale-0 transition-all duration-500" 
-                        alt={`${title} flyer`} 
-                      />
-                    </div>
-                    
-                    <div className="flex flex-col flex-1 justify-between mt-2">
-                      
-                      {/* The intelligent looping title */}
-                      <SmartMarqueeTitle title={event.basicInfo?.name ?? 'Event'} />
-                      
-                      <p className="text-[8px] sm:text-xs md:text-sm font-medium text-brand-black mb-2 sm:mb-3 md:mb-4 sm:mb-6 flex-1">
-                        {event.basicInfo?.venue}
-                      </p>
-                      <button
-                        onClick={() => setTicketModalEventId(event._id)}
-                        className="btn-outline w-full max-w-[350px] mx-auto py-2 sm:py-3 md:py-4 rounded-lg sm:rounded-full text-[12px] sm:text-[9px] md:text-xs lg:text-sm font-bold tracking-[0.15em] uppercase text-center"
-                      >
-                        Reserve Tickets
-                      </button>
-                    </div>
+                    <EventCard
+                      event={event}
+                      isActive={active}
+                      imgSrc={imgSrc}
+                      delay={`${index * 100}ms`}
+                      onReserve={() => setTicketModalEventId(event._id)}
+                      onBookVIP={() => setVipModalEvent(event)} 
+                    />
                   </div>
                 );
               })

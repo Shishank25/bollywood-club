@@ -1,11 +1,8 @@
-"use client"
-
-// import type { Metadata } from "next";
+import type { Metadata } from "next";
 import { Inter, Syne } from "next/font/google";
 import "./globals.css";
-import Header from "../components/Header";
+import HeaderWrapper from "@/components/HeaderWrapper"; // Note the new import
 import Footer from "../components/Footer";
-import { usePathname } from "next/navigation";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -19,22 +16,17 @@ const syne = Syne({
   variable: "--font-syne",
 });
 
-// export const metadata: Metadata = {
-//   title: "Bollywood Club | Elevate Your Nightlife Experience",
-//   description: "Curating Premium Bollywood Experiences Worldwide.",
-// };
+// Because this is a Server Component again, we can safely export metadata!
+export const metadata: Metadata = {
+  title: "Bollywood Club | Elevate Your Nightlife Experience",
+  description: "Curating Premium Bollywood Experiences Worldwide.",
+};
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-
-  const pathname = usePathname();
-
-  const isAdmin = pathname.startsWith("/admin");
-
-
   return (
     <html lang="en" className="scroll-smooth">
       <head>
@@ -46,8 +38,12 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${syne.variable} font-sans selection:bg-brand-black selection:text-white bg-white text-brand-black antialiased`}
       >
-        {!isAdmin &&<Header />}
+        {/* The Client Wrapper handles the logic of showing/hiding the header */}
+        <HeaderWrapper />
+        
         <main className="">{children}</main>
+        
+        {/* The Footer stays here, safely querying the DB on the server */}
         <Footer />
       </body>
     </html>

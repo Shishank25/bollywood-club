@@ -2,6 +2,8 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import type { Event, EventQueryParams, EventsApiResponse } from '@/types/events';
+import { EventCard } from '@/components/Events/EventCard'; // Adjust path if you put it in a separate file
+import VipModal from '@/components/Events/VIPModal';
 
 // ---------------------------------------------------------------------------
 // Hook: fetch events from our Next.js API route → ticketing backend
@@ -173,6 +175,8 @@ export default function EventsPage() {
 
   // Modal state — null = closed, string = event ID to show
   const [ticketModalEventId, setTicketModalEventId] = useState<string | null>(null);
+  // const [vipModalEventId, setVipModalEventId] = useState<string | null>(null);
+  const [vipModalEvent, setVipModalEvent] = useState<any | null>(null);
 
   // ---------------------------------------------------------------------------
   // Query params
@@ -282,8 +286,15 @@ export default function EventsPage() {
         />
       )}
 
+      {vipModalEvent && (
+        <VipModal
+          event={vipModalEvent}
+          onClose={() => setVipModalEvent(null)}
+        />
+      )}
+
       {/* ------------------------------------------------------------------ */}
-      {/* HERO SLIDER SECTION                                                 */}
+      {/* HERO SLIDER SECTION                                                */}
       {/* ------------------------------------------------------------------ */}
       <section className="relative h-[85svh] min-h-[500px] md:min-h-[600px] w-full px-3 sm:px-6 md:px-12 pt-24 md:pt-28 pb-6 md:pb-12 flex flex-col">
         <div
@@ -377,7 +388,7 @@ export default function EventsPage() {
       </section>
 
       {/* ------------------------------------------------------------------ */}
-      {/* EVENT GRID SECTION                                                  */}
+      {/* EVENT GRID SECTION                                                */}
       {/* ------------------------------------------------------------------ */}
       <section id="event-grid" className="pt-12 pb-32 bg-brand-white px-6 md:px-12">
         <div className="max-w-[1600px] mx-auto">
@@ -447,74 +458,15 @@ export default function EventsPage() {
                 const delay = animationDelays[i % animationDelays.length];
 
                 return (
-                  <div
+                  <EventCard
                     key={event._id}
-                    className="group flex flex-col fade-up"
-                    style={{ transitionDelay: delay }}
-                  >
-                    <div className="w-full aspect-[3/4] overflow-hidden bg-brand-offwhite mb-6 relative">
-
-                      {/* Sold out overlay */}
-                      {!active && (
-                        <div className="absolute inset-0 bg-brand-black/20 z-10" />
-                      )}
-
-                      {/* Badges */}
-                      {event.badge && (
-                        <div className={`absolute ${active ? 'top-4 left-4 bg-brand-accent text-white px-3 py-1.5' : 'inset-0 flex items-center justify-center'} z-20`}>
-                          <span className={`${!active ? 'bg-brand-black text-brand-white px-4 py-2' : ''} text-[10px] uppercase font-bold tracking-[0.2em]`}>
-                            {String(event.badge)}
-                          </span>
-                        </div>
-                      )}
-
-                      <img
-                        src={imgSrc}
-                        alt={event.basicInfo?.name ?? 'Event'}
-                        className={`w-full h-full object-cover filter transition-all duration-[300ms] ease-custom ${
-                          active ? 'grayscale group-hover:grayscale-0 group-hover:scale-105' : 'grayscale opacity-70'
-                        }`}
-                      />
-                    </div>
-
-                    <div className={`flex flex-col flex-1 ${!active ? 'opacity-60' : ''}`}>
-                      <h3 className={`text-2xl font-display font-bold uppercase tracking-tighter mb-2 text-wrap ${!active ? 'text-brand-gray' : ''}`}>
-                        {event.basicInfo?.name}
-                      </h3>
-                      <p className={`text-xs font-bold tracking-[0.15em] uppercase mb-1 ${active ? 'text-brand-black' : 'text-brand-gray'}`}>
-                        {event.basicInfo?.date
-                          ? new Date(event.basicInfo.date).toLocaleDateString('en-AU', {
-                              day: 'numeric',
-                              month: 'long',
-                              year: 'numeric',
-                            })
-                          : '—'}
-                      </p>
-                      <p className="text-[10px] font-bold tracking-[0.15em] uppercase text-brand-gray mb-4">
-                        {event.basicInfo?.city ?? event.basicInfo?.location}
-                      </p>
-                      <p className={`text-sm font-medium mb-6 flex-1 ${active ? 'text-brand-black' : 'text-brand-gray'}`}>
-                        {event.basicInfo?.venue}
-                      </p>
-
-                      {active ? (
-                        // Opens the modal for this specific event
-                        <button
-                          onClick={() => setTicketModalEventId(event._id)}
-                          className="relative inline-flex items-center justify-center w-full py-3 rounded-full text-xs font-bold tracking-[0.15em] uppercase text-center bg-transparent text-brand-black border border-brand-black hover:bg-brand-black hover:text-white transition-all duration-300"
-                        >
-                          Reserve Tickets
-                        </button>
-                      ) : (
-                        <button
-                          disabled
-                          className="w-full py-3 rounded-full text-xs font-bold tracking-[0.15em] uppercase text-center bg-brand-offwhite text-brand-gray cursor-not-allowed"
-                        >
-                          Unavailable
-                        </button>
-                      )}
-                    </div>
-                  </div>
+                    event={event}
+                    isActive={active}
+                    imgSrc={imgSrc}
+                    delay={delay}
+                    onReserve={() => setTicketModalEventId(event._id)}
+                    onBookVIP={() => setVipModalEvent(event)}
+                  />
                 );
               })}
             </div>

@@ -23,6 +23,7 @@ export default function LeadForm({ formType, fields, buttonText = "Subscribe" }:
   
   const [citySelection, setCitySelection] = useState('');
   const [customCity, setCustomCity] = useState('');
+  const [countryCode, setCountryCode] = useState('+61'); // NEW: Country code state
   const [formStatus, setFormStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [currentUrl, setCurrentUrl] = useState('');
 
@@ -42,8 +43,12 @@ export default function LeadForm({ formType, fields, buttonText = "Subscribe" }:
     // Resolve the final city value
     const finalCity = citySelection === 'Other' ? customCity : citySelection;
 
+    // Combine country code and phone number into a single string
+    const finalPhone = `${countryCode}${formData.phone}`;
+
     const payload = {
       ...formData,
+      phone: finalPhone, // Overwrite the raw phone value with the concatenated string
       form_type: formType,
       city: finalCity,
       source_url: currentUrl // Passing the captured URL to the backend
@@ -108,8 +113,33 @@ export default function LeadForm({ formType, fields, buttonText = "Subscribe" }:
           case 'phone':
             return (
               <div key={field} className={`${wrapperClass} flex items-center gap-3 sm:gap-4`}>
-                <span className="text-[8px] sm:text-[9px] md:text-xs font-bold tracking-[0.15em] uppercase text-brand-black">+61</span>
-                <input type="tel" name="phone" placeholder="PHONE NO. *" value={formData.phone} onChange={handleChange} required className={inputClass} />
+                {/* Custom Styled Country Code Dropdown */}
+                <div className="relative flex items-center shrink-0">
+                  <select
+                    value={countryCode}
+                    onChange={(e) => setCountryCode(e.target.value)}
+                    className="bg-transparent text-[8px] sm:text-[9px] md:text-xs font-bold tracking-[0.15em] uppercase text-brand-black focus:outline-none appearance-none cursor-pointer pr-4"
+                  >
+                    <option value="+61">🇦🇺 +61</option>
+                    <option value="+64">🇳🇿 +64</option>
+                    <option value="+65">🇸🇬 +65</option>
+                    <option value="+91">🇮🇳 +91</option>
+                    <option value="+44">🇬🇧 +44</option>
+                    <option value="+1">🇺🇸 +1</option>
+                  </select>
+                  {/* Custom Chevron to replace default arrow */}
+                  <i className="fa-solid fa-chevron-down absolute right-0 text-[8px] pointer-events-none text-brand-black"></i>
+                </div>
+                
+                <input 
+                  type="tel" 
+                  name="phone" 
+                  placeholder="PHONE NO. *" 
+                  value={formData.phone} 
+                  onChange={handleChange} 
+                  required 
+                  className={inputClass} 
+                />
               </div>
             );
           case 'city':
@@ -163,7 +193,6 @@ export default function LeadForm({ formType, fields, buttonText = "Subscribe" }:
                 <textarea name="description" placeholder="DESCRIPTION" value={formData.description} onChange={handleChange} rows={3} className={`${inputClass} resize-none`} />
               </div>
             );
-          // Add region/country here if needed following the same pattern
           default:
             return null;
         }

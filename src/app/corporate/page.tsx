@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { MediaAsset } from '@/lib/media';
 import MediaSlot from '@/lib/media';
+import LeadForm from '@/components/LeadForm';
 
 export default function CorporateEventsPage() {
     // State for media fetching
@@ -11,22 +12,6 @@ export default function CorporateEventsPage() {
 
     // State for the cinematic image reveal on load
     const [isRevealed, setIsRevealed] = useState(false);
-
-    // --- FORM STATE ---
-    const [formData, setFormData] = useState({
-        f_name: '',        // First Name
-        l_name: '',        // Last Name
-        company_name: '',  // Company Name
-        email: '',
-        phone: '',
-        description: ''    // Event Details
-    });
-    
-    // City Selection State
-    const [citySelection, setCitySelection] = useState("");
-    const [customCity, setCustomCity] = useState("");
-    
-    const [formStatus, setFormStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
 
     const capabilities = [
         {
@@ -104,42 +89,6 @@ export default function CorporateEventsPage() {
         };
     }, [isLoading]);
 
-    // --- FORM SUBMIT HANDLER ---
-    const handleSubscribe = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setFormStatus('loading');
-
-        // Determine final city based on dropdown vs custom input
-        const finalCity = citySelection === 'Other' ? customCity : citySelection;
-
-        try {
-            const res = await fetch('/api/leads', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    form_type: 'corporate_inquiry',
-                    f_name: formData.f_name,
-                    l_name: formData.l_name,
-                    company_name: formData.company_name, // Explicitly mapped
-                    email: formData.email,
-                    phone: formData.phone,
-                    city: finalCity,
-                    description: formData.description
-                })
-            });
-
-            if (res.ok) {
-                setFormStatus('success');
-                setFormData({ f_name: '', l_name: '', company_name: '', email: '', phone: '', description: '' });
-                setCitySelection("");
-                setCustomCity("");
-            } else {
-                setFormStatus('error');
-            }
-        } catch (error) {
-            setFormStatus('error');
-        }
-    };
 
     return (
         <main className="w-full selection:bg-brand-black selection:text-white">
@@ -259,140 +208,11 @@ export default function CorporateEventsPage() {
                             <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-display font-bold uppercase tracking-tighter text-brand-black mb-2">Plan Your Event</h3>
                             <p className="text-[8px] sm:text-[9px] md:text-xs font-bold tracking-[0.15em] uppercase text-brand-gray mb-8 sm:mb-12">Submit your requirements to our events team.</p>
                             
-                            {/* Render Success State OR The Form */}
-                            {formStatus === 'success' ? (
-                                <div className="bg-brand-black text-white p-8 rounded-xl text-center animate-in fade-in zoom-in duration-500">
-                                    <h3 className="text-2xl font-display font-bold uppercase tracking-tighter mb-2">Inquiry Sent</h3>
-                                    <p className="text-xs font-bold tracking-[0.15em] uppercase text-brand-gray">Our corporate events team will contact you shortly.</p>
-                                </div>
-                            ) : (
-                                <form className="space-y-8" onSubmit={handleSubscribe}>
-
-                                    {formStatus === 'error' && (
-                                        <div className="text-red-500 text-xs font-bold uppercase tracking-widest">
-                                            An error occurred. Please try again.
-                                        </div>
-                                    )}
-
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
-                                        <div>
-                                            <input 
-                                                type="text" 
-                                                placeholder="FIRST NAME *" 
-                                                required 
-                                                value={formData.f_name}
-                                                onChange={(e) => setFormData({...formData, f_name: e.target.value})}
-                                                className="w-full bg-transparent border-b border-brand-black pb-2 text-[9px] sm:text-[10px] md:text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray rounded-none" 
-                                            />
-                                        </div>
-                                        <div>
-                                            <input 
-                                                type="text" 
-                                                placeholder="LAST NAME *" 
-                                                required 
-                                                value={formData.l_name}
-                                                onChange={(e) => setFormData({...formData, l_name: e.target.value})}
-                                                className="w-full bg-transparent border-b border-brand-black pb-2 text-[9px] sm:text-[10px] md:text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray rounded-none" 
-                                            />
-                                        </div>
-                                    </div>
-
-                                    {/* DEDICATED COMPANY NAME FIELD */}
-                                    <div>
-                                        <input 
-                                            type="text" 
-                                            placeholder="COMPANY NAME *" 
-                                            required 
-                                            value={formData.company_name}
-                                            onChange={(e) => setFormData({...formData, company_name: e.target.value})}
-                                            className="w-full bg-transparent border-b border-brand-black pb-2 text-[9px] sm:text-[10px] md:text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray rounded-none" 
-                                        />
-                                    </div>
-
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
-                                        <div className="flex items-end border-b border-brand-black pb-2 transition-colors focus-within:border-brand-accent group">
-                                            <div className="flex items-center gap-2 mr-4 text-xs font-bold tracking-widest text-brand-black">
-                                                <span>+61</span>
-                                            </div>
-                                            <input 
-                                                type="tel" 
-                                                placeholder="PHONE NUMBER *" 
-                                                required 
-                                                value={formData.phone}
-                                                onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                                                className="w-full bg-transparent text-[9px] sm:text-[10px] md:text-xs font-bold tracking-[0.15em] uppercase outline-none placeholder-brand-gray text-brand-black rounded-none" 
-                                            />
-                                        </div>
-                                        <div>
-                                            <input 
-                                                type="email" 
-                                                placeholder="EMAIL ADDRESS *" 
-                                                required 
-                                                value={formData.email}
-                                                onChange={(e) => setFormData({...formData, email: e.target.value})}
-                                                className="w-full bg-transparent border-b border-brand-black pb-2 text-[9px] sm:text-[10px] md:text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray rounded-none" 
-                                            />
-                                        </div>
-                                    </div>
-
-                                    {/* ── DYNAMIC CITY DROPDOWN ── */}
-                                    <div className="relative border-b border-brand-black pb-2 focus-within:border-brand-accent transition-colors duration-300">
-                                        <select
-                                            value={citySelection}
-                                            onChange={(e) => setCitySelection(e.target.value)}
-                                            className={`w-full bg-transparent text-[9px] sm:text-[10px] md:text-xs font-bold tracking-[0.15em] uppercase outline-none appearance-none cursor-pointer rounded-none ${citySelection === "" ? 'text-brand-gray' : 'text-brand-black'}`}
-                                            required
-                                        >
-                                            <option value="" disabled className="text-brand-gray">SELECT CITY *</option>
-                                            <option value="Melbourne" className="text-brand-black">Melbourne</option>
-                                            <option value="Sydney" className="text-brand-black">Sydney</option>
-                                            <option value="Perth" className="text-brand-black">Perth</option>
-                                            <option value="Adelaide" className="text-brand-black">Adelaide</option>
-                                            <option value="Brisbane" className="text-brand-black">Brisbane</option>
-                                            <option value="Singapore" className="text-brand-black">Singapore</option>
-                                            <option value="Other" className="text-brand-black">Other</option>
-                                        </select>
-                                        <div className="absolute right-0 top-[20%] pointer-events-none pb-2">
-                                            <i className="fa-solid fa-chevron-down text-brand-gray text-[9px] sm:text-[10px] md:text-xs"></i>
-                                        </div>
-                                    </div>
-
-                                    {/* ── CONDITIONAL "OTHER" CITY INPUT ── */}
-                                    {citySelection === 'Other' && (
-                                        <div className="animate-in slide-in-from-top-2 duration-300">
-                                            <input
-                                                type="text"
-                                                placeholder="ENTER YOUR CITY *"
-                                                value={customCity}
-                                                onChange={(e) => setCustomCity(e.target.value)}
-                                                className="w-full bg-transparent border-b border-brand-black pb-2 text-[9px] sm:text-[10px] md:text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray rounded-none"
-                                                required
-                                            />
-                                        </div>
-                                    )}
-
-                                    {/* ── EVENT DETAILS / DESCRIPTION ── */}
-                                    <div>
-                                        <textarea 
-                                            rows={4} 
-                                            placeholder="EVENT DETAILS (DATES, OCCASION, SPECIFIC REQUIREMENTS)" 
-                                            value={formData.description}
-                                            onChange={(e) => setFormData({...formData, description: e.target.value})}
-                                            className="w-full bg-transparent border-b border-brand-black pb-2 pt-2 text-[9px] sm:text-[10px] md:text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray resize-none rounded-none"
-                                        ></textarea>
-                                    </div>
-
-                                    {/* Pure Tailwind Monumental Button */}
-                                    <button 
-                                        type="submit" 
-                                        disabled={formStatus === 'loading'}
-                                        className="group relative overflow-hidden inline-flex items-center justify-center w-full py-4 sm:py-5 md:py-6 text-[8px] sm:text-[9px] md:text-xs font-bold tracking-[0.15em] uppercase mt-6 sm:mt-8 bg-brand-black text-white transition-colors duration-300 disabled:opacity-50"
-                                    >
-                                        <div className="absolute top-full left-0 w-full h-full bg-brand-accent transition-all duration-[400ms] ease-custom z-10 group-hover:top-0"></div>
-                                        <span className="relative z-20">{formStatus === 'loading' ? 'Submitting...' : 'Submit Inquiry'}</span>
-                                    </button>
-                                </form>
-                            )}
+                            <LeadForm 
+                              formType="corporate_inquiry"
+                              fields={['f_name', 'l_name', 'company_name', 'email', 'phone', 'city', 'description']}
+                              buttonText="Submit Inquiry"
+                            />
                         </div>
                     </div>
 

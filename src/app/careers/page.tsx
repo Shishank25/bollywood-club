@@ -33,6 +33,9 @@ export default function CareersPage() {
 
     // Cinematic State
     const [isRevealed, setIsRevealed] = useState(false);
+    
+    // Form State for Country Code
+    const [countryCode, setCountryCode] = useState('+61');
 
     // Hardcoded Roster Array
     const roles = [
@@ -368,12 +371,26 @@ export default function CareersPage() {
                                 </div>
 
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
+                                    {/* ── UPDATED PHONE INPUT ── */}
                                     <div className="flex items-end border-b border-brand-black pb-2 transition-colors focus-within:border-brand-accent group">
-                                        <div className="flex items-center gap-2 mr-2 sm:mr-3 md:mr-4 text-[8px] sm:text-[9px] md:text-xs font-bold tracking-widest text-brand-black">
-                                            <span>+61</span>
+                                        <div className="relative flex items-center shrink-0 mb-[-2px] mr-2 sm:mr-3 md:mr-4">
+                                            <select
+                                                value={countryCode}
+                                                onChange={(e) => setCountryCode(e.target.value)}
+                                                className="bg-transparent text-[8px] sm:text-[9px] md:text-xs font-bold tracking-widest uppercase text-brand-black focus:outline-none appearance-none cursor-pointer pr-4 sm:pr-5"
+                                            >
+                                                <option value="+61">🇦🇺 +61</option>
+                                                <option value="+64">🇳🇿 +64</option>
+                                                <option value="+65">🇸🇬 +65</option>
+                                                <option value="+91">🇮🇳 +91</option>
+                                                <option value="+44">🇬🇧 +44</option>
+                                                <option value="+1">🇺🇸 +1</option>
+                                            </select>
+                                            <i className="fa-solid fa-chevron-down absolute right-0 text-[8px] pointer-events-none text-brand-black"></i>
                                         </div>
-                                        <input type="tel" placeholder="PHONE NUMBER" className="w-full bg-transparent text-[8px] sm:text-[9px] md:text-xs font-bold tracking-[0.15em] uppercase outline-none placeholder-brand-gray text-brand-black rounded-none" />
+                                        <input type="tel" placeholder="PHONE NUMBER *" required className="w-full bg-transparent text-[8px] sm:text-[9px] md:text-xs font-bold tracking-[0.15em] uppercase outline-none placeholder-brand-gray text-brand-black rounded-none" />
                                     </div>
+                                    
                                     <div>
                                         <input type="email" placeholder="EMAIL ADDRESS *" required className="w-full bg-transparent border-b border-brand-black pb-2 text-[8px] sm:text-[9px] md:text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray rounded-none" />
                                     </div>

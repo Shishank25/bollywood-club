@@ -13,6 +13,7 @@ const MENU_ITEMS = [
   { label: 'Settings', href: '/admin/settings', icon: '⚙️' },
   { label: 'Manage Jobs', href: '/admin/jobs', icon: '💼' },
   { label: 'Manage Offers', href: '/admin/offers', icon: '🎁' },
+  { label: 'Manage Cities', href: '/admin/city', icon: '🌆' },
 ];
 
 export function AdminSidebar() {

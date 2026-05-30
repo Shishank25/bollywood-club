@@ -1,63 +1,11 @@
 "use client";
 
 import { useEffect, useState } from 'react';
+import LeadForm from '@/components/LeadForm';
 
 export default function ContactPage() {
     // ── State for the cinematic image reveal ──
     const [isRevealed, setIsRevealed] = useState(false);
-
-    // ── Form State & API Routing ──
-    const [formData, setFormData] = useState({
-        f_name: '',
-        l_name: '',
-        email: '',
-        phone: '',
-        city: '',
-        description: ''
-    });
-    const [formStatus, setFormStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
-
-    const handleFormSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setFormStatus('loading');
-
-        try {
-            const res = await fetch('/api/leads', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    form_type: 'contact_inquiry', // Identifier for your DB
-                    f_name: formData.f_name,
-                    l_name: formData.l_name,
-                    email: formData.email,
-                    phone: formData.phone,
-                    city: formData.city,
-                    description: formData.description
-                })
-            });
-
-            if (res.ok) {
-                setFormStatus('success');
-                // Reset form
-                setFormData({
-                    f_name: '',
-                    l_name: '',
-                    email: '',
-                    phone: '',
-                    city: '',
-                    description: ''
-                });
-                
-                // Return to idle state after 3 seconds
-                setTimeout(() => setFormStatus('idle'), 3000);
-            } else {
-                setFormStatus('error');
-            }
-        } catch (error) {
-            console.error("Submission error:", error);
-            setFormStatus('error');
-        }
-    };
 
     const contactInfo = [
         {
@@ -227,113 +175,11 @@ export default function ContactPage() {
                         <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-display font-bold uppercase tracking-tighter text-brand-black mb-1 sm:mb-2">Send A Message</h3>
                         <p className="text-[8px] sm:text-[9px] md:text-xs font-bold tracking-[0.15em] uppercase text-brand-gray mb-6 sm:mb-8 md:mb-10 pb-4 sm:pb-6 border-b border-brand-border">We usually respond within 24 hours.</p>
                         
-                        {formStatus === 'error' && (
-                            <div className="mb-4 sm:mb-6 text-red-600 text-[8px] sm:text-[9px] md:text-xs font-bold uppercase tracking-widest border border-red-200 bg-red-50 p-3 sm:p-4 rounded-sm">
-                                ⚠️ An error occurred. Please try submitting again.
-                            </div>
-                        )}
-
-                        {formStatus === 'success' ? (
-                            <div className="bg-brand-offwhite border border-brand-border p-8 sm:p-10 md:p-12 text-center flex flex-col items-center justify-center min-h-[300px] sm:min-h-[350px] md:min-h-[400px] rounded-lg">
-                                <div className="w-12 sm:w-14 md:w-16 h-12 sm:h-14 md:h-16 rounded-full bg-brand-black text-white flex items-center justify-center text-lg sm:text-xl md:text-2xl mb-4 sm:mb-6">
-                                    <i className="fa-solid fa-check"></i>
-                                </div>
-                                <h4 className="text-lg sm:text-xl md:text-2xl font-display font-bold uppercase tracking-tighter text-brand-black mb-1 sm:mb-2">Message Sent</h4>
-                                <p className="text-[8px] sm:text-[9px] md:text-xs font-bold tracking-[0.15em] uppercase text-brand-gray">Our team will be in touch shortly.</p>
-                            </div>
-                        ) : (
-                            <form className="space-y-6 sm:space-y-8 md:space-y-10" onSubmit={handleFormSubmit}>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 md:gap-10">
-                                    <div>
-                                        <input 
-                                            type="text" 
-                                            placeholder="FIRST NAME *" 
-                                            required 
-                                            value={formData.f_name}
-                                            onChange={(e) => setFormData({ ...formData, f_name: e.target.value })}
-                                            className="w-full bg-transparent border-b border-brand-black pb-2 text-[8px] sm:text-[9px] md:text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray rounded-none" 
-                                        />
-                                    </div>
-                                    <div>
-                                        <input 
-                                            type="text" 
-                                            placeholder="LAST NAME" 
-                                            value={formData.l_name}
-                                            onChange={(e) => setFormData({ ...formData, l_name: e.target.value })}
-                                            className="w-full bg-transparent border-b border-brand-black pb-2 text-[8px] sm:text-[9px] md:text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray rounded-none" 
-                                        />
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <input 
-                                        type="email" 
-                                        placeholder="EMAIL ADDRESS *" 
-                                        required 
-                                        value={formData.email}
-                                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                        className="w-full bg-transparent border-b border-brand-black pb-2 text-[8px] sm:text-[9px] md:text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray rounded-none" 
-                                    />
-                                </div>
-
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 md:gap-10">
-                                    <div className="flex items-end border-b border-brand-black pb-2 transition-colors focus-within:border-brand-accent group">
-                                        <div className="flex items-center gap-2 mr-2 sm:mr-3 md:mr-4 text-[8px] sm:text-[9px] md:text-xs font-bold tracking-widest text-brand-black">
-                                            <span>+61</span>
-                                        </div>
-                                        <input 
-                                            type="tel" 
-                                            placeholder="PHONE NUMBER *" 
-                                            required 
-                                            value={formData.phone}
-                                            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                                            className="w-full bg-transparent text-[8px] sm:text-[9px] md:text-xs font-bold tracking-[0.15em] uppercase outline-none placeholder-brand-gray text-brand-black rounded-none" 
-                                        />
-                                    </div>
-                                    
-                                    <div className="relative">
-                                        <select 
-                                            required 
-                                            value={formData.city}
-                                            onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                                            className={`w-full bg-transparent border-b border-brand-black pb-2 text-[8px] sm:text-[9px] md:text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent appearance-none cursor-pointer pr-6 sm:pr-7 md:pr-8 rounded-none ${formData.city === '' ? 'text-brand-gray' : 'text-brand-black'}`}
-                                        >
-                                            <option value="" disabled className="text-brand-gray">SELECT CITY *</option>
-                                            <option value="Melbourne">Melbourne</option>
-                                            <option value="Sydney">Sydney</option>
-                                            <option value="Brisbane">Brisbane</option>
-                                            <option value="Perth">Perth</option>
-                                            <option value="Adelaide">Adelaide</option>
-                                            <option value="Auckland">Auckland</option>
-                                            <option value="Singapore">Singapore</option>
-                                        </select>
-                                        <i className="fa-solid fa-chevron-down absolute right-2 top-1/2 -translate-y-1/2 text-[8px] sm:text-[9px] md:text-xs text-brand-black pointer-events-none"></i>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <textarea 
-                                        required 
-                                        rows={5} 
-                                        placeholder="HOW CAN WE HELP YOU TODAY? *" 
-                                        value={formData.description}
-                                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                        className="w-full bg-transparent border-b border-brand-black pb-2 pt-2 text-[8px] sm:text-[9px] md:text-xs font-bold tracking-[0.15em] uppercase outline-none transition-colors duration-300 focus:border-brand-accent text-brand-black placeholder-brand-gray resize-none rounded-none"
-                                    ></textarea>
-                                </div>
-
-                                <button 
-                                    type="submit" 
-                                    disabled={formStatus === 'loading'}
-                                    className="group relative overflow-hidden inline-flex items-center justify-center w-full py-4 sm:py-5 md:py-6 text-[8px] sm:text-[9px] md:text-xs font-bold tracking-[0.15em] uppercase mt-3 sm:mt-4 md:mt-4 bg-brand-black text-white transition-colors duration-300 disabled:opacity-70 disabled:cursor-not-allowed"
-                                >
-                                    <div className="absolute top-full left-0 w-full h-full bg-brand-accent transition-all duration-[400ms] ease-custom z-10 group-hover:top-0"></div>
-                                    <span className="relative z-20">
-                                        {formStatus === 'loading' ? 'Sending...' : 'Send Message'}
-                                    </span>
-                                </button>
-                            </form>
-                        )}
+                        <LeadForm 
+                          formType="contact_inquiry"
+                          fields={['f_name', 'l_name', 'email', 'phone', 'city', 'description']}
+                          buttonText="Send Message"
+                        />
                     </div>
 
                 </div>

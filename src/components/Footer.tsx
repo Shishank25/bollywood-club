@@ -1,10 +1,32 @@
 import Link from "next/link";
+import { query } from '@/lib/database/db'; // Make sure this path points to your actual db.ts file
 
-export default function Footer() {
+// Define the shape of our fetched city data
+interface FooterCity {
+  display_name: string;
+  slug: string;
+}
+
+export default async function Footer() {
+  let cities: FooterCity[] = [];
+
+  try {
+    // Directly query the database on the server
+    const result = await query(`
+      SELECT 
+        COALESCE(footer_label, title) AS display_name, 
+        slug 
+      FROM city_pages 
+      ORDER BY display_name ASC
+    `,[]);
+    cities = result.rows;
+  } catch (error) {
+    console.error('Failed to fetch footer cities:', error);
+  }
+
   return (
     <footer className="bg-brand-white pt-16 sm:pt-20 md:pt-24 pb-8 sm:pb-10 md:pb-12 px-4 sm:px-6 md:px-12">
       <div className="max-w-[1600px] mx-auto fade-up">
-
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 md:gap-12 lg:gap-8 mb-16 sm:mb-20 md:mb-24 text-xs sm:text-sm font-medium">
 
           {/* Brand & Contact */}
@@ -31,20 +53,23 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Territories */}
+          {/* Territories (Dynamically Fetched via Server) */}
           <div className="flex flex-col gap-4 sm:gap-6">
             <p className="text-[9px] sm:text-xs font-bold tracking-[0.2em] uppercase text-brand-black">Territories</p>
             <div className="grid grid-cols-2 gap-y-2 sm:gap-y-3 gap-x-3 sm:gap-x-4 text-xs sm:text-sm text-brand-gray">
-              {[
-                "Melbourne", "Singapore",
-                "Sydney", "Adelaide",
-                "Brisbane", "Perth",
-                "Auckland",
-              ].map((city) => (
-                <Link key={city} href="#" className="hover:text-brand-black transition-colors">
-                  {city}
-                </Link>
-              ))}
+              {cities.length > 0 ? (
+                cities.map((city) => (
+                  <Link 
+                    key={city.slug} 
+                    href={`/city/${city.slug}`} 
+                    className="hover:text-brand-black transition-colors"
+                  >
+                    {city.display_name}
+                  </Link>
+                ))
+              ) : (
+                <span className="col-span-2 text-gray-400 italic">No territories found</span>
+              )}
             </div>
           </div>
 
@@ -88,7 +113,6 @@ export default function Footer() {
             Designed for Nightlife
           </p>
         </div>
-
       </div>
     </footer>
   );
