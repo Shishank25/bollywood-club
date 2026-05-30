@@ -1,4 +1,5 @@
 import type { Event } from '@/types/events';
+import SmartMarqueeTitle from '@/components/SmartMarqueeTitle'; // Adjust this import path as needed
 
 interface EventCardProps {
   event: Event;
@@ -6,7 +7,7 @@ interface EventCardProps {
   imgSrc: string;
   delay: string;
   onReserve: () => void;
-  onBookVIP: () => void; // <-- NEW PROP
+  onBookVIP: () => void;
 }
 
 export function EventCard({ event, isActive, imgSrc, delay, onReserve, onBookVIP }: EventCardProps) {
@@ -34,15 +35,16 @@ export function EventCard({ event, isActive, imgSrc, delay, onReserve, onBookVIP
           src={imgSrc}
           alt={event.basicInfo?.name ?? 'Event'}
           className={`w-full h-full object-cover filter transition-all duration-[300ms] ease-custom ${
-            isActive ? 'grayscale group-hover:grayscale-0 group-hover:scale-105' : 'grayscale opacity-70'
+            isActive ? 'group-hover:grayscale-0 group-hover:scale-105' : 'grayscale opacity-70'
           }`}
         />
       </div>
 
       <div className={`flex flex-col flex-1 ${!isActive ? 'opacity-60' : ''}`}>
-        <h3 className={`text-2xl font-display font-bold uppercase tracking-tighter mb-2 text-wrap ${!isActive ? 'text-brand-gray' : ''}`}>
-          {event.basicInfo?.name}
-        </h3>
+        
+        {/* ─── NEW: Smart Marquee Title ─── */}
+        <SmartMarqueeTitle title={event.basicInfo?.name ?? 'Event'} />
+
         <p className={`text-xs font-bold tracking-[0.15em] uppercase mb-1 ${isActive ? 'text-brand-black' : 'text-brand-gray'}`}>
           {event.basicInfo?.date
             ? new Date(event.basicInfo.date).toLocaleDateString('en-AU', {
